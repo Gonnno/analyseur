@@ -124,40 +124,40 @@ h1 em{color:var(--ac);font-style:normal;}
     Semi-conducteurs · Nasdaq · Pétrole · Or · Crypto · Forex<br>
     Binance · Kraken · CoinGecko · ExchangeRate · Finnhub News
   </div>
-
+ 
   <button class="btn-main" id="btn" onclick="analyserTout()">
     <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     Analyser maintenant
   </button>
-
+ 
   <div class="ldr" id="ldr">
     <div class="ldr-bar"><div class="ldr-fill" id="lf"></div></div>
     <div class="ldr-txt" id="lt">Initialisation...</div>
   </div>
-
+ 
   <div class="tabs" id="tabs" style="display:none;">
     <div class="tab active" onclick="showTab('global')">🌐 Vue globale</div>
     <div class="tab" onclick="showTab('prediction')">🔮 Prédiction</div>
   </div>
-
+ 
   <div id="sec-global" class="section"></div>
   <div id="sec-prediction" class="section"></div>
-
+ 
   <div class="footer">
     ⚠ Informatif uniquement — pas un conseil en investissement.<br>
     Crypto : Binance/Kraken/CoinGecko · Forex : ExchangeRate-API · Actualités : Finnhub News · Actions : Yahoo Finance<br>
     Risque élevé sur produits à levier (3SEM ×3). Toujours utiliser un stop-loss.
   </div>
 </div>
-
+ 
 <script>
 const FH_KEY = 'd82pdqpr01qvkevndb7gd82pdqpr01qvkevndb80';
 const DATA = {};
-
+ 
 // ═══════════════════════════════════════════════════════════════════
 // SOURCES DE DONNÉES — toutes CORS-friendly depuis HTTPS
 // ═══════════════════════════════════════════════════════════════════
-
+ 
 // 1. CRYPTO — Binance (pas de clé, CORS ouvert)
 async function fetchCrypto() {
   const pairs = {
@@ -191,7 +191,7 @@ async function fetchCrypto() {
     } catch(e2) {}
   }
 }
-
+ 
 // 2. FOREX — ExchangeRate-API (gratuit, CORS ouvert, pas de clé)
 async function fetchForex() {
   try {
@@ -222,16 +222,17 @@ async function fetchForex() {
     } catch(e3) {}
   } catch(e) {}
 }
-
-// 3. ACTIONS US — Yahoo Finance via proxy CORS public
+ 
+// 3. ACTIONS US — Multi-sources avec fallbacks
 const CORS_PX = [
   u=>`https://api.allorigins.win/get?url=${encodeURIComponent(u)}`,
   u=>`https://corsproxy.io/?${encodeURIComponent(u)}`,
-  u=>`https://thingproxy.freeboard.io/fetch/${u}`,
+  u=>`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
 ];
-
+ 
 async function fetchYahoo(sym) {
-  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${sym}?interval=1d&range=5d`;
+  // Range 1mo pour avoir assez de données pour RSI et momentum 5j
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${sym}?interval=1d&range=1mo`;
   for (const px of CORS_PX) {
     try {
       const r = await fetch(px(url), {signal:AbortSignal.timeout(10000)});
@@ -249,7 +250,49 @@ async function fetchYahoo(sym) {
   }
   return null;
 }
-
+ 
+// Twelve Data — gratuit, 800 req/jour, CORS ouvert
+async function fetchTwelveData(sym) {
+  try {
+    const r = await fetch(`https://api.twelvedata.com/quote?symbol=${sym}&apikey=demo`, {signal:AbortSignal.timeout(8000)});
+    if (!r.ok) throw new Error();
+    const d = await r.json();
+    if (d.status==='error'||!d.close) throw new Error();
+    const price=parseFloat(d.close), prev=parseFloat(d.previous_close);
+    return {price, prev, pct:((price-prev)/prev)*100, closes:[], source:'Twelve Data'};
+  } catch {return null;}
+}
+ 
+// MarketStack — gratuit 100 req/mois (backup)
+async function fetchMarketStack(sym) {
+  // Utilise l'API publique sans clé pour les données EOD
+  try {
+    const url=`https://api.marketstack.com/v1/eod/latest?access_key=&symbols=${sym}`;
+    for (const px of CORS_PX) {
+      try {
+        const r=await fetch(px(url),{signal:AbortSignal.timeout(8000)});
+        let txt=await r.text();
+        let d;try{d=JSON.parse(txt);}catch{continue;}
+        if(d?.contents)try{d=JSON.parse(d.contents);}catch{continue;}
+        const item=d?.data?.[0];
+        if(!item?.close)continue;
+        return{price:item.close,prev:item.open,pct:((item.close-item.open)/item.open)*100,closes:[],source:'MarketStack'};
+      }catch{continue;}
+    }
+  }catch{}
+  return null;
+}
+ 
+async function fetchStock(sym) {
+  // Essai 1 : Yahoo Finance (données complètes + historique)
+  const yf = await fetchYahoo(sym);
+  if (yf) return yf;
+  // Essai 2 : Twelve Data
+  const td = await fetchTwelveData(sym);
+  if (td) return td;
+  return null;
+}
+ 
 // Actions à récupérer
 const STOCKS = {
   NVDA: 'Nvidia',  AMD: 'AMD',    TSM: 'TSMC',  AVGO: 'Broadcom', ASML: 'ASML',
@@ -257,20 +300,19 @@ const STOCKS = {
   USO:  'USO/WTI', XOM: 'ExxonMobil',CVX:'Chevron',OXY:'Occidental',
   GLD:  'GLD/Or',  SLV: 'Argent',  GDX: 'Minières',
 };
-
+ 
 async function fetchStocks() {
   const keys = Object.keys(STOCKS);
-  // Batches de 5 avec délai pour éviter rate limit
-  for (let i=0; i<keys.length; i+=5) {
-    const batch = keys.slice(i, i+5);
+  for (let i=0; i<keys.length; i+=4) {
+    const batch = keys.slice(i, i+4);
     await Promise.allSettled(batch.map(async k => {
-      const d = await fetchYahoo(k);
-      DATA[k] = d ? {...d, label:STOCKS[k], ok:true} : {label:STOCKS[k], ok:false, price:null, prev:null, pct:null};
+      const d = await fetchStock(k);
+      DATA[k] = d ? {...d, label:STOCKS[k], ok:true} : {label:STOCKS[k], ok:false, price:null, prev:null, pct:null, closes:[]};
     }));
-    if (i+5 < keys.length) await new Promise(r=>setTimeout(r,300));
+    if (i+4 < keys.length) await new Promise(r=>setTimeout(r,200));
   }
 }
-
+ 
 // 4. ACTUALITÉS — Finnhub News (CORS ouvert depuis HTTPS)
 async function fetchNews() {
   const all = [];
@@ -296,7 +338,7 @@ async function fetchNews() {
   return all.filter(n=>{if(!n.headline||seen.has(n.headline))return false;seen.add(n.headline);return true;})
             .sort((a,b)=>b.datetime-a.datetime).slice(0,18);
 }
-
+ 
 // ═══════════════════════════════════════════════════════════════════
 // UTILITAIRES
 // ═══════════════════════════════════════════════════════════════════
@@ -319,21 +361,46 @@ const fmtPrice= (p,k)=>{
 };
 const badgeCls=s=>s==='ACHAT'?'b-buy':s==='VENTE'?'b-sell':'b-hold';
 const sigCls  =H=>H>=62?'g':H<=40?'r':'a';
-
+ 
 function computeSignal(keys){
-  let score=50,n=0;
+  let bullScore=0, bearScore=0, n=0;
   keys.forEach(k=>{
     const d=DATA[k];
     if(!d?.ok||d.pct===null)return;
-    score+=d.pct*3; n++;
-    if(d.rsi){if(d.rsi>75)score-=12;else if(d.rsi>65)score-=4;else if(d.rsi<35)score-=8;}
+    n++;
+    const p=d.pct;
+    // Pondération progressive — évite qu'une seule valeur extrême fausse tout
+    if(p>3)       bullScore+=3;
+    else if(p>1)  bullScore+=2;
+    else if(p>0)  bullScore+=1;
+    else if(p<-3) bearScore+=3;
+    else if(p<-1) bearScore+=2;
+    else if(p<0)  bearScore+=1;
+    // RSI
+    if(d.rsi){
+      if(d.rsi>75)      bearScore+=2;
+      else if(d.rsi>60) bullScore+=1;
+      else if(d.rsi<35) bearScore+=2;
+      else if(d.rsi<45) bearScore+=1;
+    }
+    // Momentum 5j si disponible
+    if(d.closes?.length>=5){
+      const m5=((d.closes.at(-1)-d.closes.at(-5))/d.closes.at(-5))*100;
+      if(m5>5)       bullScore+=2;
+      else if(m5>2)  bullScore+=1;
+      else if(m5<-5) bearScore+=2;
+      else if(m5<-2) bearScore+=1;
+    }
   });
-  const H=cl(score,3,97),B=cl(100-H,3,97);
-  const sig=H>=62?'ACHAT':H<=40?'VENTE':'NEUTRE';
-  const conf=n>=3?(Math.abs(H-50)>15?'Élevée':'Modérée'):'Faible';
+  if(n===0) return{H:50,B:50,sig:'NEUTRE',conf:'Faible',n:0};
+  const total=bullScore+bearScore||1;
+  const H=cl(40+(bullScore/total)*55, 5, 95);
+  const B=cl(100-H, 5, 95);
+  const sig=H>=60?'ACHAT':H<=42?'VENTE':'NEUTRE';
+  const conf=n>=3?(Math.abs(H-50)>12?'Élevée':'Modérée'):'Faible';
   return{H,B,sig,conf,n};
 }
-
+ 
 function sentimentNews(n){
   const t=(n.headline+' '+(n.summary||'')).toLowerCase();
   const b=['surge','rally','gain','rise','beat','jump','record','strong','higher','growth','bullish','soar','upgrade','profit'];
@@ -341,7 +408,7 @@ function sentimentNews(n){
   const bs=b.filter(w=>t.includes(w)).length, rs=r.filter(w=>t.includes(w)).length;
   return bs>rs?'bull':rs>bs?'bear':'neutral';
 }
-
+ 
 async function traduire(txt){
   if(!txt||txt.length<3)return txt;
   try{
@@ -351,7 +418,7 @@ async function traduire(txt){
     return(t&&!t.toLowerCase().includes('mymemory')&&t.length>5)?t:txt;
   }catch{return txt;}
 }
-
+ 
 async function traduireNews(news){
   const out=[];
   for(let i=0;i<news.length;i+=4){
@@ -362,7 +429,7 @@ async function traduireNews(news){
   }
   return out;
 }
-
+ 
 function getMarketStatus(){
   const now=new Date();
   const utc=now.getTime()+now.getTimezoneOffset()*60000;
@@ -378,13 +445,13 @@ function getMarketStatus(){
     forex:   !(nyD===0||(nyD===6&&nyH>=17)),
   };
 }
-
+ 
 async function step(p,t){
   document.getElementById('lf').style.width=p+'%';
   document.getElementById('lt').textContent=t;
   await new Promise(r=>setTimeout(r,200));
 }
-
+ 
 // ═══════════════════════════════════════════════════════════════════
 // ANALYSE PRINCIPALE
 // ═══════════════════════════════════════════════════════════════════
@@ -394,22 +461,22 @@ async function analyserTout(){
   document.getElementById('tabs').style.display='none';
   document.getElementById('sec-global').innerHTML='';
   document.getElementById('sec-prediction').innerHTML='';
-
+ 
   try{
     await step(5, 'Crypto — Binance & CoinGecko...');
     await fetchCrypto().catch(()=>{});
-
+ 
     await step(20,'Forex — ExchangeRate & Frankfurter...');
     await fetchForex().catch(()=>{});
-
+ 
     await step(35,'Actions — Yahoo Finance...');
     await fetchStocks().catch(()=>{});
-
+ 
     await step(65,'RSI 14...');
     ['NVDA','AMD','TSM','QQQ','GLD'].forEach(k=>{
       if(DATA[k]?.closes?.length>14) DATA[k].rsi=rsi14(DATA[k].closes);
     });
-
+ 
     await step(72,'Actualités Finnhub...');
     let NEWS=[];
     try{
@@ -418,7 +485,7 @@ async function analyserTout(){
       await step(82,'Traduction en français...');
       NEWS=mapped.length>0?await traduireNews(mapped).catch(()=>mapped):[];
     }catch(e){NEWS=[];}
-
+ 
     await step(93,'Calcul des signaux...');
     const signals={
       semi:    computeSignal(['NVDA','AMD','TSM','AVGO','ASML']),
@@ -428,13 +495,13 @@ async function analyserTout(){
       crypto:  computeSignal(['BTC','ETH','SOL','XRP']),
       forex:   computeSignal(['EURUSD','GBPUSD','USDJPY','EURGBP']),
     };
-
+ 
     await step(100,'Affichage...');
     ldr.style.display='none'; btn.disabled=false;
     document.getElementById('tabs').style.display='flex';
     renderAll(signals,NEWS,getMarketStatus());
     showTab('global');
-
+ 
   }catch(e){
     ldr.style.display='none'; btn.disabled=false;
     document.getElementById('sec-global').innerHTML=`
@@ -445,14 +512,14 @@ async function analyserTout(){
     showTab('global');
   }
 }
-
+ 
 // ═══════════════════════════════════════════════════════════════════
 // RENDU
 // ═══════════════════════════════════════════════════════════════════
 function renderAll(signals,NEWS,ms){
   const now=new Date().toLocaleString('fr-FR');
   const fx=DATA['EURUSD']?.price||1.12;
-
+ 
   const MKTS=[
     {key:'semi',   icon:'🔬',label:'Semi-conducteurs',sub:'3SEM · SOXX · PHLX',   open:ms.semi,   horaire:'NYSE · 15h30–22h FR',  keys:['NVDA','AMD','TSM','AVGO','ASML'],         labels:['Nvidia','AMD','TSMC','Broadcom','ASML']},
     {key:'nasdaq', icon:'📈',label:'Nasdaq 100',      sub:'QQQ · NQSE EUR hedgé', open:ms.nasdaq, horaire:'Nasdaq · 15h30–22h FR', keys:['QQQ','MSFT','AAPL','META','GOOG'],         labels:['QQQ','Microsoft','Apple','Meta','Alphabet']},
@@ -461,19 +528,19 @@ function renderAll(signals,NEWS,ms){
     {key:'crypto', icon:'₿', label:'Crypto',          sub:'BTC · ETH · SOL · XRP',open:ms.crypto, horaire:'24h / 7j',              keys:['BTC','ETH','SOL','XRP'],                   labels:['Bitcoin','Ethereum','Solana','XRP']},
     {key:'forex',  icon:'💱',label:'Forex',            sub:'EUR/USD · GBP · JPY',  open:ms.forex,  horaire:'Forex · lun–ven 24h/j', keys:['EURUSD','GBPUSD','USDJPY','EURGBP'],       labels:['EUR/USD','GBP/USD','USD/JPY','EUR/GBP']},
   ];
-
+ 
   const best =[...MKTS].sort((a,b)=>signals[b.key].H-signals[a.key].H)[0];
   const worst=[...MKTS].sort((a,b)=>signals[a.key].H-signals[b.key].H)[0];
-
+ 
   const dc={bull:'bfg',bear:'bfr',neutral:'bfa'};
   const vc={bull:'g',bear:'r',neutral:'a'};
-
+ 
   const cards=MKTS.map(m=>{
     const s=signals[m.key],sc=sigCls(s.H),bc=badgeCls(s.sig);
     const mini=m.keys.slice(0,3).map(k=>{const d=DATA[k];if(!d?.ok)return'';return`<span class="gc-quote"><span class="${pctCls(d.pct)}">${d.label} ${fmtPct(d.pct)}</span></span>`;}).join('');
     const dQuotes=`<div class="quotes">${m.keys.map(k=>{const d=DATA[k];if(!d)return'';const cls=pctCls(d.pct);return`<div class="qc"><div class="ql">${d.label}</div><div class="qp ${d.ok?cls:'dim'}">${fmtPrice(d.price,k)}</div><div class="qd ${cls}">${d.ok?fmtPct(d.pct):'N/A'}</div></div>`;}).join('')}</div>`;
     const dBars=`<div class="card"><div class="ch">Contribution par actif</div>${m.keys.map((k,j)=>{const d=DATA[k];const p=d?.pct||0;const dir=p>0.2?'bull':p<-0.2?'bear':'neutral';const score=cl(50+p*4,3,97);return`<div class="br"><span class="bl">${m.labels[j]}</span><div class="bt"><div class="bf ${dc[dir]}" style="width:0%" data-w="${score}"></div></div><span class="bv ${vc[dir]}">${d?.ok?fmtPct(d.pct):'—'}</span></div>`;}).join('')}</div>`;
-
+ 
     // Recommandation enrichie par marché
     const recoMap={
       semi:   {buy:'3SEM ×3 : max 25% enveloppe · stop-loss -10% · sortie ≤ 4 jours. ASML éligible PEA.',sell:'Éviter 3SEM long — envisager 3SSM ×3 short. Réduire exposition SOXX.',hold:'Rester hors position levier. Attendre signal >65/100 avant entrée.'},
@@ -485,7 +552,7 @@ function renderAll(signals,NEWS,ms){
     };
     const recoKey=s.sig==='ACHAT'?'buy':s.sig==='VENTE'?'sell':'hold';
     const reco=recoMap[m.key]?.[recoKey]||'—';
-
+ 
     return`<div class="gc" id="gc-${m.key}" onclick="toggleGC('${m.key}')">
       <div class="gc-layout">
         <div class="gc-col-status">
@@ -495,11 +562,13 @@ function renderAll(signals,NEWS,ms){
         </div>
         <div class="gc-col-info">
           <div class="gc-label">${m.icon} ${m.label}</div>
-          <div class="gc-sig ${sc}">${s.sig} <span style="font-size:11px;color:var(--tx3);">${s.H}/100</span></div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:2px;">
+            <div class="gc-sig ${sc}">${s.sig} <span style="font-size:11px;color:var(--tx3);">${s.H}/100</span></div>
+            <span class="badge ${bc}" style="font-size:10px;padding:3px 9px;">${s.sig}</span>
+          </div>
           <div class="gc-detail">${m.sub}</div>
         </div>
         <div class="gc-col-right">
-          <span class="badge ${bc}">${s.sig}</span>
           <span class="gc-arrow">▼</span>
         </div>
       </div>
@@ -510,7 +579,7 @@ function renderAll(signals,NEWS,ms){
       </div>
     </div>`;
   }).join('');
-
+ 
   document.getElementById('sec-global').innerHTML=`
     <div class="dq">Binance · CoinGecko · ExchangeRate-API · Yahoo Finance · ${now}</div>
     <div class="global-grid">${cards}</div>
@@ -523,10 +592,10 @@ function renderAll(signals,NEWS,ms){
       </div>
     </div>
     <button class="btn-sm" onclick="analyserTout()">↻ Rafraîchir</button>`;
-
+ 
   // Mise à jour de la date
   document.getElementById('last-update').textContent = 'Mis à jour ' + now;
-
+ 
   // ── PRÉDICTION ──
   const bullN=NEWS.filter(n=>n.impact==='bull');
   const bearN=NEWS.filter(n=>n.impact==='bear');
@@ -534,7 +603,7 @@ function renderAll(signals,NEWS,ms){
   const conf=tot>0?Math.round(bullN.length/tot*100):50;
   const sentCls=conf>=60?'g':conf<=40?'r':'a';
   const sentTxt=conf>=60?'Haussier':conf<=40?'Baissier':'Incertain';
-
+ 
   const mktKw={
     semi:   /nvidia|amd|tsmc|chip|semi|gpu|sox|broadcom|asml|micron|semi-conductor/i,
     nasdaq: /nasdaq|apple|microsoft|meta|alphabet|google|tech|qqq|s&p/i,
@@ -543,7 +612,7 @@ function renderAll(signals,NEWS,ms){
     crypto: /bitcoin|btc|eth|ethereum|crypto|solana|xrp|blockchain|token/i,
     forex:  /euro|dollar|fed|rate|inflation|forex|eur|usd|currency|ecb|bce/i,
   };
-
+ 
   // Contexte fixe par marché pour enrichir la prédiction
   const mktContext={
     semi:   'Fed hawkish et tensions Taïwan = facteurs de risque. Demande IA structurellement solide.',
@@ -553,7 +622,7 @@ function renderAll(signals,NEWS,ms){
     crypto: 'Corrélation forte avec le Nasdaq. Volatilité ×3 vs actions.',
     forex:  'Fed vs BCE : politique monétaire divergente = pression sur EUR/USD.',
   };
-
+ 
   const predSections=MKTS.map(m=>{
     const s=signals[m.key];
     const mn=NEWS.filter(n=>mktKw[m.key].test(n.titre+(n.detail||'')));
@@ -562,20 +631,20 @@ function renderAll(signals,NEWS,ms){
     const ni=mb>mr?'bull':mr>mb?'bear':'neutral';
     const niTxt=ni==='bull'?'haussier':ni==='bear'?'baissier':'neutre';
     const niIcon=ni==='bull'?'🟢':ni==='bear'?'🔴':'🟡';
-
+ 
     // Score final croisé données + news
     const newsScore=ni==='bull'?72:ni==='bear'?30:50;
     const fH=mn.length>0?Math.round(s.H*0.65+newsScore*0.35):s.H;
     const fs=fH>=62?'ACHAT':fH<=40?'VENTE':'NEUTRE';
     const bc2=badgeCls(fs);
-
+ 
     // Projection 24h et 1 semaine
     const base=(fH-50)/10;
     const p24=(base*(1+Math.random()*0.3)).toFixed(1);
     const p1w=(base*2.2*(1+Math.random()*0.2)).toFixed(1);
     const c24=parseFloat(p24)>=0?'g':'r';
     const c1w=parseFloat(p1w)>=0?'g':'r';
-
+ 
     // Conclusion claire
     let concl='';
     if(mn.length===0){
@@ -589,7 +658,7 @@ function renderAll(signals,NEWS,ms){
          :fs==='VENTE'?'<b style="color:var(--rd)">→ Pression vendeuse confirmée.</b>'
          :'<b style="color:var(--am)">→ Attendre une confirmation.</b>');
     }
-
+ 
     return`<div class="pred-card">
       <div class="pred-card-header">
         <span class="pred-title">${m.icon} ${m.label}</span>
@@ -610,7 +679,7 @@ function renderAll(signals,NEWS,ms){
       </div>`).join('')}
     </div>`;
   }).join('');
-
+ 
   document.getElementById('sec-prediction').innerHTML=`
     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;margin-bottom:1rem;">
       <div style="font-size:14px;font-weight:700;">🔮 Prédiction — Actualités Finnhub</div>
@@ -627,7 +696,7 @@ function renderAll(signals,NEWS,ms){
     <div style="font:400 10px/1.5 'DM Mono',monospace;color:var(--tx3);margin:.5rem 0;">⚠ Prédictions probabilistes — estimations, pas des garanties.</div>
     <button class="btn-sm" onclick="analyserTout()">↻ Rafraîchir</button>`;
 }
-
+ 
 function toggleGC(key){
   const gc=document.getElementById('gc-'+key);if(!gc)return;
   const was=gc.classList.contains('expanded');
@@ -637,7 +706,7 @@ function toggleGC(key){
     setTimeout(()=>gc.querySelectorAll('.bf[data-w]').forEach(b=>b.style.width=b.dataset.w+'%'),50);
   }
 }
-
+ 
 function showTab(name){
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('visible'));
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
