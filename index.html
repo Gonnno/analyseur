@@ -16,7 +16,7 @@
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--bg);color:var(--tx);font-family:'Syne',sans-serif;min-height:100vh;padding:1.5rem 1rem;}
-.wrap{max-width:860px;margin:0 auto;}
+.wrap{max-width:880px;margin:0 auto;}
 .logo{font:400 10px/1 'DM Mono',monospace;color:var(--tx3);letter-spacing:.14em;text-transform:uppercase;margin-bottom:.5rem;}
 h1{font-size:clamp(20px,4vw,28px);font-weight:800;letter-spacing:-.03em;margin-bottom:.3rem;}
 h1 em{color:var(--ac);font-style:normal;}
@@ -39,47 +39,33 @@ h1 em{color:var(--ac);font-style:normal;}
 .global-grid{display:flex;flex-direction:column;gap:8px;margin-bottom:1rem;}
 .gc{background:var(--sur);border:1px solid var(--brd);border-radius:12px;padding:1rem 1.1rem;cursor:pointer;transition:border-color .2s;}
 .gc:hover,.gc.expanded{border-color:var(--ac);}
-.gc-arrow{font-size:11px;color:var(--tx3);transition:transform .25s;display:inline-block;}
-.gc.expanded .gc-arrow{transform:rotate(180deg);}
 .gc-body{display:none;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--brd);}
 .gc.expanded .gc-body{display:block;}
-.gc-layout{display:grid;grid-template-columns:90px 1fr auto;align-items:center;gap:10px;}
-.gc-col-status{display:flex;flex-direction:column;align-items:flex-start;gap:4px;}
-.gc-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.gc-layout{display:grid;grid-template-columns:88px 1fr 24px;align-items:center;gap:10px;}
+.gc-col-status{display:flex;flex-direction:column;align-items:flex-start;gap:3px;}
+.gc-dot{width:8px;height:8px;border-radius:50%;margin-bottom:1px;}
 .gc-dot-open{background:#4ade80;box-shadow:0 0 6px #4ade8099;}
 .gc-dot-closed{background:var(--rd);}
 .gc-status-label{font:700 9px/1 'DM Mono',monospace;}
-.gc-horaire{font:400 9px/1.3 'DM Mono',monospace;color:var(--tx3);}
-.gc-col-info{}
+.gc-horaire{font:400 8px/1.3 'DM Mono',monospace;color:var(--tx3);}
 .gc-label{font:400 9px/1 'DM Mono',monospace;color:var(--tx3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;}
-.gc-sig{font-size:17px;font-weight:800;}
-.gc-detail{font:400 10px/1.4 'DM Mono',monospace;color:var(--tx2);margin-top:3px;}
-.gc-col-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;}
-.gc-arrow{font-size:10px;color:var(--tx3);transition:transform .25s;display:inline-block;}
+.gc-sig{font-size:17px;font-weight:800;line-height:1;}
+.gc-score{font-size:11px;color:var(--tx3);font-family:'DM Mono',monospace;margin-left:5px;}
+.gc-sub{font:400 10px/1.4 'DM Mono',monospace;color:var(--tx2);margin-top:3px;}
+.gc-arrow{font-size:11px;color:var(--tx3);transition:transform .25s;display:block;text-align:center;}
 .gc.expanded .gc-arrow{transform:rotate(180deg);}
 .gc-quotes{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;padding-top:8px;border-top:1px solid var(--brd);}
 .gc-quote{font:400 10px/1 'DM Mono',monospace;padding:3px 7px;border-radius:4px;background:var(--sur2);}
-/* Prédiction améliorée */
-.pred-signal{display:flex;align-items:center;gap:8px;padding:.6rem .85rem;background:var(--sur2);border-radius:8px;margin-bottom:.6rem;}
-.pred-signal-icon{font-size:18px;}
-.pred-signal-txt{flex:1;font-size:12px;line-height:1.6;color:var(--tx);}
-.pred-signal-txt b{color:var(--ac2);}
-.pred-horizon{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:.6rem;}
-.pred-h-item{flex:1;min-width:80px;background:var(--sur2);border-radius:8px;padding:.5rem .7rem;text-align:center;}
-.pred-h-label{font:400 9px/1 'DM Mono',monospace;color:var(--tx3);margin-bottom:4px;}
-.pred-h-val{font:700 15px/1 'DM Mono',monospace;}
-/* Quotes grille */
-.quotes{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:7px;margin-bottom:.8rem;}
+.quotes{display:grid;grid-template-columns:repeat(auto-fit,minmax(108px,1fr));gap:7px;margin-bottom:.8rem;}
 .qc{background:var(--sur2);border:1px solid var(--brd);border-radius:9px;padding:.7rem .9rem;}
 .ql{font:400 9px/1 'DM Mono',monospace;color:var(--tx3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;}
 .qp{font:700 16px/1 'DM Mono',monospace;}
 .qd{font:400 10px/1 'DM Mono',monospace;margin-top:3px;}
 .g{color:var(--gr);}.r{color:var(--rd);}.a{color:var(--am);}.dim{color:var(--tx2);}
-/* Barres */
 .card{background:var(--sur2);border-radius:10px;padding:.9rem 1rem;margin-bottom:.7rem;}
 .ch{font:400 9px/1 'DM Mono',monospace;color:var(--tx3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.8rem;}
 .br{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
-.bl{min-width:130px;font-size:11px;color:var(--tx2);}
+.bl{min-width:128px;font-size:11px;color:var(--tx2);}
 .bt{flex:1;height:5px;background:var(--sur);border-radius:3px;overflow:hidden;}
 .bf{height:100%;border-radius:3px;transition:width 1s cubic-bezier(.4,0,.2,1);}
 .bfg{background:var(--gr);}.bfr{background:var(--rd);}.bfa{background:var(--am);}
@@ -88,260 +74,266 @@ h1 em{color:var(--ac);font-style:normal;}
 .b-buy{background:var(--gr-bg);color:var(--gr);border:1px solid rgba(74,222,128,.3);}
 .b-sell{background:var(--rd-bg);color:var(--rd);border:1px solid rgba(248,113,113,.3);}
 .b-hold{background:var(--am-bg);color:var(--am);border:1px solid rgba(251,191,36,.3);}
-/* Prédiction news */
-.pred-card{background:var(--sur);border:1px solid var(--brd);border-radius:12px;padding:1rem 1.1rem;margin-bottom:.8rem;}
-.pred-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem;flex-wrap:wrap;gap:.5rem;}
-.pred-title{font-size:13px;font-weight:700;}
-.news-item{border-left:2px solid var(--brd);padding:.45rem .7rem;margin-bottom:.5rem;border-radius:0 6px 6px 0;}
-.news-item.bull{border-left-color:var(--gr);background:rgba(74,222,128,.04);}
-.news-item.bear{border-left-color:var(--rd);background:rgba(248,113,113,.04);}
-.news-item.neutral{border-left-color:var(--am);}
-.news-title{font-size:12px;font-weight:700;color:var(--tx);line-height:1.4;margin-bottom:2px;}
-.news-meta{font:400 9px/1 'DM Mono',monospace;color:var(--tx3);}
 .reco{font:400 12px/1.7 'DM Mono',monospace;color:var(--tx);background:var(--sur2);border-radius:8px;padding:.65rem .85rem;margin-top:.6rem;}
-/* Score */
-.score-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+/* Radar opportunités */
+.radar-grid{display:flex;flex-direction:column;gap:10px;margin-bottom:1rem;}
+.radar-card{background:var(--sur);border:1px solid var(--brd);border-radius:12px;padding:1rem 1.1rem;}
+.radar-card.hot{border-color:rgba(251,191,36,.4);background:linear-gradient(135deg,var(--sur),rgba(251,191,36,.04));}
+.radar-card.very-hot{border-color:rgba(248,113,113,.5);background:linear-gradient(135deg,var(--sur),rgba(248,113,113,.05));}
+.radar-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:.7rem;flex-wrap:wrap;}
+.radar-left{}
+.radar-name{font-size:15px;font-weight:800;line-height:1.2;margin-bottom:3px;}
+.radar-ticker{font:500 11px/1 'DM Mono',monospace;color:var(--tx3);margin-bottom:4px;}
+.radar-type{font:400 9px/1 'DM Mono',monospace;padding:2px 8px;border-radius:4px;display:inline-block;}
+.type-ipo{background:rgba(248,113,113,.15);color:var(--rd);border:1px solid rgba(248,113,113,.3);}
+.type-etf{background:var(--ac-bg);color:var(--ac2);border:1px solid rgba(139,127,255,.3);}
+.type-action{background:var(--gr-bg);color:var(--gr);border:1px solid rgba(74,222,128,.3);}
+.radar-right{text-align:right;flex-shrink:0;}
+.radar-score-label{font:400 9px/1 'DM Mono',monospace;color:var(--tx3);margin-bottom:3px;}
+.radar-score{font-size:22px;font-weight:800;}
+.radar-horizon{font:400 10px/1 'DM Mono',monospace;color:var(--tx3);margin-top:2px;}
+.radar-desc{font:400 12px/1.7 'DM Mono',monospace;color:var(--tx2);margin-bottom:.7rem;}
+.radar-facts{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:.7rem;}
+.radar-fact{font:400 10px/1 'DM Mono',monospace;padding:3px 8px;border-radius:4px;background:var(--sur2);color:var(--tx2);}
+.radar-signal{font:400 12px/1.6 'DM Mono',monospace;color:var(--tx);background:var(--sur2);border-radius:7px;padding:.5rem .8rem;}
+.radar-signal b{color:var(--ac2);}
+.countdown{display:inline-flex;align-items:center;gap:5px;font:700 11px/1 'DM Mono',monospace;padding:3px 9px;border-radius:5px;background:var(--rd-bg);color:var(--rd);border:1px solid rgba(248,113,113,.3);}
+.etf-score-bar{display:flex;align-items:center;gap:8px;margin-top:.6rem;}
+.etf-score-label{font:400 10px/1 'DM Mono',monospace;color:var(--tx3);min-width:90px;}
+.etf-score-track{flex:1;height:4px;background:var(--sur2);border-radius:2px;overflow:hidden;}
+.etf-score-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--am),var(--gr));}
+.pred-card{background:var(--sur);border:1px solid var(--brd);border-radius:12px;padding:1rem 1.1rem;margin-bottom:.8rem;}
+.pred-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem;flex-wrap:wrap;gap:.5rem;}
+.pred-title{font-size:13px;font-weight:700;}
+.pred-horizon{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:.7rem;}
+.pred-h-item{background:var(--sur2);border-radius:8px;padding:.5rem .6rem;text-align:center;}
+.pred-h-label{font:400 9px/1 'DM Mono',monospace;color:var(--tx3);margin-bottom:4px;}
+.pred-h-val{font:700 14px/1 'DM Mono',monospace;color:var(--tx);}
+.pred-concl{font:400 12px/1.7 'DM Mono',monospace;color:var(--tx);background:var(--sur2);border-radius:8px;padding:.65rem .85rem;margin-bottom:.6rem;}
+.pred-concl b{color:var(--ac2);}
+/* News */
+.news-item{border-left:2px solid var(--brd);padding:.5rem .8rem;margin-bottom:.5rem;border-radius:0 6px 6px 0;text-decoration:none;display:block;}
+.news-item.bull{border-left-color:var(--gr);background:rgba(74,222,128,.03);}
+.news-item.bear{border-left-color:var(--rd);background:rgba(248,113,113,.03);}
+.news-item.neutral{border-left-color:var(--am);}
+.news-item:hover{opacity:.85;}
+.news-title{font-size:12px;font-weight:700;color:var(--tx);line-height:1.4;margin-bottom:2px;}
+.news-summary{font:400 11px/1.5 'DM Mono',monospace;color:var(--tx2);margin-bottom:3px;}
+.news-meta{font:400 9px/1 'DM Mono',monospace;color:var(--tx3);display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.news-link{color:var(--ac2);text-decoration:none;font-size:9px;}
+.news-link:hover{text-decoration:underline;}
+.score-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:.5rem;}
 .score-big{font-size:32px;font-weight:800;line-height:1;}
 .score-detail{font:400 11px/1.6 'DM Mono',monospace;color:var(--tx2);}
 .footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--brd);font:400 10px/1.8 'DM Mono',monospace;color:var(--tx3);}
-/* Mobile */
 @media(max-width:480px){
-  .bl{min-width:90px;}
-  h1{font-size:20px;}
-  .gc-sig{font-size:15px;}
-  .gc-layout{grid-template-columns:80px 1fr auto;gap:8px;}
-  .gc-horaire{display:none;}
-  .pred-horizon{gap:5px;}
-  .pred-h-item{min-width:60px;}
+  .bl{min-width:90px;} h1{font-size:20px;} .gc-sig{font-size:15px;}
+  .gc-layout{grid-template-columns:76px 1fr 20px;gap:7px;}
+  .gc-horaire{display:none;} .pred-horizon{grid-template-columns:repeat(3,1fr);}
 }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="logo">Signal Intelligence · v19 · <span id="last-update">—</span></div>
+  <div class="logo">Signal Intelligence · v20 · <span id="last-update">—</span></div>
   <h1>Dashboard <em>Multi-Marchés</em></h1>
-  <div class="sub">
-    Semi-conducteurs · Nasdaq · Pétrole · Or · Crypto · Forex<br>
-    Binance · Kraken · CoinGecko · ExchangeRate · Finnhub News
-  </div>
- 
+  <div class="sub">US · Europe · Crypto · Forex · Pétrole · Or — données temps réel + actualités traduites</div>
+
   <button class="btn-main" id="btn" onclick="analyserTout()">
     <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     Analyser maintenant
   </button>
- 
   <div class="ldr" id="ldr">
     <div class="ldr-bar"><div class="ldr-fill" id="lf"></div></div>
     <div class="ldr-txt" id="lt">Initialisation...</div>
   </div>
- 
+
   <div class="tabs" id="tabs" style="display:none;">
     <div class="tab active" onclick="showTab('global')">🌐 Vue globale</div>
+    <div class="tab" onclick="showTab('radar')">🚀 Radar</div>
     <div class="tab" onclick="showTab('prediction')">🔮 Prédiction</div>
   </div>
- 
   <div id="sec-global" class="section"></div>
+  <div id="sec-radar" class="section"></div>
   <div id="sec-prediction" class="section"></div>
- 
+
   <div class="footer">
     ⚠ Informatif uniquement — pas un conseil en investissement.<br>
-    Crypto : Binance/Kraken/CoinGecko · Forex : ExchangeRate-API · Actualités : Finnhub News · Actions : Yahoo Finance<br>
-    Risque élevé sur produits à levier (3SEM ×3). Toujours utiliser un stop-loss.
+    Sources : Binance · CoinGecko · ExchangeRate-API · Frankfurter · Yahoo Finance · Finnhub News · MyMemory<br>
+    Risque très élevé sur produits à levier (3SEM ×3). Toujours utiliser un stop-loss.
   </div>
 </div>
- 
+
 <script>
 const FH_KEY = 'd82pdqpr01qvkevndb7gd82pdqpr01qvkevndb80';
 const DATA = {};
- 
-// ═══════════════════════════════════════════════════════════════════
-// SOURCES DE DONNÉES — toutes CORS-friendly depuis HTTPS
-// ═══════════════════════════════════════════════════════════════════
- 
-// 1. CRYPTO — Binance (pas de clé, CORS ouvert)
+
+// ═══════════════════════════════════════════════════════════
+// 1. CRYPTO — Binance + CoinGecko fallback
+// ═══════════════════════════════════════════════════════════
 async function fetchCrypto() {
-  const pairs = {
-    BTC: 'BTCUSDT', ETH: 'ETHUSDT', SOL: 'SOLUSDT', XRP: 'XRPUSDT'
-  };
+  const pairs = {BTC:'BTCUSDT',ETH:'ETHUSDT',SOL:'SOLUSDT',XRP:'XRPUSDT'};
+  const labels = {BTC:'Bitcoin',ETH:'Ethereum',SOL:'Solana',XRP:'XRP'};
   try {
-    const symbols = JSON.stringify(Object.values(pairs).map(s=>`"${s}"`).join(',').replace(/"/g,'').split(',').map(s=>`"${s}"`));
-    const url = `https://api.binance.com/api/v3/ticker/24hr?symbols=[${Object.values(pairs).map(s=>`"${s}"`).join(',')}]`;
-    const r = await fetch(url, {signal:AbortSignal.timeout(8000)});
-    if (!r.ok) throw new Error('Binance ' + r.status);
+    const syms = Object.values(pairs).map(s=>`"${s}"`).join(',');
+    const r = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbols=[${syms}]`,{signal:AbortSignal.timeout(6000)});
+    if(!r.ok) throw new Error();
     const arr = await r.json();
-    arr.forEach(d => {
-      const key = Object.keys(pairs).find(k => pairs[k] === d.symbol);
-      if (key) DATA[key] = {
-        label: {BTC:'Bitcoin',ETH:'Ethereum',SOL:'Solana',XRP:'XRP'}[key],
-        price: parseFloat(d.lastPrice),
-        prev:  parseFloat(d.prevClosePrice),
-        pct:   parseFloat(d.priceChangePercent),
-        ok: true, source: 'Binance'
-      };
+    arr.forEach(d=>{
+      const k=Object.keys(pairs).find(k=>pairs[k]===d.symbol);
+      if(k) DATA[k]={label:labels[k],price:+d.lastPrice,prev:+d.prevClosePrice,pct:+d.priceChangePercent,ok:true,source:'Binance',closes:[]};
     });
-  } catch(e) {
-    // Fallback CoinGecko
-    try {
-      const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,ripple&vs_currencies=usd&include_24hr_change=true', {signal:AbortSignal.timeout(8000)});
-      const d = await r.json();
-      const map = {BTC:['bitcoin','Bitcoin'],ETH:['ethereum','Ethereum'],SOL:['solana','Solana'],XRP:['ripple','XRP']};
-      Object.entries(map).forEach(([k,[id,label]])=>{
-        if(d[id]) DATA[k]={label,price:d[id].usd,prev:d[id].usd/(1+d[id].usd_24h_change/100),pct:d[id].usd_24h_change,ok:true,source:'CoinGecko'};
-      });
-    } catch(e2) {}
-  }
+    return;
+  } catch{}
+  // Fallback CoinGecko
+  try {
+    const r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,ripple&vs_currencies=usd&include_24hr_change=true',{signal:AbortSignal.timeout(6000)});
+    const d=await r.json();
+    const map={BTC:['bitcoin','Bitcoin'],ETH:['ethereum','Ethereum'],SOL:['solana','Solana'],XRP:['ripple','XRP']};
+    Object.entries(map).forEach(([k,[id,lbl]])=>{
+      if(d[id]) DATA[k]={label:lbl,price:d[id].usd,prev:d[id].usd/(1+d[id].usd_24h_change/100),pct:d[id].usd_24h_change,ok:true,source:'CoinGecko',closes:[]};
+    });
+  } catch{}
 }
- 
-// 2. FOREX — ExchangeRate-API (gratuit, CORS ouvert, pas de clé)
+
+// ═══════════════════════════════════════════════════════════
+// 2. FOREX — ExchangeRate-API + Frankfurter pour variation
+// ═══════════════════════════════════════════════════════════
 async function fetchForex() {
   try {
-    const r = await fetch('https://open.er-api.com/v6/latest/USD', {signal:AbortSignal.timeout(8000)});
-    if (!r.ok) throw new Error();
-    const d = await r.json();
-    const rates = d.rates;
-    const pairs = {
-      EURUSD: {label:'EUR/USD', calc: 1/rates.EUR},
-      GBPUSD: {label:'GBP/USD', calc: 1/rates.GBP},
-      USDJPY: {label:'USD/JPY', calc: rates.JPY},
-      EURGBP: {label:'EUR/GBP', calc: rates.GBP/rates.EUR}
+    const [rNow,rYest] = await Promise.all([
+      fetch('https://open.er-api.com/v6/latest/USD',{signal:AbortSignal.timeout(6000)}),
+      fetch(`https://api.frankfurter.app/${new Date(Date.now()-86400000).toISOString().slice(0,10)}?from=USD`,{signal:AbortSignal.timeout(6000)})
+    ]);
+    const now  = await rNow.json();
+    const yest = rYest.ok ? await rYest.json() : null;
+    const R=now.rates, Y=yest?.rates||null;
+    const pairs={
+      EURUSD:{label:'EUR/USD',calc:1/R.EUR,prev:Y?1/Y.EUR:1/R.EUR},
+      GBPUSD:{label:'GBP/USD',calc:1/R.GBP,prev:Y?1/Y.GBP:1/R.GBP},
+      USDJPY:{label:'USD/JPY',calc:R.JPY,  prev:Y?Y.JPY:R.JPY},
+      EURGBP:{label:'EUR/GBP',calc:R.GBP/R.EUR,prev:Y?Y.GBP/Y.EUR:R.GBP/R.EUR},
     };
-    // Hier via /v6/latest/USD (pas de historique, on approxime chg à 0)
     Object.entries(pairs).forEach(([k,v])=>{
-      DATA[k]={label:v.label, price:v.calc, prev:v.calc, pct:0, ok:true, source:'ExchangeRate-API'};
+      DATA[k]={label:v.label,price:v.calc,prev:v.prev,pct:((v.calc-v.prev)/v.prev)*100,ok:true,source:'ExchangeRate',closes:[]};
     });
-    // Tenter variation via Frankfurter
-    try {
-      const yesterday = new Date(Date.now()-86400000).toISOString().slice(0,10);
-      const r2 = await fetch(`https://api.frankfurter.app/${yesterday}?from=USD`, {signal:AbortSignal.timeout(6000)});
-      const d2 = await r2.json();
-      if (d2.rates) {
-        if(DATA.EURUSD && d2.rates.EUR) { const prev=1/d2.rates.EUR; DATA.EURUSD.prev=prev; DATA.EURUSD.pct=((DATA.EURUSD.price-prev)/prev)*100; }
-        if(DATA.GBPUSD && d2.rates.GBP) { const prev=1/d2.rates.GBP; DATA.GBPUSD.prev=prev; DATA.GBPUSD.pct=((DATA.GBPUSD.price-prev)/prev)*100; }
-        if(DATA.USDJPY && d2.rates.JPY) { const prev=d2.rates.JPY; DATA.USDJPY.prev=prev; DATA.USDJPY.pct=((DATA.USDJPY.price-prev)/prev)*100; }
-      }
-    } catch(e3) {}
-  } catch(e) {}
+  } catch{}
 }
- 
-// 3. ACTIONS US — Multi-sources avec fallbacks
-const CORS_PX = [
+
+// ═══════════════════════════════════════════════════════════
+// 3. ACTIONS — Yahoo Finance via proxies CORS
+// ═══════════════════════════════════════════════════════════
+const PROXIES=[
   u=>`https://api.allorigins.win/get?url=${encodeURIComponent(u)}`,
   u=>`https://corsproxy.io/?${encodeURIComponent(u)}`,
   u=>`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
 ];
- 
-async function fetchYahoo(sym) {
-  // Range 1mo pour avoir assez de données pour RSI et momentum 5j
-  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${sym}?interval=1d&range=1mo`;
-  for (const px of CORS_PX) {
-    try {
-      const r = await fetch(px(url), {signal:AbortSignal.timeout(10000)});
-      let txt = await r.text();
-      let d; try{d=JSON.parse(txt);}catch{continue;}
-      if (d?.contents) {try{d=JSON.parse(d.contents);}catch{continue;}}
-      const res = d?.chart?.result?.[0];
-      if (!res) continue;
-      const closes = (res.indicators?.quote?.[0]?.close||[]).filter(v=>v!=null);
-      if (closes.length < 2) continue;
-      const price = res.meta?.regularMarketPrice || closes.at(-1);
-      const prev  = res.meta?.chartPreviousClose || closes.at(-2);
-      return {price, prev, pct:((price-prev)/prev)*100, closes, source:'Yahoo Finance'};
-    } catch {continue;}
+
+async function yahooFetch(sym) {
+  const url=`https://query1.finance.yahoo.com/v8/finance/chart/${sym}?interval=1d&range=1mo`;
+  for(const px of PROXIES){
+    try{
+      const r=await fetch(px(url),{signal:AbortSignal.timeout(8000)});
+      let txt=await r.text();
+      let d;try{d=JSON.parse(txt);}catch{continue;}
+      if(d?.contents){try{d=JSON.parse(d.contents);}catch{continue;}}
+      const res=d?.chart?.result?.[0];if(!res)continue;
+      const closes=(res.indicators?.quote?.[0]?.close||[]).filter(v=>v!=null);
+      if(closes.length<2)continue;
+      const price=res.meta?.regularMarketPrice||closes.at(-1);
+      const prev=res.meta?.chartPreviousClose||closes.at(-2);
+      return{price,prev,pct:((price-prev)/prev)*100,closes,source:'Yahoo Finance'};
+    }catch{continue;}
   }
   return null;
 }
- 
-// Twelve Data — gratuit, 800 req/jour, CORS ouvert
-async function fetchTwelveData(sym) {
-  try {
-    const r = await fetch(`https://api.twelvedata.com/quote?symbol=${sym}&apikey=demo`, {signal:AbortSignal.timeout(8000)});
-    if (!r.ok) throw new Error();
-    const d = await r.json();
-    if (d.status==='error'||!d.close) throw new Error();
-    const price=parseFloat(d.close), prev=parseFloat(d.previous_close);
-    return {price, prev, pct:((price-prev)/prev)*100, closes:[], source:'Twelve Data'};
-  } catch {return null;}
-}
- 
-// MarketStack — gratuit 100 req/mois (backup)
-async function fetchMarketStack(sym) {
-  // Utilise l'API publique sans clé pour les données EOD
-  try {
-    const url=`https://api.marketstack.com/v1/eod/latest?access_key=&symbols=${sym}`;
-    for (const px of CORS_PX) {
-      try {
-        const r=await fetch(px(url),{signal:AbortSignal.timeout(8000)});
-        let txt=await r.text();
-        let d;try{d=JSON.parse(txt);}catch{continue;}
-        if(d?.contents)try{d=JSON.parse(d.contents);}catch{continue;}
-        const item=d?.data?.[0];
-        if(!item?.close)continue;
-        return{price:item.close,prev:item.open,pct:((item.close-item.open)/item.open)*100,closes:[],source:'MarketStack'};
-      }catch{continue;}
-    }
-  }catch{}
-  return null;
-}
- 
-async function fetchStock(sym) {
-  // Essai 1 : Yahoo Finance (données complètes + historique)
-  const yf = await fetchYahoo(sym);
-  if (yf) return yf;
-  // Essai 2 : Twelve Data
-  const td = await fetchTwelveData(sym);
-  if (td) return td;
-  return null;
-}
- 
-// Actions à récupérer
-const STOCKS = {
-  NVDA: 'Nvidia',  AMD: 'AMD',    TSM: 'TSMC',  AVGO: 'Broadcom', ASML: 'ASML',
-  QQQ:  'QQQ ETF', MSFT:'Microsoft',AAPL:'Apple',META:'Meta',      GOOG: 'Alphabet',
-  USO:  'USO/WTI', XOM: 'ExxonMobil',CVX:'Chevron',OXY:'Occidental',
-  GLD:  'GLD/Or',  SLV: 'Argent',  GDX: 'Minières',
+
+// Actions US + Europe
+const STOCKS={
+  // Semi-conducteurs US
+  NVDA:'Nvidia', AMD:'AMD', TSM:'TSMC', AVGO:'Broadcom', ASML:'ASML',
+  // Nasdaq US
+  QQQ:'QQQ ETF', MSFT:'Microsoft', AAPL:'Apple', META:'Meta', GOOG:'Alphabet',
+  // Pétrole US
+  USO:'USO/WTI', XOM:'ExxonMobil', CVX:'Chevron', OXY:'Occidental',
+  // Or US
+  GLD:'GLD/Or', SLV:'Argent', GDX:'Minières Or',
+  // Europe — indices via ETF listés sur NYSE
+  'CAC.PA':'CAC 40',  // fallback sur Yahoo Finance Europe
+  'DAX':'DAX',
+  // Actions européennes phares
+  'TTE.PA':'TotalEnergies',
+  'AIR.PA':'Airbus',
+  'LVMH.PA':'LVMH',
+  'SAN.PA':'Sanofi',
+  'BNP.PA':'BNP Paribas',
+  'OR.PA':'L\'Oréal',
 };
- 
+
 async function fetchStocks() {
-  const keys = Object.keys(STOCKS);
-  for (let i=0; i<keys.length; i+=4) {
-    const batch = keys.slice(i, i+4);
-    await Promise.allSettled(batch.map(async k => {
-      const d = await fetchStock(k);
-      DATA[k] = d ? {...d, label:STOCKS[k], ok:true} : {label:STOCKS[k], ok:false, price:null, prev:null, pct:null, closes:[]};
-    }));
-    if (i+4 < keys.length) await new Promise(r=>setTimeout(r,200));
-  }
+  // Tout en parallèle — beaucoup plus rapide
+  await Promise.allSettled(
+    Object.keys(STOCKS).map(async k=>{
+      const d=await yahooFetch(k);
+      DATA[k]=d?{...d,label:STOCKS[k],ok:true}:{label:STOCKS[k],ok:false,price:null,prev:null,pct:null,closes:[]};
+    })
+  );
 }
- 
-// 4. ACTUALITÉS — Finnhub News (CORS ouvert depuis HTTPS)
+
+// ═══════════════════════════════════════════════════════════
+// 4. NEWS — Finnhub + catégories Europe
+// ═══════════════════════════════════════════════════════════
 async function fetchNews() {
-  const all = [];
-  for (const cat of ['general','crypto']) {
-    try {
-      const r = await fetch(`https://finnhub.io/api/v1/news?category=${cat}&token=${FH_KEY}`, {signal:AbortSignal.timeout(8000)});
-      if (!r.ok) continue;
-      const d = await r.json();
-      if (Array.isArray(d)) all.push(...d.slice(0,8));
-    } catch {continue;}
-  }
-  for (const sym of ['NVDA','AMD']) {
-    try {
-      const to   = new Date().toISOString().slice(0,10);
-      const from = new Date(Date.now()-3*86400000).toISOString().slice(0,10);
-      const r = await fetch(`https://finnhub.io/api/v1/company-news?symbol=${sym}&from=${from}&to=${to}&token=${FH_KEY}`,{signal:AbortSignal.timeout(8000)});
-      if (!r.ok) continue;
-      const d = await r.json();
-      if (Array.isArray(d)) all.push(...d.slice(0,4));
-    } catch {continue;}
-  }
-  const seen = new Set();
+  const all=[];
+  // News générales + marchés clés en parallèle
+  await Promise.allSettled([
+    fetch(`https://finnhub.io/api/v1/news?category=general&token=${FH_KEY}`,{signal:AbortSignal.timeout(6000)}).then(r=>r.json()).then(d=>{if(Array.isArray(d))all.push(...d.slice(0,10));}),
+    fetch(`https://finnhub.io/api/v1/news?category=crypto&token=${FH_KEY}`,{signal:AbortSignal.timeout(6000)}).then(r=>r.json()).then(d=>{if(Array.isArray(d))all.push(...d.slice(0,6));}),
+    ...['NVDA','AMD','TTE','AIR'].map(sym=>{
+      const to=new Date().toISOString().slice(0,10);
+      const from=new Date(Date.now()-3*86400000).toISOString().slice(0,10);
+      return fetch(`https://finnhub.io/api/v1/company-news?symbol=${sym}&from=${from}&to=${to}&token=${FH_KEY}`,{signal:AbortSignal.timeout(6000)})
+        .then(r=>r.json()).then(d=>{if(Array.isArray(d))all.push(...d.slice(0,3));}).catch(()=>{});
+    })
+  ]);
+  const seen=new Set();
   return all.filter(n=>{if(!n.headline||seen.has(n.headline))return false;seen.add(n.headline);return true;})
-            .sort((a,b)=>b.datetime-a.datetime).slice(0,18);
+            .sort((a,b)=>b.datetime-a.datetime).slice(0,20);
 }
- 
-// ═══════════════════════════════════════════════════════════════════
+
+// ═══════════════════════════════════════════════════════════
+// 5. TRADUCTION — MyMemory, titre + résumé en parallèle
+// ═══════════════════════════════════════════════════════════
+async function traduire(txt) {
+  if(!txt||txt.length<4) return txt;
+  try{
+    const r=await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(txt.slice(0,450))}&langpair=en|fr`,{signal:AbortSignal.timeout(5000)});
+    const d=await r.json();
+    const t=d?.responseData?.translatedText;
+    return(t&&!t.toLowerCase().includes('mymemory')&&t.length>4)?t:txt;
+  }catch{return txt;}
+}
+
+async function traduireNews(news) {
+  // Traduire titre + résumé en parallèle, batch de 6
+  const out=[];
+  for(let i=0;i<news.length;i+=6){
+    const batch=news.slice(i,i+6);
+    const res=await Promise.allSettled(batch.map(async n=>({
+      ...n,
+      titre:  await traduire(n.titre),
+      resume: n.detail ? await traduire(n.detail) : ''
+    })));
+    res.forEach((r,j)=>out.push(r.status==='fulfilled'?r.value:{...batch[j],resume:''}));
+    if(i+6<news.length) await new Promise(r=>setTimeout(r,400));
+  }
+  return out;
+}
+
+// ═══════════════════════════════════════════════════════════
 // UTILITAIRES
-// ═══════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════
+// ─── Indicateurs techniques ────────────────────────────────────────────────
 function rsi14(c,n=14){
   if(!c||c.length<n+1)return null;
   let g=0,l=0;
@@ -350,158 +342,184 @@ function rsi14(c,n=14){
   for(let i=n+1;i<c.length;i++){const d=c[i]-c[i-1];ag=(ag*(n-1)+(d>0?d:0))/n;al=(al*(n-1)+(d<0?-d:0))/n;}
   return al===0?100:100-100/(1+ag/al);
 }
-function cl(v,a,b){return Math.min(b,Math.max(a,Math.round(v)));}
-const pctCls = p=>p===null?'dim':p>0?'g':p<0?'r':'dim';
-const fmtPct = p=>p===null?'—':(p>=0?'+':'')+p.toFixed(2)+'%';
-const fmtPrice= (p,k)=>{
-  if(p===null)return'—';
-  if(['BTC','ETH','SOL'].includes(k))return'$'+Math.round(p).toLocaleString('fr-FR');
-  if(['EURUSD','GBPUSD','USDJPY','EURGBP'].includes(k))return p.toFixed(4);
-  return'$'+p.toFixed(2);
-};
-const badgeCls=s=>s==='ACHAT'?'b-buy':s==='VENTE'?'b-sell':'b-hold';
-const sigCls  =H=>H>=62?'g':H<=40?'r':'a';
- 
+
+// Moyenne mobile simple
+function sma(c,n){
+  if(!c||c.length<n)return null;
+  return c.slice(-n).reduce((a,b)=>a+b,0)/n;
+}
+
+// Score d'un actif individuel sur multi-timeframes
+function scoreAsset(d){
+  if(!d?.ok||d.pct===null) return{score:50,alerts:[]};
+  const c=d.closes||[];
+  let bull=0,bear=0;
+  const alerts=[];
+
+  // 1. Variation du jour (poids 2)
+  const p1=d.pct;
+  if(p1>3){bull+=4;}else if(p1>1){bull+=2;}else if(p1>0){bull+=1;}
+  else if(p1<-3){bear+=4;}else if(p1<-1){bear+=2;}else if(p1<0){bear+=1;}
+  if(p1<-5) alerts.push(`⚠ Forte chute du jour : ${p1.toFixed(1)}%`);
+
+  // 2. Variation 5 jours (poids 3 — détecte les dévisages progressifs)
+  if(c.length>=6){
+    const p5=((c.at(-1)-c.at(-6))/c.at(-6))*100;
+    d._p5=p5;
+    if(p5>8){bull+=6;}else if(p5>4){bull+=4;}else if(p5>2){bull+=2;}else if(p5>0){bull+=1;}
+    else if(p5<-8){bear+=6;}else if(p5<-4){bear+=4;}else if(p5<-2){bear+=2;}else if(p5<0){bear+=1;}
+    if(p5<-8) alerts.push(`⚠ Dévisage 5j : ${p5.toFixed(1)}%`);
+    if(p5<-15) alerts.push(`🚨 Chute majeure 5j : ${p5.toFixed(1)}%`);
+  }
+
+  // 3. Variation 20 jours (tendance moyen terme, poids 2)
+  if(c.length>=21){
+    const p20=((c.at(-1)-c.at(-21))/c.at(-21))*100;
+    d._p20=p20;
+    if(p20>15){bull+=4;}else if(p20>8){bull+=2;}else if(p20>0){bull+=1;}
+    else if(p20<-15){bear+=4;}else if(p20<-8){bear+=2;}else if(p20<0){bear+=1;}
+  }
+
+  // 4. RSI (surachat/survendu)
+  if(d.rsi){
+    if(d.rsi>78){bear+=4; alerts.push(`RSI ${d.rsi.toFixed(0)} — surachat extrême`);}
+    else if(d.rsi>70){bear+=2;}
+    else if(d.rsi>55){bull+=1;}
+    else if(d.rsi<25){bull+=2; alerts.push(`RSI ${d.rsi.toFixed(0)} — survendu`);}
+    else if(d.rsi<35){bear+=1;}
+    else if(d.rsi<45){bear+=1;}
+  }
+
+  // 5. Position vs SMA20 et SMA5 (croisement)
+  if(c.length>=20){
+    const sma5=sma(c,5), sma20=sma(c,20);
+    if(sma5&&sma20){
+      if(sma5>sma20*1.01){bull+=2;} // SMA5 au-dessus SMA20 = tendance haussière
+      else if(sma5<sma20*0.99){bear+=2;} // SMA5 en dessous = tendance baissière
+    }
+    // Prix vs SMA20
+    if(c.at(-1)>sma20*1.02){bull+=1;}
+    else if(c.at(-1)<sma20*0.98){bear+=2;}
+  }
+
+  const total=bull+bear||1;
+  const score=cl(30+(bull/total)*65,3,97);
+  return{score,alerts};
+}
+
+// Signal global d'un marché — multi-timeframes avec détection dévisage
 function computeSignal(keys){
-  let bullScore=0, bearScore=0, n=0;
+  let totalBull=0,totalBear=0,n=0;
+  const allAlerts=[];
+
   keys.forEach(k=>{
     const d=DATA[k];
     if(!d?.ok||d.pct===null)return;
     n++;
-    const p=d.pct;
-    // Pondération progressive — évite qu'une seule valeur extrême fausse tout
-    if(p>3)       bullScore+=3;
-    else if(p>1)  bullScore+=2;
-    else if(p>0)  bullScore+=1;
-    else if(p<-3) bearScore+=3;
-    else if(p<-1) bearScore+=2;
-    else if(p<0)  bearScore+=1;
-    // RSI
-    if(d.rsi){
-      if(d.rsi>75)      bearScore+=2;
-      else if(d.rsi>60) bullScore+=1;
-      else if(d.rsi<35) bearScore+=2;
-      else if(d.rsi<45) bearScore+=1;
-    }
-    // Momentum 5j si disponible
-    if(d.closes?.length>=5){
-      const m5=((d.closes.at(-1)-d.closes.at(-5))/d.closes.at(-5))*100;
-      if(m5>5)       bullScore+=2;
-      else if(m5>2)  bullScore+=1;
-      else if(m5<-5) bearScore+=2;
-      else if(m5<-2) bearScore+=1;
-    }
+    const {score,alerts}=scoreAsset(d);
+    alerts.forEach(a=>allAlerts.push({label:d.label,msg:a}));
+
+    // Score 50 = neutre — au-dessus = bull, en-dessous = bear
+    const contribution=score-50;
+    if(contribution>0) totalBull+=contribution;
+    else totalBear+=Math.abs(contribution);
   });
-  if(n===0) return{H:50,B:50,sig:'NEUTRE',conf:'Faible',n:0};
-  const total=bullScore+bearScore||1;
-  const H=cl(40+(bullScore/total)*55, 5, 95);
-  const B=cl(100-H, 5, 95);
+
+  if(n===0)return{H:50,B:50,sig:'NEUTRE',conf:'Faible',n:0,alerts:[]};
+
+  const total=totalBull+totalBear||1;
+  const H=cl(35+(totalBull/total)*60,5,95);
   const sig=H>=60?'ACHAT':H<=42?'VENTE':'NEUTRE';
   const conf=n>=3?(Math.abs(H-50)>12?'Élevée':'Modérée'):'Faible';
-  return{H,B,sig,conf,n};
+  return{H,B:cl(100-H,5,95),sig,conf,n,alerts:allAlerts.slice(0,3)};
 }
- 
+
 function sentimentNews(n){
   const t=(n.headline+' '+(n.summary||'')).toLowerCase();
-  const b=['surge','rally','gain','rise','beat','jump','record','strong','higher','growth','bullish','soar','upgrade','profit'];
-  const r=['fall','drop','loss','miss','decline','weak','lower','cut','warn','bearish','crash','plunge','downgrade'];
-  const bs=b.filter(w=>t.includes(w)).length, rs=r.filter(w=>t.includes(w)).length;
-  return bs>rs?'bull':rs>bs?'bear':'neutral';
+  const bull=['surge','rally','gain','rise','beat','jump','record','strong','higher','growth','bullish','soar','upgrade','profit','boost'];
+  const bear=['fall','drop','loss','miss','decline','weak','lower','cut','warn','bearish','crash','plunge','downgrade','concern','risk'];
+  return bull.filter(w=>t.includes(w)).length > bear.filter(w=>t.includes(w)).length ? 'bull'
+       : bear.filter(w=>t.includes(w)).length > bull.filter(w=>t.includes(w)).length ? 'bear' : 'neutral';
 }
- 
-async function traduire(txt){
-  if(!txt||txt.length<3)return txt;
-  try{
-    const r=await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(txt.slice(0,400))}&langpair=en|fr`,{signal:AbortSignal.timeout(5000)});
-    const d=await r.json();
-    const t=d?.responseData?.translatedText;
-    return(t&&!t.toLowerCase().includes('mymemory')&&t.length>5)?t:txt;
-  }catch{return txt;}
-}
- 
-async function traduireNews(news){
-  const out=[];
-  for(let i=0;i<news.length;i+=4){
-    const batch=news.slice(i,i+4);
-    const tr=await Promise.allSettled(batch.map(async n=>({...n,titre:await traduire(n.titre)})));
-    tr.forEach((t,j)=>out.push(t.status==='fulfilled'?t.value:batch[j]));
-    if(i+4<news.length)await new Promise(r=>setTimeout(r,600));
-  }
-  return out;
-}
- 
+
 function getMarketStatus(){
-  const now=new Date();
-  const utc=now.getTime()+now.getTimezoneOffset()*60000;
-  const ny=new Date(utc-4*3600000); // EDT
+  const utc=Date.now()+new Date().getTimezoneOffset()*60000;
+  const ny=new Date(utc-4*3600000);
+  const fr=new Date(utc+2*3600000); // CEST UTC+2
   const nyH=ny.getHours()+ny.getMinutes()/60, nyD=ny.getDay();
-  const wd=nyD>=1&&nyD<=5;
+  const frH=fr.getHours()+fr.getMinutes()/60, frD=fr.getDay();
+  const wdNY=nyD>=1&&nyD<=5, wdFR=frD>=1&&frD<=5;
   return{
-    semi:    wd&&nyH>=9.5&&nyH<16,
-    nasdaq:  wd&&nyH>=9.5&&nyH<16,
-    petrole: wd||(nyD===0&&nyH>=18),
-    or:      wd,
-    crypto:  true,
-    forex:   !(nyD===0||(nyD===6&&nyH>=17)),
+    semi:   wdNY&&nyH>=9.5&&nyH<16,
+    nasdaq: wdNY&&nyH>=9.5&&nyH<16,
+    europe: wdFR&&frH>=9&&frH<17.5,
+    petrole:wdNY||(nyD===0&&nyH>=18),
+    or:     wdNY,
+    crypto: true,
+    forex:  !(nyD===0||(nyD===6&&nyH>=17)),
   };
 }
- 
+
 async function step(p,t){
   document.getElementById('lf').style.width=p+'%';
   document.getElementById('lt').textContent=t;
-  await new Promise(r=>setTimeout(r,200));
+  await new Promise(r=>setTimeout(r,80));
 }
- 
-// ═══════════════════════════════════════════════════════════════════
-// ANALYSE PRINCIPALE
-// ═══════════════════════════════════════════════════════════════════
+
+// ═══════════════════════════════════════════════════════════
+// ANALYSE PRINCIPALE — tout en parallèle
+// ═══════════════════════════════════════════════════════════
 async function analyserTout(){
   const btn=document.getElementById('btn'),ldr=document.getElementById('ldr');
   btn.disabled=true; ldr.style.display='block';
   document.getElementById('tabs').style.display='none';
   document.getElementById('sec-global').innerHTML='';
   document.getElementById('sec-prediction').innerHTML='';
- 
+
   try{
-    await step(5, 'Crypto — Binance & CoinGecko...');
-    await fetchCrypto().catch(()=>{});
- 
-    await step(20,'Forex — ExchangeRate & Frankfurter...');
-    await fetchForex().catch(()=>{});
- 
-    await step(35,'Actions — Yahoo Finance...');
-    await fetchStocks().catch(()=>{});
- 
-    await step(65,'RSI 14...');
-    ['NVDA','AMD','TSM','QQQ','GLD'].forEach(k=>{
+    await step(5,'Lancement de toutes les sources en parallèle...');
+
+    // Tout en parallèle : crypto + forex + actions + news simultanément
+    const [,,rawNews]=await Promise.all([
+      fetchCrypto().catch(()=>{}),
+      fetchForex().catch(()=>{}),
+      fetchNews().catch(()=>[]),
+      fetchStocks().catch(()=>{}),
+    ]);
+
+    await step(60,'RSI 14 + indicateurs techniques...');
+    Object.keys(DATA).forEach(k=>{
       if(DATA[k]?.closes?.length>14) DATA[k].rsi=rsi14(DATA[k].closes);
     });
- 
-    await step(72,'Actualités Finnhub...');
-    let NEWS=[];
-    try{
-      const raw=await fetchNews();
-      const mapped=raw.map(n=>({impact:sentimentNews(n),titre:n.headline||'',detail:(n.summary||'').slice(0,120),source:n.source||'',time:n.datetime?new Date(n.datetime*1000).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}):'' }));
-      await step(82,'Traduction en français...');
-      NEWS=mapped.length>0?await traduireNews(mapped).catch(()=>mapped):[];
-    }catch(e){NEWS=[];}
- 
-    await step(93,'Calcul des signaux...');
+
+    await step(70,'Traduction des actualités...');
+    const newsRaw=(rawNews||[]).map(n=>({
+      impact:sentimentNews(n),
+      titre:n.headline||'',
+      detail:(n.summary||'').slice(0,200),
+      source:n.source||'',
+      url:n.url||'',
+      time:n.datetime?new Date(n.datetime*1000).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}):''
+    }));
+    const NEWS=newsRaw.length>0?await traduireNews(newsRaw).catch(()=>newsRaw):[];
+
+    await step(92,'Calcul des signaux...');
     const signals={
       semi:    computeSignal(['NVDA','AMD','TSM','AVGO','ASML']),
       nasdaq:  computeSignal(['QQQ','MSFT','AAPL','META','GOOG']),
+      europe:  computeSignal(['TTE.PA','AIR.PA','LVMH.PA','SAN.PA','BNP.PA','OR.PA']),
       petrole: computeSignal(['USO','XOM','CVX','OXY']),
       or:      computeSignal(['GLD','SLV','GDX']),
       crypto:  computeSignal(['BTC','ETH','SOL','XRP']),
       forex:   computeSignal(['EURUSD','GBPUSD','USDJPY','EURGBP']),
     };
- 
+
     await step(100,'Affichage...');
     ldr.style.display='none'; btn.disabled=false;
     document.getElementById('tabs').style.display='flex';
     renderAll(signals,NEWS,getMarketStatus());
     showTab('global');
- 
+
   }catch(e){
     ldr.style.display='none'; btn.disabled=false;
     document.getElementById('sec-global').innerHTML=`
@@ -512,47 +530,59 @@ async function analyserTout(){
     showTab('global');
   }
 }
- 
-// ═══════════════════════════════════════════════════════════════════
+
+// ═══════════════════════════════════════════════════════════
 // RENDU
-// ═══════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════
 function renderAll(signals,NEWS,ms){
   const now=new Date().toLocaleString('fr-FR');
   const fx=DATA['EURUSD']?.price||1.12;
- 
+  document.getElementById('last-update').textContent='Mis à jour '+now;
+
   const MKTS=[
-    {key:'semi',   icon:'🔬',label:'Semi-conducteurs',sub:'3SEM · SOXX · PHLX',   open:ms.semi,   horaire:'NYSE · 15h30–22h FR',  keys:['NVDA','AMD','TSM','AVGO','ASML'],         labels:['Nvidia','AMD','TSMC','Broadcom','ASML']},
-    {key:'nasdaq', icon:'📈',label:'Nasdaq 100',      sub:'QQQ · NQSE EUR hedgé', open:ms.nasdaq, horaire:'Nasdaq · 15h30–22h FR', keys:['QQQ','MSFT','AAPL','META','GOOG'],         labels:['QQQ','Microsoft','Apple','Meta','Alphabet']},
-    {key:'petrole',icon:'🛢️',label:'Pétrole & Énergie',sub:'WTI · Brent · Majors',open:ms.petrole,horaire:'CME Futures · 24h/5j', keys:['USO','XOM','CVX','OXY'],                   labels:['USO/WTI','ExxonMobil','Chevron','Occidental']},
-    {key:'or',     icon:'🥇',label:'Or & Métaux',     sub:'GLD · SLV · Minières', open:ms.or,     horaire:'Comex · lun–ven',       keys:['GLD','SLV','GDX'],                         labels:['GLD/Or','SLV/Argent','GDX/Minières']},
-    {key:'crypto', icon:'₿', label:'Crypto',          sub:'BTC · ETH · SOL · XRP',open:ms.crypto, horaire:'24h / 7j',              keys:['BTC','ETH','SOL','XRP'],                   labels:['Bitcoin','Ethereum','Solana','XRP']},
-    {key:'forex',  icon:'💱',label:'Forex',            sub:'EUR/USD · GBP · JPY',  open:ms.forex,  horaire:'Forex · lun–ven 24h/j', keys:['EURUSD','GBPUSD','USDJPY','EURGBP'],       labels:['EUR/USD','GBP/USD','USD/JPY','EUR/GBP']},
+    {key:'semi',   icon:'🔬',label:'Semi-conducteurs',sub:'3SEM · SOXX · PHLX',           open:ms.semi,   horaire:'NYSE · 15h30–22h FR',  keys:['NVDA','AMD','TSM','AVGO','ASML'],               labels:['Nvidia','AMD','TSMC','Broadcom','ASML']},
+    {key:'nasdaq', icon:'📈',label:'Nasdaq 100',      sub:'QQQ · NQSE EUR hedgé',          open:ms.nasdaq, horaire:'Nasdaq · 15h30–22h FR', keys:['QQQ','MSFT','AAPL','META','GOOG'],               labels:['QQQ','Microsoft','Apple','Meta','Alphabet']},
+    {key:'europe', icon:'🇪🇺',label:'Bourse Européenne',sub:'CAC40 · DAX · Blue chips FR',  open:ms.europe, horaire:'Euronext · 9h–17h30 FR',keys:['TTE.PA','AIR.PA','LVMH.PA','SAN.PA','BNP.PA','OR.PA'],labels:['TotalEnergies','Airbus','LVMH','Sanofi','BNP','L\'Oréal']},
+    {key:'petrole',icon:'🛢️',label:'Pétrole & Énergie',sub:'WTI · Brent · Majors',         open:ms.petrole,horaire:'CME Futures · 24h/5j', keys:['USO','XOM','CVX','OXY'],                         labels:['USO/WTI','ExxonMobil','Chevron','Occidental']},
+    {key:'or',     icon:'🥇',label:'Or & Métaux',     sub:'GLD · SLV · GDX Minières',     open:ms.or,     horaire:'Comex · lun–ven',       keys:['GLD','SLV','GDX'],                               labels:['GLD/Or','SLV/Argent','GDX/Minières']},
+    {key:'crypto', icon:'₿', label:'Crypto',          sub:'BTC · ETH · SOL · XRP',        open:ms.crypto, horaire:'24h / 7j',              keys:['BTC','ETH','SOL','XRP'],                         labels:['Bitcoin','Ethereum','Solana','XRP']},
+    {key:'forex',  icon:'💱',label:'Forex',            sub:'EUR/USD · GBP · JPY',          open:ms.forex,  horaire:'Forex · lun–ven 24h/j', keys:['EURUSD','GBPUSD','USDJPY','EURGBP'],             labels:['EUR/USD','GBP/USD','USD/JPY','EUR/GBP']},
   ];
- 
+
   const best =[...MKTS].sort((a,b)=>signals[b.key].H-signals[a.key].H)[0];
   const worst=[...MKTS].sort((a,b)=>signals[a.key].H-signals[b.key].H)[0];
- 
   const dc={bull:'bfg',bear:'bfr',neutral:'bfa'};
   const vc={bull:'g',bear:'r',neutral:'a'};
- 
+
+  const recoMap={
+    semi:   {ACHAT:'3SEM ×3 : max 25% · stop-loss -10% · ≤4 jours. ASML éligible PEA.',VENTE:'Éviter 3SEM long — envisager 3SSM ×3 short.',NEUTRE:'Hors position levier. Attendre signal >65/100.'},
+    nasdaq: {ACHAT:`NQSE hedgé EUR recommandé (EUR/USD ${fx.toFixed(4)}). QQQ pour exposition USD.`,VENTE:'Réduire QQQ/NQSE. Dollar fort amplifie les pertes sur ETF non-hedgés.',NEUTRE:'Surveiller EUR/USD avant entrée. NQSE protège contre la volatilité de change.'},
+    europe: {ACHAT:'Actions européennes en momentum. TotalEnergies et Airbus = valeurs clés.',VENTE:'Pression sur les marchés européens. Surveiller BCE et macro zone euro.',NEUTRE:'Euronext sans tendance claire. Attendre catalyseur macro européen.'},
+    petrole:{ACHAT:'OXY = haut bêta. XOM = défensif. Surveiller annonces OPEC et tension Iran.',VENTE:'Pression baissière sur brut. Risque de retournement géopolitique.',NEUTRE:'Volatilité géopolitique élevée. Attendre stabilisation du Brent.'},
+    or:     {ACHAT:'Or = refuge. GDX (minières) amplifie ×1.5. Inverse du dollar.',VENTE:'Risk-on dominant → rotation vers actions. Pression sur or et argent.',NEUTRE:'Or corrélé à l\'inflation et tensions géopolitiques. Surveiller dollar.'},
+    crypto: {ACHAT:'BTC = baromètre. ETH et SOL amplifient. Volatilité ×3 vs actions.',VENTE:'Risk-off. Crypto suit le Nasdaq en baisse. Réduire l\'exposition.',NEUTRE:'BTC doit franchir un niveau clé pour confirmer la tendance.'},
+    forex:  {ACHAT:`EUR/USD ${fx.toFixed(4)} haussier — NQSE hedgé surperforme les non-hedgés.`,VENTE:'Dollar dominant — ETF non-hedgés (SXRV) pénalisés. Privilégier NQSE.',NEUTRE:`EUR/USD ${fx.toFixed(4)} — zone neutre. Fed hawkish vs BCE.`},
+  };
+
   const cards=MKTS.map(m=>{
     const s=signals[m.key],sc=sigCls(s.H),bc=badgeCls(s.sig);
     const mini=m.keys.slice(0,3).map(k=>{const d=DATA[k];if(!d?.ok)return'';return`<span class="gc-quote"><span class="${pctCls(d.pct)}">${d.label} ${fmtPct(d.pct)}</span></span>`;}).join('');
-    const dQuotes=`<div class="quotes">${m.keys.map(k=>{const d=DATA[k];if(!d)return'';const cls=pctCls(d.pct);return`<div class="qc"><div class="ql">${d.label}</div><div class="qp ${d.ok?cls:'dim'}">${fmtPrice(d.price,k)}</div><div class="qd ${cls}">${d.ok?fmtPct(d.pct):'N/A'}</div></div>`;}).join('')}</div>`;
-    const dBars=`<div class="card"><div class="ch">Contribution par actif</div>${m.keys.map((k,j)=>{const d=DATA[k];const p=d?.pct||0;const dir=p>0.2?'bull':p<-0.2?'bear':'neutral';const score=cl(50+p*4,3,97);return`<div class="br"><span class="bl">${m.labels[j]}</span><div class="bt"><div class="bf ${dc[dir]}" style="width:0%" data-w="${score}"></div></div><span class="bv ${vc[dir]}">${d?.ok?fmtPct(d.pct):'—'}</span></div>`;}).join('')}</div>`;
- 
-    // Recommandation enrichie par marché
-    const recoMap={
-      semi:   {buy:'3SEM ×3 : max 25% enveloppe · stop-loss -10% · sortie ≤ 4 jours. ASML éligible PEA.',sell:'Éviter 3SEM long — envisager 3SSM ×3 short. Réduire exposition SOXX.',hold:'Rester hors position levier. Attendre signal >65/100 avant entrée.'},
-      nasdaq: {buy:`NQSE hedgé EUR recommandé (EUR/USD ${fx.toFixed(4)}). QQQ pour exposition directe USD.`,sell:'Réduire QQQ/NQSE. Dollar fort peut amplifier les pertes sur ETF non-hedgés.',hold:'EUR/USD à surveiller avant entrée. NQSE protège contre la volatilité de change.'},
-      petrole:{buy:'OXY = proxy haut bêta. XOM = valeur défensive. Surveiller annonces OPEC.',sell:'Pression baissière sur brut. Géopolitique Iran/Ormuz = risque de retournement rapide.',hold:'Volatilité géopolitique élevée. Attendre stabilisation du Brent.'},
-      or:     {buy:'Or = actif refuge. GDX (minières) amplifie ×1.5. Corrélation inverse avec le dollar.',sell:'Risk-on dominant → rotation vers actions. Pression sur l\'or et l\'argent.',hold:'Or corrélé à l\'inflation et aux tensions géopolitiques. Surveiller le dollar.'},
-      crypto: {buy:'BTC = baromètre. Altcoins (ETH, SOL) amplifient le mouvement. Volatilité ×3 vs actions.',sell:'Sentiment risk-off. Crypto suit le Nasdaq en baisse. Réduire l\'exposition.',hold:'Marché indécis. BTC doit franchir un niveau clé pour confirmer la tendance.'},
-      forex:  {buy:`EUR/USD ${fx.toFixed(4)} — haussier. NQSE hedgé EUR surperforme les ETF non-hedgés.`,sell:`Dollar dominant. ETF Nasdaq non-hedgés (SXRV) pénalisés. Privilégier NQSE.`,hold:`EUR/USD ${fx.toFixed(4)} — zone neutre. Fed hawkish vs BCE 2%.`},
-    };
-    const recoKey=s.sig==='ACHAT'?'buy':s.sig==='VENTE'?'sell':'hold';
-    const reco=recoMap[m.key]?.[recoKey]||'—';
- 
+    const dQuotes=`<div class="quotes">${m.keys.map(k=>{const d=DATA[k];if(!d)return'';return`<div class="qc"><div class="ql">${d.label}</div><div class="qp ${d.ok?pctCls(d.pct):'dim'}">${fmtPrice(d.price,k)}</div><div class="qd ${pctCls(d.pct)}">${d.ok?fmtPct(d.pct):'N/A'}</div></div>`;}).join('')}</div>`;
+    const dBars=`<div class="card"><div class="ch">Contribution par actif — J / 5j / 20j</div>${m.keys.map((k,j)=>{
+      const d=DATA[k];const p=d?.pct||0;
+      const p5=d?._p5,p20=d?._p20;
+      const dir=p5!==undefined?(p5>2?'bull':p5<-2?'bear':'neutral'):(p>0.3?'bull':p<-0.3?'bear':'neutral');
+      const score=d?scoreAsset(d).score:50;
+      const p5str=p5!==undefined?` / ${p5>=0?'+':''}${p5.toFixed(1)}%`:'';
+      const p20str=p20!==undefined?` / ${p20>=0?'+':''}${p20.toFixed(1)}%`:'';
+      return`<div class="br">
+        <span class="bl">${m.labels[j]}</span>
+        <div class="bt"><div class="bf ${dc[dir]}" style="width:0%" data-w="${score}"></div></div>
+        <span class="bv ${vc[dir]}" title="Jour / 5j / 20j">${d?.ok?fmtPct(d.pct):'—'}${p5str}</span>
+      </div>`;
+    }).join('')}</div>`;
+    const reco=recoMap[m.key]?.[s.sig]||'—';
+
     return`<div class="gc" id="gc-${m.key}" onclick="toggleGC('${m.key}')">
       <div class="gc-layout">
         <div class="gc-col-status">
@@ -560,42 +590,40 @@ function renderAll(signals,NEWS,ms){
           <span class="gc-status-label" style="color:${m.open?'var(--gr)':'var(--rd)'};">${m.open?'OUVERT':'FERMÉ'}</span>
           <span class="gc-horaire">${m.horaire}</span>
         </div>
-        <div class="gc-col-info">
+        <div>
           <div class="gc-label">${m.icon} ${m.label}</div>
-          <div style="display:flex;align-items:center;gap:8px;margin-top:2px;">
-            <div class="gc-sig ${sc}">${s.sig} <span style="font-size:11px;color:var(--tx3);">${s.H}/100</span></div>
-            <span class="badge ${bc}" style="font-size:10px;padding:3px 9px;">${s.sig}</span>
+          <div style="display:flex;align-items:baseline;gap:6px;">
+            <span class="gc-sig ${sc}">${s.sig}</span>
+            <span class="gc-score">${s.H}/100</span>
           </div>
-          <div class="gc-detail">${m.sub}</div>
+          <div class="gc-sub">${m.sub}</div>
         </div>
-        <div class="gc-col-right">
-          <span class="gc-arrow">▼</span>
-        </div>
+        <span class="gc-arrow">▼</span>
       </div>
       ${mini?`<div class="gc-quotes">${mini}</div>`:''}
       <div class="gc-body">
         ${dQuotes}${dBars}
         <div class="reco">→ ${reco}</div>
+        ${s.alerts?.length?`<div style="margin-top:.5rem;font:400 11px/1.6 'DM Mono',monospace;color:var(--rd);background:var(--rd-bg);border-radius:7px;padding:.5rem .7rem;">
+          ${s.alerts.map(a=>`${a.label} : ${a.msg}`).join('<br>')}
+        </div>`:''}
       </div>
     </div>`;
   }).join('');
- 
+
   document.getElementById('sec-global').innerHTML=`
-    <div class="dq">Binance · CoinGecko · ExchangeRate-API · Yahoo Finance · ${now}</div>
+    <div class="dq">Binance · ExchangeRate · Yahoo Finance · ${now}</div>
     <div class="global-grid">${cards}</div>
-    <div class="card"><div class="ch">Résumé</div>
-      <div style="font-size:13px;line-height:1.8;color:var(--tx);">
+    <div class="card"><div class="ch">Résumé du moment</div>
+      <div style="font-size:13px;line-height:1.9;color:var(--tx);">
         Marché le plus haussier : <b style="color:var(--gr)">${best.icon} ${best.label}</b> (${signals[best.key].H}/100).<br>
         Marché sous pression : <b style="color:var(--rd)">${worst.icon} ${worst.label}</b> (${signals[worst.key].H}/100).<br>
         EUR/USD ${fx.toFixed(4)} — ${fx>1.10?'NQSE hedgé EUR favorable':'surveiller impact dollar sur ETF non-hedgés'}.<br>
-        <span style="color:var(--tx3);font-size:12px;">3SEM ×3 uniquement sur signal ACHAT >65/100, horizon ≤4j, stop-loss -10%.</span>
+        <span style="color:var(--tx3);font-size:12px;">3SEM ×3 : signal ACHAT >65/100 requis · horizon ≤4j · stop-loss -10% strict.</span>
       </div>
     </div>
     <button class="btn-sm" onclick="analyserTout()">↻ Rafraîchir</button>`;
- 
-  // Mise à jour de la date
-  document.getElementById('last-update').textContent = 'Mis à jour ' + now;
- 
+
   // ── PRÉDICTION ──
   const bullN=NEWS.filter(n=>n.impact==='bull');
   const bearN=NEWS.filter(n=>n.impact==='bear');
@@ -603,100 +631,112 @@ function renderAll(signals,NEWS,ms){
   const conf=tot>0?Math.round(bullN.length/tot*100):50;
   const sentCls=conf>=60?'g':conf<=40?'r':'a';
   const sentTxt=conf>=60?'Haussier':conf<=40?'Baissier':'Incertain';
- 
+
   const mktKw={
-    semi:   /nvidia|amd|tsmc|chip|semi|gpu|sox|broadcom|asml|micron|semi-conductor/i,
-    nasdaq: /nasdaq|apple|microsoft|meta|alphabet|google|tech|qqq|s&p/i,
-    petrole:/oil|crude|brent|wti|opec|iran|energy|barrel|pétrole|petroleum/i,
-    or:     /gold|silver|metal|gld|xau|\bor\b|precious/i,
-    crypto: /bitcoin|btc|eth|ethereum|crypto|solana|xrp|blockchain|token/i,
-    forex:  /euro|dollar|fed|rate|inflation|forex|eur|usd|currency|ecb|bce/i,
+    semi:    /nvidia|amd|tsmc|chip|semi|gpu|sox|broadcom|asml|micron/i,
+    nasdaq:  /nasdaq|apple|microsoft|meta|alphabet|google|tech|qqq/i,
+    europe:  /total|airbus|lvmh|sanofi|bnp|loreal|cac|dax|euronext|europe|european/i,
+    petrole: /oil|crude|brent|wti|opec|iran|energy|barrel|pétrole/i,
+    or:      /gold|silver|metal|gld|xau|precious|or\b/i,
+    crypto:  /bitcoin|btc|eth|ethereum|crypto|solana|xrp|blockchain/i,
+    forex:   /euro|dollar|fed|rate|inflation|forex|eur|usd|currency|ecb|bce/i,
   };
- 
-  // Contexte fixe par marché pour enrichir la prédiction
-  const mktContext={
-    semi:   'Fed hawkish et tensions Taïwan = facteurs de risque. Demande IA structurellement solide.',
-    nasdaq: `EUR/USD ${fx.toFixed(4)} — ${fx>1.10?'favorable au NQSE hedgé EUR':'surveiller impact dollar sur ETF non-hedgés'}.`,
-    petrole:'Géopolitique Iran/Ormuz = volatilité élevée. Surveiller annonces OPEC.',
-    or:     'Corrélé inversement au dollar. Actif refuge en période de tensions.',
-    crypto: 'Corrélation forte avec le Nasdaq. Volatilité ×3 vs actions.',
-    forex:  'Fed vs BCE : politique monétaire divergente = pression sur EUR/USD.',
+
+  const mktCtx={
+    semi:   'Demande IA structurellement solide. Fed hawkish + tensions Taïwan = risques.',
+    nasdaq: `EUR/USD ${fx.toFixed(4)} — ${fx>1.10?'NQSE hedgé favorable':'surveiller impact dollar'}.`,
+    europe: 'BCE à 2%, inflation zone euro en baisse. Airbus et TotalEnergies = valeurs phares.',
+    petrole:'Géopolitique Iran/Ormuz = volatilité élevée. Surveiller OPEC.',
+    or:     'Refuge en période de tensions. Corrélation inverse dollar.',
+    crypto: 'Corrèle fortement avec le Nasdaq. Volatilité ×3 vs actions.',
+    forex:  'Fed hawkish vs BCE plus accommodante = pression sur EUR/USD.',
   };
- 
-  const predSections=MKTS.map(m=>{
+
+  const predCards=MKTS.map(m=>{
     const s=signals[m.key];
-    const mn=NEWS.filter(n=>mktKw[m.key].test(n.titre+(n.detail||'')));
+    const mn=NEWS.filter(n=>mktKw[m.key].test(n.titre+(n.resume||n.detail||'')));
     const mb=mn.filter(n=>n.impact==='bull').length;
     const mr=mn.filter(n=>n.impact==='bear').length;
     const ni=mb>mr?'bull':mr>mb?'bear':'neutral';
     const niTxt=ni==='bull'?'haussier':ni==='bear'?'baissier':'neutre';
     const niIcon=ni==='bull'?'🟢':ni==='bear'?'🔴':'🟡';
- 
-    // Score final croisé données + news
-    const newsScore=ni==='bull'?72:ni==='bear'?30:50;
-    const fH=mn.length>0?Math.round(s.H*0.65+newsScore*0.35):s.H;
-    const fs=fH>=62?'ACHAT':fH<=40?'VENTE':'NEUTRE';
-    const bc2=badgeCls(fs);
- 
-    // Projection 24h et 1 semaine
+    const fH=mn.length>0?Math.round(s.H*0.65+(ni==='bull'?72:ni==='bear'?28:50)*0.35):s.H;
+    const fs=fH>=60?'ACHAT':fH<=42?'VENTE':'NEUTRE';
+
+    // Projections sans couleur (estimations uniquement)
     const base=(fH-50)/10;
-    const p24=(base*(1+Math.random()*0.3)).toFixed(1);
-    const p1w=(base*2.2*(1+Math.random()*0.2)).toFixed(1);
-    const c24=parseFloat(p24)>=0?'g':'r';
-    const c1w=parseFloat(p1w)>=0?'g':'r';
- 
-    // Conclusion claire
+    const p24=base.toFixed(1);
+    const p1w=(base*2.1).toFixed(1);
+
     let concl='';
     if(mn.length===0){
-      concl=`Pas d'actualité spécifique détectée. Signal basé sur les cours uniquement : <b>${s.sig}</b> (${s.H}/100). ${mktContext[m.key]}`;
+      concl=`Pas d'actualité spécifique. Signal cours : <b>${s.sig}</b> (${s.H}/100). ${mktCtx[m.key]}`;
     } else {
       const top=mn[0];
-      concl=`${mn.length} actualité(s) — sentiment ${niIcon} <b>${niTxt}</b>. `
-        +`Actu principale : "<em>${top.titre}</em>". `
-        +`${mktContext[m.key]} `
-        +(fs==='ACHAT'?'<b style="color:var(--gr)">→ Conditions favorables.</b>'
-         :fs==='VENTE'?'<b style="color:var(--rd)">→ Pression vendeuse confirmée.</b>'
-         :'<b style="color:var(--am)">→ Attendre une confirmation.</b>');
+      concl=`${mn.length} actu(s) — sentiment ${niIcon} <b>${niTxt}</b>. "${top.titre}". `
+        +`${mktCtx[m.key]} `
+        +(fs==='ACHAT'?'<b>→ Conditions favorables.</b>':fs==='VENTE'?'<b>→ Pression vendeuse confirmée.</b>':'<b>→ Attendre confirmation.</b>');
     }
- 
+
+    // Alertes techniques du marché
+    const techAlerts=s.alerts||[];
+    const alertHTML=techAlerts.length?`<div style="font:400 11px/1.6 'DM Mono',monospace;color:var(--rd);background:var(--rd-bg);border-radius:7px;padding:.5rem .7rem;margin-bottom:.6rem;">
+      ${techAlerts.map(a=>`⚠ <b>${a.label}</b> : ${a.msg}`).join('<br>')}
+    </div>`:'';
+
+    // Top actif sous pression dans le groupe (pour les prédictions VENTE)
+    const worstInGroup=m.keys
+      .filter(k=>DATA[k]?.ok&&DATA[k]?._p5!==undefined)
+      .sort((a,b)=>(DATA[a]._p5||0)-(DATA[b]._p5||0))[0];
+    const worstInfo=worstInGroup&&DATA[worstInGroup]._p5<-3
+      ?`<div style="font:400 11px/1.5 'DM Mono',monospace;color:var(--am);margin-top:.4rem;">📉 Valeur sous pression 5j : <b>${DATA[worstInGroup].label}</b> ${(DATA[worstInGroup]._p5>=0?'+':'')+DATA[worstInGroup]._p5.toFixed(1)}%</div>`
+      :'';
+
+    const newsHTML=mn.slice(0,3).map(n=>`
+      <a class="news-item ${n.impact}" href="${n.url||'#'}" target="_blank" rel="noopener noreferrer">
+        <div class="news-title">${n.titre}</div>
+        ${n.resume?`<div class="news-summary">${n.resume}</div>`:''}
+        <div class="news-meta">
+          <span>${n.source||''}</span>
+          ${n.time?`<span>· ${n.time}</span>`:''}
+          ${n.url?`<span class="news-link">↗ Lire l'article</span>`:''}
+        </div>
+      </a>`).join('');
+
     return`<div class="pred-card">
-      <div class="pred-card-header">
+      <div class="pred-header">
         <span class="pred-title">${m.icon} ${m.label}</span>
-        <span class="badge ${bc2}" style="font-size:11px;padding:3px 10px;">${fs}</span>
+        <span class="badge ${badgeCls(fs)}" style="font-size:11px;padding:3px 10px;">${fs}</span>
       </div>
       <div class="pred-horizon">
-        <div class="pred-h-item"><div class="pred-h-label">Signal données</div><div class="pred-h-val ${sigCls(s.H)}">${s.sig}</div></div>
-        <div class="pred-h-item"><div class="pred-h-label">Prédiction 24h</div><div class="pred-h-val ${c24}">${parseFloat(p24)>=0?'+':''}${p24}%</div></div>
-        <div class="pred-h-item"><div class="pred-h-label">Prédiction 1 sem</div><div class="pred-h-val ${c1w}">${parseFloat(p1w)>=0?'+':''}${p1w}%</div></div>
-        <div class="pred-h-item"><div class="pred-h-label">Actualités (${mn.length})</div><div class="pred-h-val" style="font-size:14px;">${niIcon}</div></div>
+        <div class="pred-h-item"><div class="pred-h-label">Signal données</div><div class="pred-h-val ${sigCls(s.H)}">${s.sig} ${s.H}/100</div></div>
+        <div class="pred-h-item"><div class="pred-h-label">Projection 24h</div><div class="pred-h-val">${parseFloat(p24)>=0?'+':''}${p24}%</div></div>
+        <div class="pred-h-item"><div class="pred-h-label">Projection 1 sem</div><div class="pred-h-val">${parseFloat(p1w)>=0?'+':''}${p1w}%</div></div>
       </div>
-      <div class="pred-signal">
-        <div class="pred-signal-txt">${concl}</div>
-      </div>
-      ${mn.slice(0,2).map(n=>`<div class="news-item ${n.impact}">
-        <div class="news-title">${n.titre}</div>
-        <div class="news-meta">${n.source||''} ${n.time?'· '+n.time:''}</div>
-      </div>`).join('')}
+      <div class="pred-concl">${concl}</div>
+      ${alertHTML}
+      ${worstInfo}
+      ${newsHTML}
     </div>`;
   }).join('');
- 
+
   document.getElementById('sec-prediction').innerHTML=`
     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;margin-bottom:1rem;">
-      <div style="font-size:14px;font-weight:700;">🔮 Prédiction — Actualités Finnhub</div>
+      <div style="font-size:14px;font-weight:700;">🔮 Prédiction — Actualités Finnhub traduite</div>
       <span class="badge ${conf>=60?'b-buy':conf<=40?'b-sell':'b-hold'}">${sentTxt}</span>
     </div>
     <div class="pred-card">
-      <div class="ch">Sentiment global des actualités · ${now}</div>
+      <div class="ch">Sentiment global · ${now}</div>
       <div class="score-row">
         <div class="score-big ${sentCls}">${conf}%</div>
-        <div class="score-detail">${bullN.length} haussières · ${bearN.length} baissières · ${NEWS.length-bullN.length-bearN.length} neutres<br>${NEWS.length} actualités analysées et traduites</div>
+        <div class="score-detail">${bullN.length} haussières · ${bearN.length} baissières · ${NEWS.length-bullN.length-bearN.length} neutres<br>${NEWS.length} actualités analysées · titres + résumés traduits</div>
       </div>
     </div>
-    ${predSections}
-    <div style="font:400 10px/1.5 'DM Mono',monospace;color:var(--tx3);margin:.5rem 0;">⚠ Prédictions probabilistes — estimations, pas des garanties.</div>
+    ${predCards}
+    <div style="font:400 10px/1.5 'DM Mono',monospace;color:var(--tx3);margin:.5rem 0;">⚠ Projections probabilistes — pas des garanties. Cliquez sur les actualités pour lire l'article complet.</div>
     <button class="btn-sm" onclick="analyserTout()">↻ Rafraîchir</button>`;
 }
- 
+
 function toggleGC(key){
   const gc=document.getElementById('gc-'+key);if(!gc)return;
   const was=gc.classList.contains('expanded');
@@ -706,13 +746,11 @@ function toggleGC(key){
     setTimeout(()=>gc.querySelectorAll('.bf[data-w]').forEach(b=>b.style.width=b.dataset.w+'%'),50);
   }
 }
- 
 function showTab(name){
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('visible'));
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('sec-'+name)?.classList.add('visible');
-  const idx={global:0,prediction:1};
-  document.querySelectorAll('.tab')[idx[name]]?.classList.add('active');
+  document.querySelectorAll('.tab')[{global:0,prediction:1}[name]]?.classList.add('active');
 }
 </script>
 </body>
