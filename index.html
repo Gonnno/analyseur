@@ -35,7 +35,6 @@ h1 em{color:var(--ac);font-style:normal;}
 .tab:hover,.tab.active{background:var(--ac-bg);border-color:var(--ac);color:var(--ac2);}
 .section{display:none;}.section.visible{display:block;}
 .dq{font:400 10px/1.5 'DM Mono',monospace;color:var(--tx3);background:var(--sur2);border-radius:7px;padding:.5rem .8rem;margin-bottom:1rem;}
-/* Accordéon */
 .global-grid{display:flex;flex-direction:column;gap:8px;margin-bottom:1rem;}
 .gc{background:var(--sur);border:1px solid var(--brd);border-radius:12px;padding:1rem 1.1rem;cursor:pointer;transition:border-color .2s;}
 .gc:hover,.gc.expanded{border-color:var(--ac);}
@@ -75,7 +74,6 @@ h1 em{color:var(--ac);font-style:normal;}
 .b-sell{background:var(--rd-bg);color:var(--rd);border:1px solid rgba(248,113,113,.3);}
 .b-hold{background:var(--am-bg);color:var(--am);border:1px solid rgba(251,191,36,.3);}
 .reco{font:400 12px/1.7 'DM Mono',monospace;color:var(--tx);background:var(--sur2);border-radius:8px;padding:.65rem .85rem;margin-top:.6rem;}
-/* Radar opportunités */
 .radar-grid{display:flex;flex-direction:column;gap:10px;margin-bottom:1rem;}
 .radar-card{background:var(--sur);border:1px solid var(--brd);border-radius:12px;padding:1rem 1.1rem;}
 .radar-card.hot{border-color:rgba(251,191,36,.4);background:linear-gradient(135deg,var(--sur),rgba(251,191,36,.04));}
@@ -111,7 +109,6 @@ h1 em{color:var(--ac);font-style:normal;}
 .pred-h-val{font:700 14px/1 'DM Mono',monospace;color:var(--tx);}
 .pred-concl{font:400 12px/1.7 'DM Mono',monospace;color:var(--tx);background:var(--sur2);border-radius:8px;padding:.65rem .85rem;margin-bottom:.6rem;}
 .pred-concl b{color:var(--ac2);}
-/* News */
 .news-item{border-left:2px solid var(--brd);padding:.5rem .8rem;margin-bottom:.5rem;border-radius:0 6px 6px 0;text-decoration:none;display:block;}
 .news-item.bull{border-left-color:var(--gr);background:rgba(74,222,128,.03);}
 .news-item.bear{border-left-color:var(--rd);background:rgba(248,113,113,.03);}
@@ -169,6 +166,38 @@ const FH_KEY = 'd82pdqpr01qvkevndb7gd82pdqpr01qvkevndb80';
 const DATA = {};
 
 // ═══════════════════════════════════════════════════════════
+// UTILITAIRES — fonctions de base
+// ═══════════════════════════════════════════════════════════
+function cl(v, mn, mx) { return Math.max(mn, Math.min(mx, v)); }
+
+function sigCls(h) {
+  return h >= 60 ? 'g' : h <= 42 ? 'r' : 'a';
+}
+
+function badgeCls(sig) {
+  return sig === 'ACHAT' ? 'b-buy' : sig === 'VENTE' ? 'b-sell' : 'b-hold';
+}
+
+function pctCls(pct) {
+  if (pct === null || pct === undefined) return 'dim';
+  return pct > 0.3 ? 'g' : pct < -0.3 ? 'r' : 'dim';
+}
+
+function fmtPct(pct) {
+  if (pct === null || pct === undefined) return '—';
+  return (pct >= 0 ? '+' : '') + pct.toFixed(2) + '%';
+}
+
+function fmtPrice(price, key) {
+  if (price === null || price === undefined) return '—';
+  const isForex = ['EURUSD','GBPUSD','USDJPY','EURGBP'].includes(key);
+  const isCrypto = ['BTC','ETH','SOL','XRP'].includes(key);
+  if (isForex) return price.toFixed(4);
+  if (isCrypto && price > 1000) return price.toLocaleString('fr-FR', { maximumFractionDigits: 0 }) + ' $';
+  return price.toFixed(2) + (isCrypto ? ' $' : '');
+}
+
+// ═══════════════════════════════════════════════════════════
 // 1. CRYPTO — Binance + CoinGecko fallback
 // ═══════════════════════════════════════════════════════════
 async function fetchCrypto() {
@@ -185,7 +214,6 @@ async function fetchCrypto() {
     });
     return;
   } catch{}
-  // Fallback CoinGecko
   try {
     const r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,ripple&vs_currencies=usd&include_24hr_change=true',{signal:AbortSignal.timeout(6000)});
     const d=await r.json();
@@ -248,20 +276,13 @@ async function yahooFetch(sym) {
   return null;
 }
 
-// Actions US + Europe
 const STOCKS={
-  // Semi-conducteurs US
   NVDA:'Nvidia', AMD:'AMD', TSM:'TSMC', AVGO:'Broadcom', ASML:'ASML',
-  // Nasdaq US
   QQQ:'QQQ ETF', MSFT:'Microsoft', AAPL:'Apple', META:'Meta', GOOG:'Alphabet',
-  // Pétrole US
   USO:'USO/WTI', XOM:'ExxonMobil', CVX:'Chevron', OXY:'Occidental',
-  // Or US
   GLD:'GLD/Or', SLV:'Argent', GDX:'Minières Or',
-  // Europe — indices via ETF listés sur NYSE
-  'CAC.PA':'CAC 40',  // fallback sur Yahoo Finance Europe
+  'CAC.PA':'CAC 40',
   'DAX':'DAX',
-  // Actions européennes phares
   'TTE.PA':'TotalEnergies',
   'AIR.PA':'Airbus',
   'LVMH.PA':'LVMH',
@@ -271,7 +292,6 @@ const STOCKS={
 };
 
 async function fetchStocks() {
-  // Tout en parallèle — beaucoup plus rapide
   await Promise.allSettled(
     Object.keys(STOCKS).map(async k=>{
       const d=await yahooFetch(k);
@@ -281,11 +301,10 @@ async function fetchStocks() {
 }
 
 // ═══════════════════════════════════════════════════════════
-// 4. NEWS — Finnhub + catégories Europe
+// 4. NEWS — Finnhub
 // ═══════════════════════════════════════════════════════════
 async function fetchNews() {
   const all=[];
-  // News générales + marchés clés en parallèle
   await Promise.allSettled([
     fetch(`https://finnhub.io/api/v1/news?category=general&token=${FH_KEY}`,{signal:AbortSignal.timeout(6000)}).then(r=>r.json()).then(d=>{if(Array.isArray(d))all.push(...d.slice(0,10));}),
     fetch(`https://finnhub.io/api/v1/news?category=crypto&token=${FH_KEY}`,{signal:AbortSignal.timeout(6000)}).then(r=>r.json()).then(d=>{if(Array.isArray(d))all.push(...d.slice(0,6));}),
@@ -302,7 +321,7 @@ async function fetchNews() {
 }
 
 // ═══════════════════════════════════════════════════════════
-// 5. TRADUCTION — MyMemory, titre + résumé en parallèle
+// 5. TRADUCTION — MyMemory
 // ═══════════════════════════════════════════════════════════
 async function traduire(txt) {
   if(!txt||txt.length<4) return txt;
@@ -315,7 +334,6 @@ async function traduire(txt) {
 }
 
 async function traduireNews(news) {
-  // Traduire titre + résumé en parallèle, batch de 6
   const out=[];
   for(let i=0;i<news.length;i+=6){
     const batch=news.slice(i,i+6);
@@ -331,41 +349,8 @@ async function traduireNews(news) {
 }
 
 // ═══════════════════════════════════════════════════════════
-// UTILITAIRES
+// INDICATEURS TECHNIQUES
 // ═══════════════════════════════════════════════════════════
-  
-// ─── Utilitaires manquants ─────────────────────────────────────────────────
-function cl(v, mn, mx) { return Math.max(mn, Math.min(mx, v)); }
-
-function sigCls(h) {
-  return h >= 60 ? 'g' : h <= 42 ? 'r' : 'a';
-}
-
-function badgeCls(sig) {
-  return sig === 'ACHAT' ? 'b-buy' : sig === 'VENTE' ? 'b-sell' : 'b-hold';
-}
-
-function pctCls(pct) {
-  if (pct === null || pct === undefined) return 'dim';
-  return pct > 0.3 ? 'g' : pct < -0.3 ? 'r' : 'dim';
-}
-
-function fmtPct(pct) {
-  if (pct === null || pct === undefined) return '—';
-  return (pct >= 0 ? '+' : '') + pct.toFixed(2) + '%';
-}
-
-function fmtPrice(price, key) {
-  if (price === null || price === undefined) return '—';
-  // Forex : 4 décimales, sinon 2
-  const isForex = ['EURUSD','GBPUSD','USDJPY','EURGBP'].includes(key);
-  const isCrypto = ['BTC','ETH','SOL','XRP'].includes(key);
-  if (isForex) return price.toFixed(4);
-  if (isCrypto && price > 1000) return price.toLocaleString('fr-FR', { maximumFractionDigits: 0 }) + ' $';
-  return price.toFixed(2) + (isCrypto ? ' $' : '');
-}
-
-// ─── Indicateurs techniques ────────────────────────────────────────────────
 function rsi14(c,n=14){
   if(!c||c.length<n+1)return null;
   let g=0,l=0;
@@ -375,26 +360,22 @@ function rsi14(c,n=14){
   return al===0?100:100-100/(1+ag/al);
 }
 
-// Moyenne mobile simple
 function sma(c,n){
   if(!c||c.length<n)return null;
   return c.slice(-n).reduce((a,b)=>a+b,0)/n;
 }
 
-// Score d'un actif individuel sur multi-timeframes
 function scoreAsset(d){
   if(!d?.ok||d.pct===null) return{score:50,alerts:[]};
   const c=d.closes||[];
   let bull=0,bear=0;
   const alerts=[];
 
-  // 1. Variation du jour (poids 2)
   const p1=d.pct;
   if(p1>3){bull+=4;}else if(p1>1){bull+=2;}else if(p1>0){bull+=1;}
   else if(p1<-3){bear+=4;}else if(p1<-1){bear+=2;}else if(p1<0){bear+=1;}
   if(p1<-5) alerts.push(`⚠ Forte chute du jour : ${p1.toFixed(1)}%`);
 
-  // 2. Variation 5 jours (poids 3 — détecte les dévisages progressifs)
   if(c.length>=6){
     const p5=((c.at(-1)-c.at(-6))/c.at(-6))*100;
     d._p5=p5;
@@ -404,7 +385,6 @@ function scoreAsset(d){
     if(p5<-15) alerts.push(`🚨 Chute majeure 5j : ${p5.toFixed(1)}%`);
   }
 
-  // 3. Variation 20 jours (tendance moyen terme, poids 2)
   if(c.length>=21){
     const p20=((c.at(-1)-c.at(-21))/c.at(-21))*100;
     d._p20=p20;
@@ -412,7 +392,6 @@ function scoreAsset(d){
     else if(p20<-15){bear+=4;}else if(p20<-8){bear+=2;}else if(p20<0){bear+=1;}
   }
 
-  // 4. RSI (surachat/survendu)
   if(d.rsi){
     if(d.rsi>78){bear+=4; alerts.push(`RSI ${d.rsi.toFixed(0)} — surachat extrême`);}
     else if(d.rsi>70){bear+=2;}
@@ -422,16 +401,14 @@ function scoreAsset(d){
     else if(d.rsi<45){bear+=1;}
   }
 
-  // 5. Position vs SMA20 et SMA5 (croisement)
   if(c.length>=20){
-    const sma5=sma(c,5), sma20=sma(c,20);
-    if(sma5&&sma20){
-      if(sma5>sma20*1.01){bull+=2;} // SMA5 au-dessus SMA20 = tendance haussière
-      else if(sma5<sma20*0.99){bear+=2;} // SMA5 en dessous = tendance baissière
+    const sma5v=sma(c,5), sma20v=sma(c,20);
+    if(sma5v&&sma20v){
+      if(sma5v>sma20v*1.01){bull+=2;}
+      else if(sma5v<sma20v*0.99){bear+=2;}
     }
-    // Prix vs SMA20
-    if(c.at(-1)>sma20*1.02){bull+=1;}
-    else if(c.at(-1)<sma20*0.98){bear+=2;}
+    if(c.at(-1)>sma20v*1.02){bull+=1;}
+    else if(c.at(-1)<sma20v*0.98){bear+=2;}
   }
 
   const total=bull+bear||1;
@@ -439,7 +416,6 @@ function scoreAsset(d){
   return{score,alerts};
 }
 
-// Signal global d'un marché — multi-timeframes avec détection dévisage
 function computeSignal(keys){
   let totalBull=0,totalBear=0,n=0;
   const allAlerts=[];
@@ -450,8 +426,6 @@ function computeSignal(keys){
     n++;
     const {score,alerts}=scoreAsset(d);
     alerts.forEach(a=>allAlerts.push({label:d.label,msg:a}));
-
-    // Score 50 = neutre — au-dessus = bull, en-dessous = bear
     const contribution=score-50;
     if(contribution>0) totalBull+=contribution;
     else totalBear+=Math.abs(contribution);
@@ -477,7 +451,7 @@ function sentimentNews(n){
 function getMarketStatus(){
   const utc=Date.now()+new Date().getTimezoneOffset()*60000;
   const ny=new Date(utc-4*3600000);
-  const fr=new Date(utc+2*3600000); // CEST UTC+2
+  const fr=new Date(utc+2*3600000);
   const nyH=ny.getHours()+ny.getMinutes()/60, nyD=ny.getDay();
   const frH=fr.getHours()+fr.getMinutes()/60, frD=fr.getDay();
   const wdNY=nyD>=1&&nyD<=5, wdFR=frD>=1&&frD<=5;
@@ -499,7 +473,7 @@ async function step(p,t){
 }
 
 // ═══════════════════════════════════════════════════════════
-// ANALYSE PRINCIPALE — tout en parallèle
+// ANALYSE PRINCIPALE
 // ═══════════════════════════════════════════════════════════
 async function analyserTout(){
   const btn=document.getElementById('btn'),ldr=document.getElementById('ldr');
@@ -511,7 +485,6 @@ async function analyserTout(){
   try{
     await step(5,'Lancement de toutes les sources en parallèle...');
 
-    // Tout en parallèle : crypto + forex + actions + news simultanément
     const [,,rawNews]=await Promise.all([
       fetchCrypto().catch(()=>{}),
       fetchForex().catch(()=>{}),
@@ -656,7 +629,6 @@ function renderAll(signals,NEWS,ms){
     </div>
     <button class="btn-sm" onclick="analyserTout()">↻ Rafraîchir</button>`;
 
-  // ── PRÉDICTION ──
   const bullN=NEWS.filter(n=>n.impact==='bull');
   const bearN=NEWS.filter(n=>n.impact==='bear');
   const tot=bullN.length+bearN.length;
@@ -695,7 +667,6 @@ function renderAll(signals,NEWS,ms){
     const fH=mn.length>0?Math.round(s.H*0.65+(ni==='bull'?72:ni==='bear'?28:50)*0.35):s.H;
     const fs=fH>=60?'ACHAT':fH<=42?'VENTE':'NEUTRE';
 
-    // Projections sans couleur (estimations uniquement)
     const base=(fH-50)/10;
     const p24=base.toFixed(1);
     const p1w=(base*2.1).toFixed(1);
@@ -710,13 +681,11 @@ function renderAll(signals,NEWS,ms){
         +(fs==='ACHAT'?'<b>→ Conditions favorables.</b>':fs==='VENTE'?'<b>→ Pression vendeuse confirmée.</b>':'<b>→ Attendre confirmation.</b>');
     }
 
-    // Alertes techniques du marché
     const techAlerts=s.alerts||[];
     const alertHTML=techAlerts.length?`<div style="font:400 11px/1.6 'DM Mono',monospace;color:var(--rd);background:var(--rd-bg);border-radius:7px;padding:.5rem .7rem;margin-bottom:.6rem;">
       ${techAlerts.map(a=>`⚠ <b>${a.label}</b> : ${a.msg}`).join('<br>')}
     </div>`:'';
 
-    // Top actif sous pression dans le groupe (pour les prédictions VENTE)
     const worstInGroup=m.keys
       .filter(k=>DATA[k]?.ok&&DATA[k]?._p5!==undefined)
       .sort((a,b)=>(DATA[a]._p5||0)-(DATA[b]._p5||0))[0];
@@ -778,6 +747,7 @@ function toggleGC(key){
     setTimeout(()=>gc.querySelectorAll('.bf[data-w]').forEach(b=>b.style.width=b.dataset.w+'%'),50);
   }
 }
+
 function showTab(name){
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('visible'));
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
