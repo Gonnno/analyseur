@@ -333,6 +333,38 @@ async function traduireNews(news) {
 // ═══════════════════════════════════════════════════════════
 // UTILITAIRES
 // ═══════════════════════════════════════════════════════════
+  
+// ─── Utilitaires manquants ─────────────────────────────────────────────────
+function cl(v, mn, mx) { return Math.max(mn, Math.min(mx, v)); }
+
+function sigCls(h) {
+  return h >= 60 ? 'g' : h <= 42 ? 'r' : 'a';
+}
+
+function badgeCls(sig) {
+  return sig === 'ACHAT' ? 'b-buy' : sig === 'VENTE' ? 'b-sell' : 'b-hold';
+}
+
+function pctCls(pct) {
+  if (pct === null || pct === undefined) return 'dim';
+  return pct > 0.3 ? 'g' : pct < -0.3 ? 'r' : 'dim';
+}
+
+function fmtPct(pct) {
+  if (pct === null || pct === undefined) return '—';
+  return (pct >= 0 ? '+' : '') + pct.toFixed(2) + '%';
+}
+
+function fmtPrice(price, key) {
+  if (price === null || price === undefined) return '—';
+  // Forex : 4 décimales, sinon 2
+  const isForex = ['EURUSD','GBPUSD','USDJPY','EURGBP'].includes(key);
+  const isCrypto = ['BTC','ETH','SOL','XRP'].includes(key);
+  if (isForex) return price.toFixed(4);
+  if (isCrypto && price > 1000) return price.toLocaleString('fr-FR', { maximumFractionDigits: 0 }) + ' $';
+  return price.toFixed(2) + (isCrypto ? ' $' : '');
+}
+
 // ─── Indicateurs techniques ────────────────────────────────────────────────
 function rsi14(c,n=14){
   if(!c||c.length<n+1)return null;
