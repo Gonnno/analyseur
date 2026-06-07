@@ -73,33 +73,11 @@ h1 em{color:var(--ac);font-style:normal;}
 .b-buy{background:var(--gr-bg);color:var(--gr);border:1px solid rgba(74,222,128,.3);}
 .b-sell{background:var(--rd-bg);color:var(--rd);border:1px solid rgba(248,113,113,.3);}
 .b-hold{background:var(--am-bg);color:var(--am);border:1px solid rgba(251,191,36,.3);}
+.b-danger{background:var(--rd-bg);color:var(--rd);border:1px solid rgba(248,113,113,.5);animation:pulse .8s ease-in-out infinite alternate;}
+@keyframes pulse{from{opacity:.7}to{opacity:1}}
 .reco{font:400 12px/1.7 'DM Mono',monospace;color:var(--tx);background:var(--sur2);border-radius:8px;padding:.65rem .85rem;margin-top:.6rem;}
-.radar-grid{display:flex;flex-direction:column;gap:10px;margin-bottom:1rem;}
-.radar-card{background:var(--sur);border:1px solid var(--brd);border-radius:12px;padding:1rem 1.1rem;}
-.radar-card.hot{border-color:rgba(251,191,36,.4);background:linear-gradient(135deg,var(--sur),rgba(251,191,36,.04));}
-.radar-card.very-hot{border-color:rgba(248,113,113,.5);background:linear-gradient(135deg,var(--sur),rgba(248,113,113,.05));}
-.radar-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:.7rem;flex-wrap:wrap;}
-.radar-left{}
-.radar-name{font-size:15px;font-weight:800;line-height:1.2;margin-bottom:3px;}
-.radar-ticker{font:500 11px/1 'DM Mono',monospace;color:var(--tx3);margin-bottom:4px;}
-.radar-type{font:400 9px/1 'DM Mono',monospace;padding:2px 8px;border-radius:4px;display:inline-block;}
-.type-ipo{background:rgba(248,113,113,.15);color:var(--rd);border:1px solid rgba(248,113,113,.3);}
-.type-etf{background:var(--ac-bg);color:var(--ac2);border:1px solid rgba(139,127,255,.3);}
-.type-action{background:var(--gr-bg);color:var(--gr);border:1px solid rgba(74,222,128,.3);}
-.radar-right{text-align:right;flex-shrink:0;}
-.radar-score-label{font:400 9px/1 'DM Mono',monospace;color:var(--tx3);margin-bottom:3px;}
-.radar-score{font-size:22px;font-weight:800;}
-.radar-horizon{font:400 10px/1 'DM Mono',monospace;color:var(--tx3);margin-top:2px;}
-.radar-desc{font:400 12px/1.7 'DM Mono',monospace;color:var(--tx2);margin-bottom:.7rem;}
-.radar-facts{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:.7rem;}
-.radar-fact{font:400 10px/1 'DM Mono',monospace;padding:3px 8px;border-radius:4px;background:var(--sur2);color:var(--tx2);}
-.radar-signal{font:400 12px/1.6 'DM Mono',monospace;color:var(--tx);background:var(--sur2);border-radius:7px;padding:.5rem .8rem;}
-.radar-signal b{color:var(--ac2);}
-.countdown{display:inline-flex;align-items:center;gap:5px;font:700 11px/1 'DM Mono',monospace;padding:3px 9px;border-radius:5px;background:var(--rd-bg);color:var(--rd);border:1px solid rgba(248,113,113,.3);}
-.etf-score-bar{display:flex;align-items:center;gap:8px;margin-top:.6rem;}
-.etf-score-label{font:400 10px/1 'DM Mono',monospace;color:var(--tx3);min-width:90px;}
-.etf-score-track{flex:1;height:4px;background:var(--sur2);border-radius:2px;overflow:hidden;}
-.etf-score-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--am),var(--gr));}
+.alert-box{margin-top:.5rem;font:400 11px/1.6 'DM Mono',monospace;color:var(--rd);background:var(--rd-bg);border-radius:7px;padding:.5rem .7rem;border:1px solid rgba(248,113,113,.25);}
+.warn-box{margin-top:.5rem;font:400 11px/1.6 'DM Mono',monospace;color:var(--am);background:var(--am-bg);border-radius:7px;padding:.5rem .7rem;border:1px solid rgba(251,191,36,.25);}
 .pred-card{background:var(--sur);border:1px solid var(--brd);border-radius:12px;padding:1rem 1.1rem;margin-bottom:.8rem;}
 .pred-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem;flex-wrap:wrap;gap:.5rem;}
 .pred-title{font-size:13px;font-weight:700;}
@@ -123,6 +101,8 @@ h1 em{color:var(--ac);font-style:normal;}
 .score-big{font-size:32px;font-weight:800;line-height:1;}
 .score-detail{font:400 11px/1.6 'DM Mono',monospace;color:var(--tx2);}
 .footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--brd);font:400 10px/1.8 'DM Mono',monospace;color:var(--tx3);}
+/* Légende filtres de sécurité */
+.safety-legend{font:400 10px/1.7 'DM Mono',monospace;color:var(--tx3);background:var(--sur2);border-radius:8px;padding:.6rem .9rem;margin-bottom:1rem;border-left:2px solid var(--ac);}
 @media(max-width:480px){
   .bl{min-width:90px;} h1{font-size:20px;} .gc-sig{font-size:15px;}
   .gc-layout{grid-template-columns:76px 1fr 20px;gap:7px;}
@@ -132,9 +112,9 @@ h1 em{color:var(--ac);font-style:normal;}
 </head>
 <body>
 <div class="wrap">
-  <div class="logo">Signal Intelligence · v20 · <span id="last-update">—</span></div>
+  <div class="logo">Signal Intelligence · v21 · <span id="last-update">—</span></div>
   <h1>Dashboard <em>Multi-Marchés</em></h1>
-  <div class="sub">US · Europe · Crypto · Forex · Pétrole · Or — données temps réel + actualités traduites</div>
+  <div class="sub">US · Europe · Crypto · Forex · Pétrole · Or — signaux filtrés + sécurité renforcée</div>
 
   <button class="btn-main" id="btn" onclick="analyserTout()">
     <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
@@ -147,11 +127,9 @@ h1 em{color:var(--ac);font-style:normal;}
 
   <div class="tabs" id="tabs" style="display:none;">
     <div class="tab active" onclick="showTab('global')">🌐 Vue globale</div>
-    <div class="tab" onclick="showTab('radar')">🚀 Radar</div>
     <div class="tab" onclick="showTab('prediction')">🔮 Prédiction</div>
   </div>
   <div id="sec-global" class="section"></div>
-  <div id="sec-radar" class="section"></div>
   <div id="sec-prediction" class="section"></div>
 
   <div class="footer">
@@ -166,42 +144,43 @@ const FH_KEY = 'd82pdqpr01qvkevndb7gd82pdqpr01qvkevndb80';
 const DATA = {};
 
 // ═══════════════════════════════════════════════════════════
-// UTILITAIRES — fonctions de base
+// UTILITAIRES DE BASE
 // ═══════════════════════════════════════════════════════════
 function cl(v, mn, mx) { return Math.max(mn, Math.min(mx, v)); }
 
-function sigCls(h) {
-  return h >= 60 ? 'g' : h <= 42 ? 'r' : 'a';
-}
+function sigCls(h) { return h >= 60 ? 'g' : h <= 42 ? 'r' : 'a'; }
 
 function badgeCls(sig) {
-  return sig === 'ACHAT' ? 'b-buy' : sig === 'VENTE' ? 'b-sell' : 'b-hold';
+  if(sig === 'ACHAT') return 'b-buy';
+  if(sig === 'VENTE') return 'b-sell';
+  if(sig === 'DANGER') return 'b-danger';
+  return 'b-hold';
 }
 
 function pctCls(pct) {
-  if (pct === null || pct === undefined) return 'dim';
+  if(pct === null || pct === undefined) return 'dim';
   return pct > 0.3 ? 'g' : pct < -0.3 ? 'r' : 'dim';
 }
 
 function fmtPct(pct) {
-  if (pct === null || pct === undefined) return '—';
+  if(pct === null || pct === undefined) return '—';
   return (pct >= 0 ? '+' : '') + pct.toFixed(2) + '%';
 }
 
 function fmtPrice(price, key) {
-  if (price === null || price === undefined) return '—';
-  const isForex = ['EURUSD','GBPUSD','USDJPY','EURGBP'].includes(key);
+  if(price === null || price === undefined) return '—';
+  const isForex  = ['EURUSD','GBPUSD','USDJPY','EURGBP'].includes(key);
   const isCrypto = ['BTC','ETH','SOL','XRP'].includes(key);
-  if (isForex) return price.toFixed(4);
-  if (isCrypto && price > 1000) return price.toLocaleString('fr-FR', { maximumFractionDigits: 0 }) + ' $';
+  if(isForex) return price.toFixed(4);
+  if(isCrypto && price > 1000) return price.toLocaleString('fr-FR',{maximumFractionDigits:0}) + ' $';
   return price.toFixed(2) + (isCrypto ? ' $' : '');
 }
 
 // ═══════════════════════════════════════════════════════════
-// 1. CRYPTO — Binance + CoinGecko fallback
+// 1. CRYPTO
 // ═══════════════════════════════════════════════════════════
 async function fetchCrypto() {
-  const pairs = {BTC:'BTCUSDT',ETH:'ETHUSDT',SOL:'SOLUSDT',XRP:'XRPUSDT'};
+  const pairs  = {BTC:'BTCUSDT',ETH:'ETHUSDT',SOL:'SOLUSDT',XRP:'XRPUSDT'};
   const labels = {BTC:'Bitcoin',ETH:'Ethereum',SOL:'Solana',XRP:'XRP'};
   try {
     const syms = Object.values(pairs).map(s=>`"${s}"`).join(',');
@@ -209,15 +188,15 @@ async function fetchCrypto() {
     if(!r.ok) throw new Error();
     const arr = await r.json();
     arr.forEach(d=>{
-      const k=Object.keys(pairs).find(k=>pairs[k]===d.symbol);
+      const k = Object.keys(pairs).find(k=>pairs[k]===d.symbol);
       if(k) DATA[k]={label:labels[k],price:+d.lastPrice,prev:+d.prevClosePrice,pct:+d.priceChangePercent,ok:true,source:'Binance',closes:[]};
     });
     return;
   } catch{}
   try {
-    const r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,ripple&vs_currencies=usd&include_24hr_change=true',{signal:AbortSignal.timeout(6000)});
-    const d=await r.json();
-    const map={BTC:['bitcoin','Bitcoin'],ETH:['ethereum','Ethereum'],SOL:['solana','Solana'],XRP:['ripple','XRP']};
+    const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,ripple&vs_currencies=usd&include_24hr_change=true',{signal:AbortSignal.timeout(6000)});
+    const d = await r.json();
+    const map = {BTC:['bitcoin','Bitcoin'],ETH:['ethereum','Ethereum'],SOL:['solana','Solana'],XRP:['ripple','XRP']};
     Object.entries(map).forEach(([k,[id,lbl]])=>{
       if(d[id]) DATA[k]={label:lbl,price:d[id].usd,prev:d[id].usd/(1+d[id].usd_24h_change/100),pct:d[id].usd_24h_change,ok:true,source:'CoinGecko',closes:[]};
     });
@@ -225,7 +204,7 @@ async function fetchCrypto() {
 }
 
 // ═══════════════════════════════════════════════════════════
-// 2. FOREX — ExchangeRate-API + Frankfurter pour variation
+// 2. FOREX
 // ═══════════════════════════════════════════════════════════
 async function fetchForex() {
   try {
@@ -237,10 +216,10 @@ async function fetchForex() {
     const yest = rYest.ok ? await rYest.json() : null;
     const R=now.rates, Y=yest?.rates||null;
     const pairs={
-      EURUSD:{label:'EUR/USD',calc:1/R.EUR,prev:Y?1/Y.EUR:1/R.EUR},
-      GBPUSD:{label:'GBP/USD',calc:1/R.GBP,prev:Y?1/Y.GBP:1/R.GBP},
-      USDJPY:{label:'USD/JPY',calc:R.JPY,  prev:Y?Y.JPY:R.JPY},
-      EURGBP:{label:'EUR/GBP',calc:R.GBP/R.EUR,prev:Y?Y.GBP/Y.EUR:R.GBP/R.EUR},
+      EURUSD:{label:'EUR/USD',calc:1/R.EUR,    prev:Y?1/Y.EUR:1/R.EUR},
+      GBPUSD:{label:'GBP/USD',calc:1/R.GBP,    prev:Y?1/Y.GBP:1/R.GBP},
+      USDJPY:{label:'USD/JPY',calc:R.JPY,       prev:Y?Y.JPY:R.JPY},
+      EURGBP:{label:'EUR/GBP',calc:R.GBP/R.EUR, prev:Y?Y.GBP/Y.EUR:R.GBP/R.EUR},
     };
     Object.entries(pairs).forEach(([k,v])=>{
       DATA[k]={label:v.label,price:v.calc,prev:v.prev,pct:((v.calc-v.prev)/v.prev)*100,ok:true,source:'ExchangeRate',closes:[]};
@@ -249,7 +228,7 @@ async function fetchForex() {
 }
 
 // ═══════════════════════════════════════════════════════════
-// 3. ACTIONS — Yahoo Finance via proxies CORS
+// 3. ACTIONS via Yahoo Finance
 // ═══════════════════════════════════════════════════════════
 const PROXIES=[
   u=>`https://api.allorigins.win/get?url=${encodeURIComponent(u)}`,
@@ -263,13 +242,13 @@ async function yahooFetch(sym) {
     try{
       const r=await fetch(px(url),{signal:AbortSignal.timeout(8000)});
       let txt=await r.text();
-      let d;try{d=JSON.parse(txt);}catch{continue;}
+      let d; try{d=JSON.parse(txt);}catch{continue;}
       if(d?.contents){try{d=JSON.parse(d.contents);}catch{continue;}}
-      const res=d?.chart?.result?.[0];if(!res)continue;
+      const res=d?.chart?.result?.[0]; if(!res)continue;
       const closes=(res.indicators?.quote?.[0]?.close||[]).filter(v=>v!=null);
       if(closes.length<2)continue;
       const price=res.meta?.regularMarketPrice||closes.at(-1);
-      const prev=res.meta?.chartPreviousClose||closes.at(-2);
+      const prev =res.meta?.chartPreviousClose||closes.at(-2);
       return{price,prev,pct:((price-prev)/prev)*100,closes,source:'Yahoo Finance'};
     }catch{continue;}
   }
@@ -277,18 +256,12 @@ async function yahooFetch(sym) {
 }
 
 const STOCKS={
-  NVDA:'Nvidia', AMD:'AMD', TSM:'TSMC', AVGO:'Broadcom', ASML:'ASML',
-  QQQ:'QQQ ETF', MSFT:'Microsoft', AAPL:'Apple', META:'Meta', GOOG:'Alphabet',
-  USO:'USO/WTI', XOM:'ExxonMobil', CVX:'Chevron', OXY:'Occidental',
-  GLD:'GLD/Or', SLV:'Argent', GDX:'Minières Or',
-  'CAC.PA':'CAC 40',
-  'DAX':'DAX',
-  'TTE.PA':'TotalEnergies',
-  'AIR.PA':'Airbus',
-  'LVMH.PA':'LVMH',
-  'SAN.PA':'Sanofi',
-  'BNP.PA':'BNP Paribas',
-  'OR.PA':'L\'Oréal',
+  NVDA:'Nvidia',AMD:'AMD',TSM:'TSMC',AVGO:'Broadcom',ASML:'ASML',
+  QQQ:'QQQ ETF',MSFT:'Microsoft',AAPL:'Apple',META:'Meta',GOOG:'Alphabet',
+  USO:'USO/WTI',XOM:'ExxonMobil',CVX:'Chevron',OXY:'Occidental',
+  GLD:'GLD/Or',SLV:'Argent',GDX:'Minières Or',
+  'TTE.PA':'TotalEnergies','AIR.PA':'Airbus','LVMH.PA':'LVMH',
+  'SAN.PA':'Sanofi','BNP.PA':'BNP Paribas','OR.PA':'L\'Oréal',
 };
 
 async function fetchStocks() {
@@ -301,7 +274,7 @@ async function fetchStocks() {
 }
 
 // ═══════════════════════════════════════════════════════════
-// 4. NEWS — Finnhub
+// 4. NEWS Finnhub
 // ═══════════════════════════════════════════════════════════
 async function fetchNews() {
   const all=[];
@@ -321,7 +294,7 @@ async function fetchNews() {
 }
 
 // ═══════════════════════════════════════════════════════════
-// 5. TRADUCTION — MyMemory
+// 5. TRADUCTION MyMemory
 // ═══════════════════════════════════════════════════════════
 async function traduire(txt) {
   if(!txt||txt.length<4) return txt;
@@ -339,8 +312,8 @@ async function traduireNews(news) {
     const batch=news.slice(i,i+6);
     const res=await Promise.allSettled(batch.map(async n=>({
       ...n,
-      titre:  await traduire(n.titre),
-      resume: n.detail ? await traduire(n.detail) : ''
+      titre: await traduire(n.titre),
+      resume:n.detail?await traduire(n.detail):''
     })));
     res.forEach((r,j)=>out.push(r.status==='fulfilled'?r.value:{...batch[j],resume:''}));
     if(i+6<news.length) await new Promise(r=>setTimeout(r,400));
@@ -365,79 +338,176 @@ function sma(c,n){
   return c.slice(-n).reduce((a,b)=>a+b,0)/n;
 }
 
-function scoreAsset(d){
-  if(!d?.ok||d.pct===null) return{score:50,alerts:[]};
-  const c=d.closes||[];
-  let bull=0,bear=0;
-  const alerts=[];
-
-  const p1=d.pct;
-  if(p1>3){bull+=4;}else if(p1>1){bull+=2;}else if(p1>0){bull+=1;}
-  else if(p1<-3){bear+=4;}else if(p1<-1){bear+=2;}else if(p1<0){bear+=1;}
-  if(p1<-5) alerts.push(`⚠ Forte chute du jour : ${p1.toFixed(1)}%`);
-
-  if(c.length>=6){
-    const p5=((c.at(-1)-c.at(-6))/c.at(-6))*100;
-    d._p5=p5;
-    if(p5>8){bull+=6;}else if(p5>4){bull+=4;}else if(p5>2){bull+=2;}else if(p5>0){bull+=1;}
-    else if(p5<-8){bear+=6;}else if(p5<-4){bear+=4;}else if(p5<-2){bear+=2;}else if(p5<0){bear+=1;}
-    if(p5<-8) alerts.push(`⚠ Dévisage 5j : ${p5.toFixed(1)}%`);
-    if(p5<-15) alerts.push(`🚨 Chute majeure 5j : ${p5.toFixed(1)}%`);
+// Calcul de la volatilité réalisée (écart-type des rendements journaliers)
+function volatilite(closes,n=10){
+  if(!closes||closes.length<n+1)return null;
+  const ret=[];
+  for(let i=closes.length-n;i<closes.length;i++){
+    if(closes[i-1]) ret.push((closes[i]-closes[i-1])/closes[i-1]*100);
   }
-
-  if(c.length>=21){
-    const p20=((c.at(-1)-c.at(-21))/c.at(-21))*100;
-    d._p20=p20;
-    if(p20>15){bull+=4;}else if(p20>8){bull+=2;}else if(p20>0){bull+=1;}
-    else if(p20<-15){bear+=4;}else if(p20<-8){bear+=2;}else if(p20<0){bear+=1;}
-  }
-
-  if(d.rsi){
-    if(d.rsi>78){bear+=4; alerts.push(`RSI ${d.rsi.toFixed(0)} — surachat extrême`);}
-    else if(d.rsi>70){bear+=2;}
-    else if(d.rsi>55){bull+=1;}
-    else if(d.rsi<25){bull+=2; alerts.push(`RSI ${d.rsi.toFixed(0)} — survendu`);}
-    else if(d.rsi<35){bear+=1;}
-    else if(d.rsi<45){bear+=1;}
-  }
-
-  if(c.length>=20){
-    const sma5v=sma(c,5), sma20v=sma(c,20);
-    if(sma5v&&sma20v){
-      if(sma5v>sma20v*1.01){bull+=2;}
-      else if(sma5v<sma20v*0.99){bear+=2;}
-    }
-    if(c.at(-1)>sma20v*1.02){bull+=1;}
-    else if(c.at(-1)<sma20v*0.98){bear+=2;}
-  }
-
-  const total=bull+bear||1;
-  const score=cl(30+(bull/total)*65,3,97);
-  return{score,alerts};
+  if(!ret.length)return null;
+  const mean=ret.reduce((a,b)=>a+b,0)/ret.length;
+  const variance=ret.reduce((a,b)=>a+(b-mean)**2,0)/ret.length;
+  return Math.sqrt(variance);
 }
 
+// ═══════════════════════════════════════════════════════════
+// SCORE D'UN ACTIF — logique de sécurité intégrée
+// ═══════════════════════════════════════════════════════════
+function scoreAsset(d){
+  if(!d?.ok||d.pct===null) return{score:50,alerts:[],warnings:[],blocked:false,blockReason:''};
+
+  const c     = d.closes||[];
+  const rsi   = d.rsi||null;
+  const vol   = volatilite(c);
+  const p1    = d.pct;
+  const p5    = c.length>=6  ? ((c.at(-1)-c.at(-6))/c.at(-6))*100   : null;
+  const p20   = c.length>=21 ? ((c.at(-1)-c.at(-21))/c.at(-21))*100 : null;
+  const sma5v = sma(c,5);
+  const sma20v= sma(c,20);
+
+  if(p5  !== null) d._p5  = p5;
+  if(p20 !== null) d._p20 = p20;
+  d._vol = vol;
+
+  const alerts   = [];   // critiques → bloquent ou pénalisent fortement
+  const warnings = [];   // avertissements → réduisent le score
+
+  // ── FILTRES DE BLOCAGE (empêchent le signal ACHAT) ──────────────────────
+
+  // 1. Volatilité excessive : vol journalière > 4% = marché chaotique
+  let blocked = false;
+  let blockReason = '';
+  if(vol !== null && vol > 4){
+    blocked = true;
+    blockReason = `Volatilité excessive (${vol.toFixed(1)}%/j) — risque non mesurable`;
+    alerts.push(`🚨 Volatilité ${vol.toFixed(1)}%/j — signal neutralisé`);
+  }
+
+  // 2. Chute > 8% sur 5 jours = tendance baissière confirmée
+  if(p5 !== null && p5 < -8){
+    blocked = true;
+    blockReason = blockReason || `Chute 5j de ${p5.toFixed(1)}% — tendance baissière confirmée`;
+    alerts.push(`🚨 Chute 5j : ${p5.toFixed(1)}% — signal VENTE forcé`);
+  }
+
+  // 3. RSI > 75 = zone de surachat dangereuse, ACHAT interdit
+  if(rsi !== null && rsi > 75){
+    blocked = true;
+    blockReason = blockReason || `RSI ${rsi.toFixed(0)} — surachat extrême, retournement probable`;
+    alerts.push(`🚨 RSI ${rsi.toFixed(0)} — surachat extrême`);
+  }
+
+  // 4. Chute du jour > 5% = journée en déroute
+  if(p1 < -5){
+    alerts.push(`⚠ Chute du jour : ${p1.toFixed(1)}%`);
+    warnings.push('chute_jour');
+  }
+
+  // 5. Chute > 15% sur 5 jours = krach partiel
+  if(p5 !== null && p5 < -15){
+    alerts.push(`🚨 Krach 5j : ${p5.toFixed(1)}%`);
+  }
+
+  // ── CALCUL DU SCORE DE BASE (seulement si pas bloqué) ───────────────────
+  let bull=0, bear=0;
+
+  // Variation du jour
+  if(p1>3)     bull+=4; else if(p1>1) bull+=2; else if(p1>0) bull+=1;
+  else if(p1<-3) bear+=4; else if(p1<-1) bear+=2; else if(p1<0) bear+=1;
+
+  // Variation 5 jours (poids fort)
+  if(p5!==null){
+    if(p5>8)     bull+=6; else if(p5>4) bull+=4; else if(p5>2) bull+=2; else if(p5>0) bull+=1;
+    else if(p5<-8) bear+=6; else if(p5<-4) bear+=4; else if(p5<-2) bear+=2; else if(p5<0) bear+=1;
+  }
+
+  // Variation 20 jours
+  if(p20!==null){
+    if(p20>15)    bull+=4; else if(p20>8) bull+=2; else if(p20>0) bull+=1;
+    else if(p20<-15) bear+=4; else if(p20<-8) bear+=2; else if(p20<0) bear+=1;
+  }
+
+  // RSI — pénalité progressive (plus stricte qu'avant)
+  if(rsi!==null){
+    if(rsi>70)      bear+=6;   // surachat fort → penalité lourde
+    else if(rsi>60) bear+=2;
+    else if(rsi>55) bull+=1;
+    else if(rsi<30) bull+=3;   // survendu → opportunité
+    else if(rsi<40) bull+=1;
+    else if(rsi<45) bear+=1;
+  }
+
+  // Volatilité élevée (sans être bloquante) → penalité modérée
+  if(vol!==null && vol>2.5 && vol<=4){
+    bear+=3;
+    warnings.push(`Vol. élevée ${vol.toFixed(1)}%/j`);
+  }
+
+  // Position vs moyennes mobiles
+  if(sma5v && sma20v){
+    if(sma5v > sma20v*1.01) bull+=2;
+    else if(sma5v < sma20v*0.99) bear+=2;
+  }
+  if(c.length>=20 && sma20v){
+    if(c.at(-1) > sma20v*1.02)      bull+=1;
+    else if(c.at(-1) < sma20v*0.98) bear+=2;
+  }
+
+  const total = bull+bear||1;
+  let score = cl(30+(bull/total)*65, 3, 97);
+
+  // Si bloqué : le score est forcé en zone de vente/neutralité
+  if(blocked){
+    // Si chute 5j > 8% : on force sous 42 (zone VENTE)
+    if(p5!==null && p5 < -8) score = cl(score, 3, 38);
+    // Sinon (RSI ou volatilité) : on force zone neutre basse
+    else score = cl(score, 3, 48);
+  }
+
+  return{score, alerts, warnings, blocked, blockReason};
+}
+
+// ═══════════════════════════════════════════════════════════
+// SIGNAL GLOBAL D'UN MARCHÉ
+// ═══════════════════════════════════════════════════════════
 function computeSignal(keys){
-  let totalBull=0,totalBear=0,n=0;
-  const allAlerts=[];
+  let totalBull=0, totalBear=0, n=0;
+  const allAlerts=[], allWarnings=[];
+  let nbBlocked=0;
 
   keys.forEach(k=>{
     const d=DATA[k];
     if(!d?.ok||d.pct===null)return;
     n++;
-    const {score,alerts}=scoreAsset(d);
+    const {score,alerts,warnings,blocked}=scoreAsset(d);
     alerts.forEach(a=>allAlerts.push({label:d.label,msg:a}));
+    warnings.forEach(w=>allWarnings.push(`${d.label} : ${w}`));
+    if(blocked) nbBlocked++;
+
     const contribution=score-50;
     if(contribution>0) totalBull+=contribution;
     else totalBear+=Math.abs(contribution);
   });
 
-  if(n===0)return{H:50,B:50,sig:'NEUTRE',conf:'Faible',n:0,alerts:[]};
+  if(n===0) return{H:50,B:50,sig:'NEUTRE',conf:'Faible',n:0,alerts:[],warnings:[],nbBlocked:0};
 
-  const total=totalBull+totalBear||1;
-  const H=cl(35+(totalBull/total)*60,5,95);
-  const sig=H>=60?'ACHAT':H<=42?'VENTE':'NEUTRE';
-  const conf=n>=3?(Math.abs(H-50)>12?'Élevée':'Modérée'):'Faible';
-  return{H,B:cl(100-H,5,95),sig,conf,n,alerts:allAlerts.slice(0,3)};
+  const total = totalBull+totalBear||1;
+  let H = cl(35+(totalBull/total)*60, 5, 95);
+
+  // Si la majorité des actifs du groupe sont bloqués → on plafonne
+  const ratioBloque = nbBlocked/n;
+  if(ratioBloque >= 0.5) H = cl(H, 5, 50); // plafonne à NEUTRE
+  if(ratioBloque >= 0.75) H = cl(H, 5, 42); // force VENTE
+
+  const sig  = H>=60?'ACHAT':H<=42?'VENTE':'NEUTRE';
+  const conf = n>=3?(Math.abs(H-50)>12?'Élevée':'Modérée'):'Faible';
+
+  // Signal DANGER si plusieurs alertes critiques
+  const nbCritiques = allAlerts.filter(a=>a.msg.startsWith('🚨')).length;
+  const sigFinal = nbCritiques>=2 ? 'DANGER' : sig;
+
+  return{H, B:cl(100-H,5,95), sig:sigFinal, conf, n, alerts:allAlerts.slice(0,4), warnings:allWarnings.slice(0,3), nbBlocked};
 }
 
 function sentimentNews(n){
@@ -476,15 +546,14 @@ async function step(p,t){
 // ANALYSE PRINCIPALE
 // ═══════════════════════════════════════════════════════════
 async function analyserTout(){
-  const btn=document.getElementById('btn'),ldr=document.getElementById('ldr');
+  const btn=document.getElementById('btn'), ldr=document.getElementById('ldr');
   btn.disabled=true; ldr.style.display='block';
   document.getElementById('tabs').style.display='none';
   document.getElementById('sec-global').innerHTML='';
   document.getElementById('sec-prediction').innerHTML='';
 
   try{
-    await step(5,'Lancement de toutes les sources en parallèle...');
-
+    await step(5,'Récupération des données en parallèle...');
     const [,,rawNews]=await Promise.all([
       fetchCrypto().catch(()=>{}),
       fetchForex().catch(()=>{}),
@@ -492,7 +561,7 @@ async function analyserTout(){
       fetchStocks().catch(()=>{}),
     ]);
 
-    await step(60,'RSI 14 + indicateurs techniques...');
+    await step(60,'RSI 14 + volatilité réalisée...');
     Object.keys(DATA).forEach(k=>{
       if(DATA[k]?.closes?.length>14) DATA[k].rsi=rsi14(DATA[k].closes);
     });
@@ -508,7 +577,7 @@ async function analyserTout(){
     }));
     const NEWS=newsRaw.length>0?await traduireNews(newsRaw).catch(()=>newsRaw):[];
 
-    await step(92,'Calcul des signaux...');
+    await step(92,'Application des filtres de sécurité...');
     const signals={
       semi:    computeSignal(['NVDA','AMD','TSM','AVGO','ASML']),
       nasdaq:  computeSignal(['QQQ','MSFT','AAPL','META','GOOG']),
@@ -545,48 +614,106 @@ function renderAll(signals,NEWS,ms){
   document.getElementById('last-update').textContent='Mis à jour '+now;
 
   const MKTS=[
-    {key:'semi',   icon:'🔬',label:'Semi-conducteurs',sub:'3SEM · SOXX · PHLX',           open:ms.semi,   horaire:'NYSE · 15h30–22h FR',  keys:['NVDA','AMD','TSM','AVGO','ASML'],               labels:['Nvidia','AMD','TSMC','Broadcom','ASML']},
-    {key:'nasdaq', icon:'📈',label:'Nasdaq 100',      sub:'QQQ · NQSE EUR hedgé',          open:ms.nasdaq, horaire:'Nasdaq · 15h30–22h FR', keys:['QQQ','MSFT','AAPL','META','GOOG'],               labels:['QQQ','Microsoft','Apple','Meta','Alphabet']},
-    {key:'europe', icon:'🇪🇺',label:'Bourse Européenne',sub:'CAC40 · DAX · Blue chips FR',  open:ms.europe, horaire:'Euronext · 9h–17h30 FR',keys:['TTE.PA','AIR.PA','LVMH.PA','SAN.PA','BNP.PA','OR.PA'],labels:['TotalEnergies','Airbus','LVMH','Sanofi','BNP','L\'Oréal']},
-    {key:'petrole',icon:'🛢️',label:'Pétrole & Énergie',sub:'WTI · Brent · Majors',         open:ms.petrole,horaire:'CME Futures · 24h/5j', keys:['USO','XOM','CVX','OXY'],                         labels:['USO/WTI','ExxonMobil','Chevron','Occidental']},
-    {key:'or',     icon:'🥇',label:'Or & Métaux',     sub:'GLD · SLV · GDX Minières',     open:ms.or,     horaire:'Comex · lun–ven',       keys:['GLD','SLV','GDX'],                               labels:['GLD/Or','SLV/Argent','GDX/Minières']},
-    {key:'crypto', icon:'₿', label:'Crypto',          sub:'BTC · ETH · SOL · XRP',        open:ms.crypto, horaire:'24h / 7j',              keys:['BTC','ETH','SOL','XRP'],                         labels:['Bitcoin','Ethereum','Solana','XRP']},
-    {key:'forex',  icon:'💱',label:'Forex',            sub:'EUR/USD · GBP · JPY',          open:ms.forex,  horaire:'Forex · lun–ven 24h/j', keys:['EURUSD','GBPUSD','USDJPY','EURGBP'],             labels:['EUR/USD','GBP/USD','USD/JPY','EUR/GBP']},
+    {key:'semi',   icon:'🔬',label:'Semi-conducteurs',sub:'3SEM · SOXX · PHLX',            open:ms.semi,   horaire:'NYSE · 15h30–22h FR',   keys:['NVDA','AMD','TSM','AVGO','ASML'],                        labels:['Nvidia','AMD','TSMC','Broadcom','ASML']},
+    {key:'nasdaq', icon:'📈',label:'Nasdaq 100',       sub:'QQQ · NQSE EUR hedgé',           open:ms.nasdaq, horaire:'Nasdaq · 15h30–22h FR',  keys:['QQQ','MSFT','AAPL','META','GOOG'],                        labels:['QQQ','Microsoft','Apple','Meta','Alphabet']},
+    {key:'europe', icon:'🇪🇺',label:'Bourse Européenne',sub:'CAC40 · DAX · Blue chips FR',   open:ms.europe, horaire:'Euronext · 9h–17h30 FR', keys:['TTE.PA','AIR.PA','LVMH.PA','SAN.PA','BNP.PA','OR.PA'],   labels:['TotalEnergies','Airbus','LVMH','Sanofi','BNP','L\'Oréal']},
+    {key:'petrole',icon:'🛢️',label:'Pétrole & Énergie',sub:'WTI · Brent · Majors',          open:ms.petrole,horaire:'CME Futures · 24h/5j',   keys:['USO','XOM','CVX','OXY'],                                 labels:['USO/WTI','ExxonMobil','Chevron','Occidental']},
+    {key:'or',     icon:'🥇',label:'Or & Métaux',      sub:'GLD · SLV · GDX Minières',      open:ms.or,     horaire:'Comex · lun–ven',         keys:['GLD','SLV','GDX'],                                       labels:['GLD/Or','SLV/Argent','GDX/Minières']},
+    {key:'crypto', icon:'₿', label:'Crypto',           sub:'BTC · ETH · SOL · XRP',         open:ms.crypto, horaire:'24h / 7j',                keys:['BTC','ETH','SOL','XRP'],                                 labels:['Bitcoin','Ethereum','Solana','XRP']},
+    {key:'forex',  icon:'💱',label:'Forex',             sub:'EUR/USD · GBP · JPY',           open:ms.forex,  horaire:'Forex · lun–ven 24h/j',   keys:['EURUSD','GBPUSD','USDJPY','EURGBP'],                     labels:['EUR/USD','GBP/USD','USD/JPY','EUR/GBP']},
   ];
 
-  const best =[...MKTS].sort((a,b)=>signals[b.key].H-signals[a.key].H)[0];
-  const worst=[...MKTS].sort((a,b)=>signals[a.key].H-signals[b.key].H)[0];
+  const best  = [...MKTS].sort((a,b)=>signals[b.key].H-signals[a.key].H)[0];
+  const worst = [...MKTS].sort((a,b)=>signals[a.key].H-signals[b.key].H)[0];
   const dc={bull:'bfg',bear:'bfr',neutral:'bfa'};
   const vc={bull:'g',bear:'r',neutral:'a'};
 
   const recoMap={
-    semi:   {ACHAT:'3SEM ×3 : max 25% · stop-loss -10% · ≤4 jours. ASML éligible PEA.',VENTE:'Éviter 3SEM long — envisager 3SSM ×3 short.',NEUTRE:'Hors position levier. Attendre signal >65/100.'},
-    nasdaq: {ACHAT:`NQSE hedgé EUR recommandé (EUR/USD ${fx.toFixed(4)}). QQQ pour exposition USD.`,VENTE:'Réduire QQQ/NQSE. Dollar fort amplifie les pertes sur ETF non-hedgés.',NEUTRE:'Surveiller EUR/USD avant entrée. NQSE protège contre la volatilité de change.'},
-    europe: {ACHAT:'Actions européennes en momentum. TotalEnergies et Airbus = valeurs clés.',VENTE:'Pression sur les marchés européens. Surveiller BCE et macro zone euro.',NEUTRE:'Euronext sans tendance claire. Attendre catalyseur macro européen.'},
-    petrole:{ACHAT:'OXY = haut bêta. XOM = défensif. Surveiller annonces OPEC et tension Iran.',VENTE:'Pression baissière sur brut. Risque de retournement géopolitique.',NEUTRE:'Volatilité géopolitique élevée. Attendre stabilisation du Brent.'},
-    or:     {ACHAT:'Or = refuge. GDX (minières) amplifie ×1.5. Inverse du dollar.',VENTE:'Risk-on dominant → rotation vers actions. Pression sur or et argent.',NEUTRE:'Or corrélé à l\'inflation et tensions géopolitiques. Surveiller dollar.'},
-    crypto: {ACHAT:'BTC = baromètre. ETH et SOL amplifient. Volatilité ×3 vs actions.',VENTE:'Risk-off. Crypto suit le Nasdaq en baisse. Réduire l\'exposition.',NEUTRE:'BTC doit franchir un niveau clé pour confirmer la tendance.'},
-    forex:  {ACHAT:`EUR/USD ${fx.toFixed(4)} haussier — NQSE hedgé surperforme les non-hedgés.`,VENTE:'Dollar dominant — ETF non-hedgés (SXRV) pénalisés. Privilégier NQSE.',NEUTRE:`EUR/USD ${fx.toFixed(4)} — zone neutre. Fed hawkish vs BCE.`},
+    semi:{
+      ACHAT: '3SEM ×3 : max 25% · stop-loss -10% · ≤4 jours. RSI et volatilité confirmés sains.',
+      VENTE: '⛔ Éviter 3SEM long. Tendance baissière ou RSI dégradé. Envisager 3SSM short.',
+      NEUTRE:'Hors position levier. Attendre signal ACHAT > 60/100 sans alerte active.',
+      DANGER:'🚨 Ne pas intervenir. Volatilité ou chute trop importante. Attendre stabilisation.',
+    },
+    nasdaq:{
+      ACHAT: `NQSE hedgé EUR recommandé (EUR/USD ${fx.toFixed(4)}). Indicateurs sains.`,
+      VENTE: '⛔ Réduire QQQ/NQSE. Dollar fort amplifie les pertes sur ETF non-hedgés.',
+      NEUTRE:'Surveiller EUR/USD avant entrée. NQSE protège contre la volatilité de change.',
+      DANGER:'🚨 Conditions dégradées. Ne pas initier de position. Surveiller sans agir.',
+    },
+    europe:{
+      ACHAT: 'Momentum européen confirmé. TotalEnergies et Airbus en tête.',
+      VENTE: '⛔ Pression sur les marchés européens. Surveiller BCE et macro zone euro.',
+      NEUTRE:'Euronext sans tendance claire. Attendre catalyseur macro européen.',
+      DANGER:'🚨 Marché européen sous stress. Rester en cash ou positions défensives.',
+    },
+    petrole:{
+      ACHAT: 'OXY = haut bêta. XOM = défensif. Surveiller annonces OPEC.',
+      VENTE: '⛔ Pression baissière sur brut. Risque géopolitique élevé.',
+      NEUTRE:'Volatilité géopolitique. Attendre stabilisation du Brent.',
+      DANGER:'🚨 Brut très volatil. Aucune position levier recommandée.',
+    },
+    or:{
+      ACHAT: 'Or = refuge confirmé. GDX (minières) amplifie ×1.5. Inverse dollar.',
+      VENTE: '⛔ Risk-on dominant → rotation vers actions. Pression sur or et argent.',
+      NEUTRE:'Or corrélé à l\'inflation et tensions géopolitiques. Surveiller dollar.',
+      DANGER:'🚨 Mouvement extrême sur métaux. Attendre consolidation avant d\'agir.',
+    },
+    crypto:{
+      ACHAT: 'BTC = baromètre sain. ETH et SOL amplifient. Volatilité sous contrôle.',
+      VENTE: '⛔ Risk-off crypto. Suit le Nasdaq en baisse. Réduire l\'exposition.',
+      NEUTRE:'BTC doit franchir un niveau clé pour confirmer la tendance.',
+      DANGER:'🚨 Volatilité crypto extrême. Ne pas initier. Risque de liquidation.',
+    },
+    forex:{
+      ACHAT: `EUR/USD ${fx.toFixed(4)} haussier — NQSE hedgé surperforme.`,
+      VENTE: '⛔ Dollar dominant — ETF non-hedgés pénalisés. Privilégier NQSE.',
+      NEUTRE:`EUR/USD ${fx.toFixed(4)} — zone neutre. Fed hawkish vs BCE.`,
+      DANGER:'🚨 Mouvement de change brutal. Éviter les ETF non-hedgés.',
+    },
   };
 
   const cards=MKTS.map(m=>{
-    const s=signals[m.key],sc=sigCls(s.H),bc=badgeCls(s.sig);
-    const mini=m.keys.slice(0,3).map(k=>{const d=DATA[k];if(!d?.ok)return'';return`<span class="gc-quote"><span class="${pctCls(d.pct)}">${d.label} ${fmtPct(d.pct)}</span></span>`;}).join('');
-    const dQuotes=`<div class="quotes">${m.keys.map(k=>{const d=DATA[k];if(!d)return'';return`<div class="qc"><div class="ql">${d.label}</div><div class="qp ${d.ok?pctCls(d.pct):'dim'}">${fmtPrice(d.price,k)}</div><div class="qd ${pctCls(d.pct)}">${d.ok?fmtPct(d.pct):'N/A'}</div></div>`;}).join('')}</div>`;
-    const dBars=`<div class="card"><div class="ch">Contribution par actif — J / 5j / 20j</div>${m.keys.map((k,j)=>{
-      const d=DATA[k];const p=d?.pct||0;
-      const p5=d?._p5,p20=d?._p20;
+    const s=signals[m.key];
+    const sc=sigCls(s.H);
+    const mini=m.keys.slice(0,3).map(k=>{
+      const d=DATA[k]; if(!d?.ok)return'';
+      return`<span class="gc-quote"><span class="${pctCls(d.pct)}">${d.label} ${fmtPct(d.pct)}</span></span>`;
+    }).join('');
+
+    const dQuotes=`<div class="quotes">${m.keys.map(k=>{
+      const d=DATA[k]; if(!d)return'';
+      const volStr=d._vol?` · vol ${d._vol.toFixed(1)}%`:'';
+      return`<div class="qc">
+        <div class="ql">${d.label}</div>
+        <div class="qp ${d.ok?pctCls(d.pct):'dim'}">${fmtPrice(d.price,k)}</div>
+        <div class="qd ${pctCls(d.pct)}">${d.ok?fmtPct(d.pct):'N/A'}${volStr}</div>
+      </div>`;
+    }).join('')}</div>`;
+
+    const dBars=`<div class="card"><div class="ch">Contribution par actif — J / 5j / vol</div>${m.keys.map((k,j)=>{
+      const d=DATA[k]; const p=d?.pct||0;
+      const p5=d?._p5;
+      const vol=d?._vol;
       const dir=p5!==undefined?(p5>2?'bull':p5<-2?'bear':'neutral'):(p>0.3?'bull':p<-0.3?'bear':'neutral');
-      const score=d?scoreAsset(d).score:50;
+      const {score}=d?scoreAsset(d):{score:50};
       const p5str=p5!==undefined?` / ${p5>=0?'+':''}${p5.toFixed(1)}%`:'';
-      const p20str=p20!==undefined?` / ${p20>=0?'+':''}${p20.toFixed(1)}%`:'';
+      const volStr=vol?` · v${vol.toFixed(1)}%`:'';
       return`<div class="br">
         <span class="bl">${m.labels[j]}</span>
         <div class="bt"><div class="bf ${dc[dir]}" style="width:0%" data-w="${score}"></div></div>
-        <span class="bv ${vc[dir]}" title="Jour / 5j / 20j">${d?.ok?fmtPct(d.pct):'—'}${p5str}</span>
+        <span class="bv ${vc[dir]}" title="Jour / 5j / volatilité">${d?.ok?fmtPct(d.pct):'—'}${p5str}${volStr}</span>
       </div>`;
     }).join('')}</div>`;
-    const reco=recoMap[m.key]?.[s.sig]||'—';
+
+    const reco = recoMap[m.key]?.[s.sig] || recoMap[m.key]?.['NEUTRE'] || '—';
+
+    // Alertes critiques (rouge)
+    const alertHTML = s.alerts?.length ? `<div class="alert-box">${s.alerts.map(a=>`${a.label} : ${a.msg}`).join('<br>')}</div>` : '';
+    // Avertissements (orange)
+    const warnHTML  = s.warnings?.length ? `<div class="warn-box">⚠ ${s.warnings.join(' · ')}</div>` : '';
+    // Info actifs bloqués
+    const blockedInfo = s.nbBlocked>0 ? `<div style="font:400 10px/1.4 'DM Mono',monospace;color:var(--tx3);margin-top:.4rem;">🔒 ${s.nbBlocked}/${s.n} actif(s) avec filtre de sécurité actif</div>` : '';
 
     return`<div class="gc" id="gc-${m.key}" onclick="toggleGC('${m.key}')">
       <div class="gc-layout">
@@ -609,26 +736,28 @@ function renderAll(signals,NEWS,ms){
       <div class="gc-body">
         ${dQuotes}${dBars}
         <div class="reco">→ ${reco}</div>
-        ${s.alerts?.length?`<div style="margin-top:.5rem;font:400 11px/1.6 'DM Mono',monospace;color:var(--rd);background:var(--rd-bg);border-radius:7px;padding:.5rem .7rem;">
-          ${s.alerts.map(a=>`${a.label} : ${a.msg}`).join('<br>')}
-        </div>`:''}
+        ${alertHTML}${warnHTML}${blockedInfo}
       </div>
     </div>`;
   }).join('');
 
   document.getElementById('sec-global').innerHTML=`
+    <div class="safety-legend">
+      🔒 Filtres de sécurité actifs · ACHAT bloqué si : RSI > 75 · chute 5j > 8% · volatilité > 4%/j · DANGER si ≥ 2 alertes critiques
+    </div>
     <div class="dq">Binance · ExchangeRate · Yahoo Finance · ${now}</div>
     <div class="global-grid">${cards}</div>
     <div class="card"><div class="ch">Résumé du moment</div>
       <div style="font-size:13px;line-height:1.9;color:var(--tx);">
-        Marché le plus haussier : <b style="color:var(--gr)">${best.icon} ${best.label}</b> (${signals[best.key].H}/100).<br>
-        Marché sous pression : <b style="color:var(--rd)">${worst.icon} ${worst.label}</b> (${signals[worst.key].H}/100).<br>
+        Signal le plus fort : <b style="color:var(--gr)">${best.icon} ${best.label}</b> (${signals[best.key].H}/100 — ${signals[best.key].sig}).<br>
+        Signal le plus faible : <b style="color:var(--rd)">${worst.icon} ${worst.label}</b> (${signals[worst.key].H}/100 — ${signals[worst.key].sig}).<br>
         EUR/USD ${fx.toFixed(4)} — ${fx>1.10?'NQSE hedgé EUR favorable':'surveiller impact dollar sur ETF non-hedgés'}.<br>
-        <span style="color:var(--tx3);font-size:12px;">3SEM ×3 : signal ACHAT >65/100 requis · horizon ≤4j · stop-loss -10% strict.</span>
+        <span style="color:var(--tx3);font-size:12px;">Signal ACHAT uniquement si score > 60 ET aucun filtre de sécurité actif.</span>
       </div>
     </div>
     <button class="btn-sm" onclick="analyserTout()">↻ Rafraîchir</button>`;
 
+  // ── PRÉDICTION ──────────────────────────────────────────
   const bullN=NEWS.filter(n=>n.impact==='bull');
   const bearN=NEWS.filter(n=>n.impact==='bear');
   const tot=bullN.length+bearN.length;
@@ -645,7 +774,6 @@ function renderAll(signals,NEWS,ms){
     crypto:  /bitcoin|btc|eth|ethereum|crypto|solana|xrp|blockchain/i,
     forex:   /euro|dollar|fed|rate|inflation|forex|eur|usd|currency|ecb|bce/i,
   };
-
   const mktCtx={
     semi:   'Demande IA structurellement solide. Fed hawkish + tensions Taïwan = risques.',
     nasdaq: `EUR/USD ${fx.toFixed(4)} — ${fx>1.10?'NQSE hedgé favorable':'surveiller impact dollar'}.`,
@@ -664,12 +792,19 @@ function renderAll(signals,NEWS,ms){
     const ni=mb>mr?'bull':mr>mb?'bear':'neutral';
     const niTxt=ni==='bull'?'haussier':ni==='bear'?'baissier':'neutre';
     const niIcon=ni==='bull'?'🟢':ni==='bear'?'🔴':'🟡';
-    const fH=mn.length>0?Math.round(s.H*0.65+(ni==='bull'?72:ni==='bear'?28:50)*0.35):s.H;
+
+    // Score final intègre les alertes de sécurité
+    let fH=mn.length>0?Math.round(s.H*0.65+(ni==='bull'?72:ni==='bear'?28:50)*0.35):s.H;
+    // Si signal DANGER ou VENTE, on ne laisse pas la news remonter le score
+    if(s.sig==='DANGER'||s.sig==='VENTE') fH=Math.min(fH,45);
     const fs=fH>=60?'ACHAT':fH<=42?'VENTE':'NEUTRE';
+    const fsSafe = (s.sig==='DANGER')?'DANGER':fs;
 
     const base=(fH-50)/10;
-    const p24=base.toFixed(1);
-    const p1w=(base*2.1).toFixed(1);
+    // Projections bornées selon le signal de sécurité
+    const projMax = s.sig==='DANGER'?0.5:s.sig==='VENTE'?1.5:3;
+    const p24=cl(base,-projMax,projMax).toFixed(1);
+    const p1w=cl(base*2.1,-projMax*2,projMax*2).toFixed(1);
 
     let concl='';
     if(mn.length===0){
@@ -678,12 +813,14 @@ function renderAll(signals,NEWS,ms){
       const top=mn[0];
       concl=`${mn.length} actu(s) — sentiment ${niIcon} <b>${niTxt}</b>. "${top.titre}". `
         +`${mktCtx[m.key]} `
-        +(fs==='ACHAT'?'<b>→ Conditions favorables.</b>':fs==='VENTE'?'<b>→ Pression vendeuse confirmée.</b>':'<b>→ Attendre confirmation.</b>');
+        +(fsSafe==='ACHAT'?'<b>→ Conditions favorables.</b>'
+         :fsSafe==='DANGER'?'<b>→ 🚨 Ne pas intervenir — filtres de sécurité actifs.</b>'
+         :fsSafe==='VENTE'?'<b>→ Pression vendeuse confirmée.</b>'
+         :'<b>→ Attendre confirmation du signal.</b>');
     }
 
-    const techAlerts=s.alerts||[];
-    const alertHTML=techAlerts.length?`<div style="font:400 11px/1.6 'DM Mono',monospace;color:var(--rd);background:var(--rd-bg);border-radius:7px;padding:.5rem .7rem;margin-bottom:.6rem;">
-      ${techAlerts.map(a=>`⚠ <b>${a.label}</b> : ${a.msg}`).join('<br>')}
+    const alertHTML=s.alerts?.length?`<div class="alert-box" style="margin-bottom:.6rem;">
+      ${s.alerts.map(a=>`⚠ <b>${a.label}</b> : ${a.msg}`).join('<br>')}
     </div>`:'';
 
     const worstInGroup=m.keys
@@ -707,7 +844,7 @@ function renderAll(signals,NEWS,ms){
     return`<div class="pred-card">
       <div class="pred-header">
         <span class="pred-title">${m.icon} ${m.label}</span>
-        <span class="badge ${badgeCls(fs)}" style="font-size:11px;padding:3px 10px;">${fs}</span>
+        <span class="badge ${badgeCls(fsSafe)}" style="font-size:11px;padding:3px 10px;">${fsSafe}</span>
       </div>
       <div class="pred-horizon">
         <div class="pred-h-item"><div class="pred-h-label">Signal données</div><div class="pred-h-val ${sigCls(s.H)}">${s.sig} ${s.H}/100</div></div>
@@ -715,15 +852,14 @@ function renderAll(signals,NEWS,ms){
         <div class="pred-h-item"><div class="pred-h-label">Projection 1 sem</div><div class="pred-h-val">${parseFloat(p1w)>=0?'+':''}${p1w}%</div></div>
       </div>
       <div class="pred-concl">${concl}</div>
-      ${alertHTML}
-      ${worstInfo}
+      ${alertHTML}${worstInfo}
       ${newsHTML}
     </div>`;
   }).join('');
 
   document.getElementById('sec-prediction').innerHTML=`
     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;margin-bottom:1rem;">
-      <div style="font-size:14px;font-weight:700;">🔮 Prédiction — Actualités Finnhub traduite</div>
+      <div style="font-size:14px;font-weight:700;">🔮 Prédiction — Actualités + Filtres sécurité</div>
       <span class="badge ${conf>=60?'b-buy':conf<=40?'b-sell':'b-hold'}">${sentTxt}</span>
     </div>
     <div class="pred-card">
@@ -734,12 +870,12 @@ function renderAll(signals,NEWS,ms){
       </div>
     </div>
     ${predCards}
-    <div style="font:400 10px/1.5 'DM Mono',monospace;color:var(--tx3);margin:.5rem 0;">⚠ Projections probabilistes — pas des garanties. Cliquez sur les actualités pour lire l'article complet.</div>
+    <div style="font:400 10px/1.5 'DM Mono',monospace;color:var(--tx3);margin:.5rem 0;">⚠ Projections probabilistes — pas des garanties. Signal ACHAT uniquement si aucun filtre de sécurité actif.</div>
     <button class="btn-sm" onclick="analyserTout()">↻ Rafraîchir</button>`;
 }
 
 function toggleGC(key){
-  const gc=document.getElementById('gc-'+key);if(!gc)return;
+  const gc=document.getElementById('gc-'+key); if(!gc)return;
   const was=gc.classList.contains('expanded');
   document.querySelectorAll('.gc.expanded').forEach(el=>el.classList.remove('expanded'));
   if(!was){
