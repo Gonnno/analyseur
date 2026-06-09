@@ -102,7 +102,7 @@ h1 em{color:var(--ac);font-style:normal;}
 .b-buy{background:var(--gr-bg);color:var(--gr);border:1px solid rgba(74,222,128,.3);}
 .b-sell{background:var(--rd-bg);color:var(--rd);border:1px solid rgba(248,113,113,.3);}
 .b-hold{background:var(--am-bg);color:var(--am);border:1px solid rgba(251,191,36,.3);}
-.b-danger{background:var(--rd-bg);color:var(--rd);border:1px solid rgba(248,113,113,.5);animation:pulse .8s ease-in-out infinite alternate;}
+.b-danger{background:var(--am-bg);color:var(--am);border:1px solid rgba(251,191,36,.5);animation:pulse .8s ease-in-out infinite alternate;}
 @keyframes pulse{from{opacity:.7}to{opacity:1}}
 .reco{font:400 12px/1.7 'DM Mono',monospace;color:var(--tx);background:var(--sur2);border-radius:8px;padding:.65rem .85rem;margin-top:.6rem;}
 .alert-box{margin-top:.5rem;font:400 11px/1.6 'DM Mono',monospace;color:var(--rd);background:var(--rd-bg);border-radius:7px;padding:.5rem .7rem;border:1px solid rgba(248,113,113,.25);}
@@ -186,12 +186,17 @@ function badgeCls(sig){
 }
 function pctCls(pct){
   if(pct===null||pct===undefined)return 'dim';
-  return pct>0.3?'g':pct<-0.3?'r':'dim';
+  const v=parseFloat(pct);
+  if(isNaN(v))return 'dim';
+  return v>0.3?'g':v<-0.3?'r':'dim';
 }
 function fmtPct(pct){
   if(pct===null||pct===undefined)return '—';
-  return(pct>=0?'+':'')+pct.toFixed(2)+'%';
+  const v=parseFloat(pct);
+  if(isNaN(v))return '—';
+  return(v>=0?'+':'')+v.toFixed(2)+'%';
 }
+function fmtScore(h){return Math.round(h);}
 function fmtPrice(price,key){
   if(price===null||price===undefined)return '—';
   const isForex  =['EURUSD','GBPUSD','USDJPY','EURGBP'].includes(key);
@@ -503,7 +508,7 @@ function choisirVedette(MKTS,signals){
   if(hausseJ.length>0)raisons.push(`Hausse du jour (${hausseJ.length} actifs)`);
 
   // Score élevé
-  if(s.H>=65)raisons.push(`Score fort : ${s.H}/100`);
+  if(s.H>=65)raisons.push(`Score fort : ${fmtScore(s.H)}/100`);
 
   // Aucun blocage
   if(s.nbBlocked===0)raisons.push(`Aucun filtre de sécurité actif`);
@@ -636,7 +641,7 @@ function renderAll(signals,NEWS,ms){
           </div>
         </div>
         <div class="vedette-right">
-          <div class="vedette-score-num">${sv.H}</div>
+          <div class="vedette-score-num">${fmtScore(sv.H)}</div>
           <div class="vedette-score-label">/ 100 · confiance ${sv.conf}</div>
         </div>
       </div>
@@ -738,7 +743,7 @@ function renderAll(signals,NEWS,ms){
           <div class="gc-label">${m.icon} ${m.label}${vedetteTag}</div>
           <div style="display:flex;align-items:baseline;gap:6px;">
             <span class="gc-sig ${sc}">${s.sig}</span>
-            <span class="gc-score">${s.H}/100</span>
+            <span class="gc-score">${fmtScore(s.H)}/100</span>
           </div>
           <div class="gc-sub">${m.sub}</div>
         </div>
@@ -765,9 +770,9 @@ function renderAll(signals,NEWS,ms){
     <div class="global-grid">${cards}</div>
     <div class="card"><div class="ch">Résumé du moment</div>
       <div style="font-size:13px;line-height:1.9;color:var(--tx);">
-        ★ Vedette : <b style="color:var(--gr)">${vedette.icon} ${vedette.label}</b> (${sv.H}/100 — ${sv.sig}).<br>
-        Signal fort : <b style="color:var(--gr)">${best.icon} ${best.label}</b> (${signals[best.key].H}/100).<br>
-        Signal faible : <b style="color:var(--rd)">${worst.icon} ${worst.label}</b> (${signals[worst.key].H}/100).<br>
+        ★ Vedette : <b style="color:var(--gr)">${vedette.icon} ${vedette.label}</b> (${fmtScore(sv.H)}/100 — ${sv.sig}).<br>
+        Signal fort : <b style="color:var(--gr)">${best.icon} ${best.label}</b> (${fmtScore(signals[best.key].H)}/100).<br>
+        Signal faible : <b style="color:var(--rd)">${worst.icon} ${worst.label}</b> (${fmtScore(signals[worst.key].H)}/100).<br>
         EUR/USD ${fx.toFixed(4)} — ${fx>1.10?'NQSE hedgé EUR favorable':'surveiller impact dollar sur ETF non-hedgés'}.<br>
         <span style="color:var(--tx3);font-size:12px;">Signal ACHAT uniquement si score > 60 ET aucun filtre de sécurité actif.</span>
       </div>
@@ -817,7 +822,7 @@ function renderAll(signals,NEWS,ms){
     const p1w=cl(base*2.1,-projMax*2,projMax*2).toFixed(1);
     let concl='';
     if(mn.length===0){
-      concl=`Pas d'actualité spécifique. Signal cours : <b>${s.sig}</b> (${s.H}/100). ${mktCtx[m.key]}`;
+      concl=`Pas d'actualité spécifique. Signal cours : <b>${s.sig}</b> (${fmtScore(s.H)}/100). ${mktCtx[m.key]}`;
     }else{
       const top=mn[0];
       concl=`${mn.length} actu(s) — sentiment ${niIcon} <b>${niTxt}</b>. "${top.titre}". `
@@ -844,7 +849,7 @@ function renderAll(signals,NEWS,ms){
         <span class="badge ${badgeCls(fsSafe)}" style="font-size:11px;padding:3px 10px;">${fsSafe}</span>
       </div>
       <div class="pred-horizon">
-        <div class="pred-h-item"><div class="pred-h-label">Signal données</div><div class="pred-h-val ${sigCls(s.H)}">${s.sig} ${s.H}/100</div></div>
+        <div class="pred-h-item"><div class="pred-h-label">Signal données</div><div class="pred-h-val ${sigCls(s.H)}">${s.sig} ${fmtScore(s.H)}/100</div></div>
         <div class="pred-h-item"><div class="pred-h-label">Projection 24h</div><div class="pred-h-val">${parseFloat(p24)>=0?'+':''}${p24}%</div></div>
         <div class="pred-h-item"><div class="pred-h-label">Projection 1 sem</div><div class="pred-h-val">${parseFloat(p1w)>=0?'+':''}${p1w}%</div></div>
       </div>
