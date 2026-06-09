@@ -141,7 +141,7 @@ h1 em{color:var(--ac);font-style:normal;}
 </head>
 <body>
 <div class="wrap">
-  <div class="logo">Signal Intelligence · v2.1 · <span id="last-update">—</span></div>
+  <div class="logo">Signal Intelligence · v2.2 · <span id="last-update">—</span></div>
   <h1>Dashboard <em>Multi-Marchés</em></h1>
   <div class="sub">US · Europe · Crypto · Forex · Pétrole · Or — signaux filtrés · sécurité renforcée · indice vedette</div>
 
@@ -165,7 +165,7 @@ h1 em{color:var(--ac);font-style:normal;}
     ⚠ Informatif uniquement — pas un conseil en investissement.<br>
     Sources : Binance · CoinGecko · ExchangeRate-API · Frankfurter · Yahoo Finance · Finnhub News · MyMemory<br>
     Risque très élevé sur produits à levier (3SEM ×3). Toujours utiliser un stop-loss.<br>
-    v2.0 : refonte sécurité (RSI/volatilité/chute bloquants) · v2.1 : indice vedette + versioning
+    v2.0 : refonte sécurité · v2.1 : indice vedette · v2.2 : barres jour vs 5j séparées, DANGER orange, scores entiers
   </div>
 </div>
 
@@ -714,16 +714,19 @@ function renderAll(signals,NEWS,ms){
       </div>`;
     }).join('')}</div>`;
     const dBars=`<div class="card"><div class="ch">Contribution par actif — J / 5j / vol</div>${m.keys.map((k,j)=>{
-      const d=DATA[k];const p=d?.pct||0;
-      const p5=d?._p5,vol=d?._vol;
-      const dir=p5!==undefined?(p5>2?'bull':p5<-2?'bear':'neutral'):(p>0.3?'bull':p<-0.3?'bear':'neutral');
+      const d=DATA[k]; const p=d?.pct||0;
+      const p5=d?._p5, vol=d?._vol;
+      // Couleur barre = direction du JOUR
+      const dirJ=p>0.3?'bull':p<-0.3?'bear':'neutral';
+      // Couleur texte = direction 5j (tendance)
+      const dirT=p5!==undefined?(p5>2?'bull':p5<-2?'bear':'neutral'):dirJ;
       const {score}=d?scoreAsset(d):{score:50};
-      const p5str=p5!==undefined?` / ${p5>=0?'+':''}${p5.toFixed(1)}%`:'';
-      const volStr=vol?` · v${vol.toFixed(1)}%`:'';
+      const p5str=p5!==undefined?` / <span class="${vc[p5>2?'bull':p5<-2?'bear':'neutral']}">${p5>=0?'+':''}${p5.toFixed(1)}%</span>`:'';
+      const volStr=vol?` <span class="dim">· v${vol.toFixed(1)}%</span>`:'';
       return`<div class="br">
         <span class="bl">${m.labels[j]}</span>
-        <div class="bt"><div class="bf ${dc[dir]}" style="width:0%" data-w="${score}"></div></div>
-        <span class="bv ${vc[dir]}">${d?.ok?fmtPct(d.pct):'—'}${p5str}${volStr}</span>
+        <div class="bt"><div class="bf ${dc[dirJ]}" style="width:0%" data-w="${score}"></div></div>
+        <span class="bv ${vc[dirJ]}">${d?.ok?fmtPct(d.pct):'—'}${p5str}${volStr}</span>
       </div>`;
     }).join('')}</div>`;
     const reco=recoMap[m.key]?.[s.sig]||recoMap[m.key]?.['NEUTRE']||'—';
