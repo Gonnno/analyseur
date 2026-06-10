@@ -563,7 +563,7 @@ function renderAll(signals,NEWS,ms){
 
   const recoMap={
     semi:{ACHAT:'3SEM ×3 : max 25% · stop-loss -10% · ≤4 jours. RSI et volatilité confirmés sains.',VENTE:'⛔ Éviter 3SEM long. Tendance baissière ou RSI dégradé.',NEUTRE:'Hors position levier. Attendre signal ACHAT > 60/100 sans alerte active.',DANGER:'🚨 Ne pas intervenir. Volatilité ou chute trop importante.'},
-    nasdaq:{ACHAT:`NQSE hedgé EUR recommandé (EUR/USD ${fx.toFixed(4)}). Indicateurs sains.`,VENTE:'⛔ Réduire QQQ/NQSE. Dollar fort amplifie les pertes.',NEUTRE:'Surveiller EUR/USD avant entrée. NQSE protège contre la volatilité de change.',DANGER:'🚨 Conditions dégradées. Ne pas initier de position.'},
+    nasdaq:{ACHAT:'NQSE hedgé EUR recommandé. Indicateurs sains.',VENTE:'⛔ Réduire QQQ/NQSE. Dollar fort amplifie les pertes.',NEUTRE:'Surveiller le dollar avant entrée. NQSE protège contre la volatilité de change.',DANGER:'🚨 Conditions dégradées. Ne pas initier de position.'},
     europe:{ACHAT:'Momentum européen confirmé. TotalEnergies et Airbus en tête.',VENTE:'⛔ Pression sur les marchés européens. Surveiller BCE.',NEUTRE:'Euronext sans tendance claire. Attendre catalyseur macro.',DANGER:'🚨 Marché européen sous stress. Rester en cash.'},
     petrole:{ACHAT:'OXY = haut bêta. XOM = défensif. Surveiller OPEC.',VENTE:'⛔ Pression baissière sur brut. Risque géopolitique élevé.',NEUTRE:'Volatilité géopolitique. Attendre stabilisation du Brent.',DANGER:'🚨 Brut très volatil. Aucune position levier recommandée.'},
     or:{ACHAT:'Or = refuge confirmé. GDX (minières) amplifie ×1.5. Inverse dollar.',VENTE:'⛔ Risk-on dominant → rotation vers actions.',NEUTRE:"Or corrélé à l'inflation et tensions géopolitiques.",DANGER:'🚨 Mouvement extrême sur métaux. Attendre consolidation.'},
@@ -648,7 +648,7 @@ function renderAll(signals,NEWS,ms){
   };
   const mktCtx={
     semi:'Demande IA structurellement solide. Fed hawkish + tensions Taïwan = risques.',
-    nasdaq:`EUR/USD ${fx.toFixed(4)} — ${fx>1.10?'NQSE hedgé favorable':'surveiller impact dollar'}.`,
+    nasdaq:'Surveiller le dollar US — NQSE hedgé EUR recommandé pour limiter l\'impact de change.',
     europe:'BCE à 2%, inflation zone euro en baisse. Airbus et TotalEnergies = valeurs phares.',
     petrole:'Géopolitique Iran/Ormuz = volatilité élevée. Surveiller OPEC.',
     or:'Refuge en période de tensions. Corrélation inverse dollar.',
