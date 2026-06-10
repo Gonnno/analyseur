@@ -62,11 +62,10 @@ h1 em{color:var(--ac);font-style:normal;}
 .gc-dot-closed{background:var(--rd);}
 .gc-status-label{font:700 9px/1 'DM Mono',monospace;}
 .gc-horaire{font:400 8px/1.3 'DM Mono',monospace;color:var(--tx3);}
-.gc-label{font:600 13px/1.2 'Syne',sans-serif;color:var(--tx2);letter-spacing:-.01em;margin-bottom:5px;}
-.gc-label-icon{font-size:14px;margin-right:4px;}
-.gc-sig{font-size:14px;font-weight:800;line-height:1;}
+.gc-label{font:400 9px/1 'DM Mono',monospace;color:var(--tx3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;}
+.gc-sig{font-size:17px;font-weight:800;line-height:1;}
 .gc-score{font-size:11px;color:var(--tx3);font-family:'DM Mono',monospace;margin-left:5px;}
-.gc-sub{font:400 10px/1.4 'DM Mono',monospace;color:var(--tx3);margin-top:3px;}
+.gc-sub{font:400 10px/1.4 'DM Mono',monospace;color:var(--tx2);margin-top:3px;}
 .gc-arrow{font-size:11px;color:var(--tx3);transition:transform .25s;display:block;text-align:center;}
 .gc.expanded .gc-arrow{transform:rotate(180deg);}
 .gc-quotes{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;padding-top:8px;border-top:1px solid var(--brd);}
@@ -119,7 +118,7 @@ h1 em{color:var(--ac);font-style:normal;}
 .score-detail{font:400 11px/1.6 'DM Mono',monospace;color:var(--tx2);}
 .footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--brd);font:400 10px/1.8 'DM Mono',monospace;color:var(--tx3);}
 @media(max-width:480px){
-  .bl{min-width:90px;} h1{font-size:20px;} .gc-sig{font-size:13px;} .gc-label{font-size:12px;}
+  .bl{min-width:90px;} h1{font-size:20px;} .gc-sig{font-size:15px;}
   .gc-layout{grid-template-columns:76px 1fr 20px;gap:7px;}
   .gc-horaire{display:none;} .pred-horizon{grid-template-columns:repeat(3,1fr);}
   .vedette-score-num{font-size:36px;}
@@ -128,7 +127,7 @@ h1 em{color:var(--ac);font-style:normal;}
 </head>
 <body>
 <div class="wrap">
-  <div class="logo">Signal Intelligence · v2.6 · <span id="last-update">—</span></div>
+  <div class="logo">Signal Intelligence · v2.7 · <span id="last-update">—</span></div>
   <h1>Dashboard <em>Multi-Marchés</em></h1>
   <div class="sub">US · Europe · Crypto · Forex · Pétrole · Or — signaux filtrés · sécurité renforcée · indice vedette</div>
   <button class="btn-main" id="btn" onclick="analyserTout()">
@@ -147,7 +146,7 @@ h1 em{color:var(--ac);font-style:normal;}
   <div id="sec-prediction" class="section"></div>
   <div class="footer">
     ⚠ Informatif uniquement — pas un conseil en investissement.<br>
-    Sources : Binance · CoinGecko · ExchangeRate-API · Frankfurter · Finnhub (quotes + candles + news) · MyMemory<br>
+    Sources : Binance · CoinGecko · Yahoo Finance · Finnhub (quotes + candles + news) · MyMemory<br>
     Risque très élevé sur produits à levier (3SEM ×3). Toujours utiliser un stop-loss.<br>
     v2.4 : Yahoo Finance supprimé → Finnhub direct (quotes temps réel + candles 1 mois)
   </div>
@@ -174,7 +173,6 @@ function fmtPct(p){if(p==null)return'—';const v=+p;return isNaN(v)?'—':(v>=0
 function fmtScore(h){return Math.round(h);}
 function fmtPrice(price,key){
   if(price==null)return'—';
-  if(['EURUSD','GBPUSD','USDJPY','EURGBP'].includes(key))return(+price).toFixed(4);
   if(['BTC','ETH','SOL','XRP'].includes(key)&&price>1000)return(+price).toLocaleString('fr-FR',{maximumFractionDigits:0})+' $';
   return(+price).toFixed(2)+(['BTC','ETH','SOL','XRP'].includes(key)?' $':'');
 }
@@ -222,6 +220,15 @@ const STOCKS_FH={
   AAPL:{fh:'AAPL',label:'Apple'},
   META:{fh:'META',label:'Meta'},
   GOOG:{fh:'GOOG',label:'Alphabet'},
+  // S&P 500 (référence)
+  SPY: {fh:'SPY', label:'SPY S&P500'},
+  // Thématiques
+  BOTZ:{fh:'BOTZ',label:'IA/Robotique'},
+  ARKK:{fh:'ARKK',label:'ARK Innov.'},
+  ITA: {fh:'ITA', label:'Défense'},
+  ICLN:{fh:'ICLN',label:'Énergie propre'},
+  XBI: {fh:'XBI', label:'Biotech'},
+  HACK:{fh:'HACK',label:'Cybersécurité'},
   // Energie/Pétrole
   USO: {fh:'USO', label:'USO/WTI'},
   XOM: {fh:'XOM', label:'ExxonMobil'},
@@ -231,7 +238,7 @@ const STOCKS_FH={
   GLD: {fh:'GLD', label:'GLD/Or'},
   SLV: {fh:'SLV', label:'Argent'},
   GDX: {fh:'GDX', label:'Minières Or'},
-  // Europe — format Finnhub exchange
+  // Europe
   'TTE.PA':{fh:'TTE:XPAR',label:'TotalEnergies'},
   'AIR.PA':{fh:'AIR:XPAR',label:'Airbus'},
   'LVMH.PA':{fh:'MC:XPAR', label:'LVMH'},
@@ -295,42 +302,9 @@ async function fetchCrypto(){
 }
 
 // ═══════════════════════════════════════════════════════════
-// FOREX — ExchangeRate (direct, pas de proxy)
 // ═══════════════════════════════════════════════════════════
-function lastWeekday(back=1){
-  let d=new Date(Date.now()-back*86400000);
-  let n=0;while((d.getDay()===0||d.getDay()===6)&&n<4){d=new Date(d-86400000);n++;}
-  return d.toISOString().slice(0,10);
-}
-async function fetchForex(){
-  try{
-    const [rN,rY]=await Promise.all([
-      fetchT(`https://open.er-api.com/v6/latest/USD?_t=${Date.now()}`,6000),
-      fetchT(`https://api.frankfurter.app/${lastWeekday(1)}?from=USD&_t=${Date.now()}`,6000),
-    ]);
-    const now=await rN.json();
-    let yest=null;
-    if(rY.ok){const t=await rY.json();if(t?.rates)yest=t;}
-    if(!yest){
-      for(let b=2;b<=4;b++){
-        try{const rf=await fetchT(`https://api.frankfurter.app/${lastWeekday(b)}?from=USD`,5000);
-          if(rf.ok){const t=await rf.json();if(t?.rates){yest=t;break;}}}catch{}
-      }
-    }
-    const R=now.rates,Y=yest?.rates||null;
-    const pairs={
-      EURUSD:{label:'EUR/USD',calc:1/R.EUR,prev:Y?1/Y.EUR:null},
-      GBPUSD:{label:'GBP/USD',calc:1/R.GBP,prev:Y?1/Y.GBP:null},
-      USDJPY:{label:'USD/JPY',calc:R.JPY,   prev:Y?Y.JPY:null},
-      EURGBP:{label:'EUR/GBP',calc:R.GBP/R.EUR,prev:Y?Y.GBP/Y.EUR:null},
-    };
-    Object.entries(pairs).forEach(([k,v])=>{
-      const prev=v.prev??v.calc;
-      const pct=v.prev!=null?((v.calc-prev)/prev)*100:0;
-      DATA[k]={label:v.label,price:v.calc,prev,pct,ok:true,closes:[],source:'ExchangeRate'};
-    });
-  }catch{}
-}
+// S&P 500 — ajouté aux STOCKS Yahoo Finance
+// ═══════════════════════════════════════════════════════════
 
 // ═══════════════════════════════════════════════════════════
 // NEWS — Finnhub
@@ -493,7 +467,6 @@ function getMarketStatus(){
     petrole:nyD>=1&&nyD<=5||(nyD===0&&nyH>=18),
     or:     nyD>=1&&nyD<=5,
     crypto: true,
-    forex:  !(nyD===0||(nyD===6&&nyH>=17)),
   };
 }
 
@@ -515,9 +488,8 @@ async function analyserTout(){
   Object.keys(DATA).forEach(k=>delete DATA[k]);
   try{
     await step(5,'Quotes temps réel (Finnhub)...');
-    const [,,rawNews]=await Promise.all([
+    const [,rawNews]=await Promise.all([
       fetchCrypto().catch(()=>{}),
-      fetchForex().catch(()=>{}),
       fetchNews().catch(()=>[]),
       fetchStocks().catch(()=>{}),
     ]);
@@ -538,7 +510,7 @@ async function analyserTout(){
       petrole: computeSignal(['USO','XOM','CVX','OXY']),
       or:      computeSignal(['GLD','SLV','GDX']),
       crypto:  computeSignal(['BTC','ETH','SOL','XRP']),
-      forex:   computeSignal(['EURUSD','GBPUSD','USDJPY','EURGBP']),
+      thematiques: computeSignal(['BOTZ','ARKK','ITA','ICLN','XBI','HACK']),
     };
     await step(100,'Affichage...');
     ldr.style.display='none';btn.disabled=false;
@@ -557,7 +529,6 @@ async function analyserTout(){
 // ═══════════════════════════════════════════════════════════
 function renderAll(signals,NEWS,ms){
   const now=new Date().toLocaleString('fr-FR');
-  const fx=DATA['EURUSD']?.price||1.12;
   document.getElementById('last-update').textContent='Mis à jour '+now;
 
   const MKTS=[
@@ -567,7 +538,7 @@ function renderAll(signals,NEWS,ms){
     {key:'petrole',icon:'🛢️',label:'Pétrole & Énergie', sub:'WTI · Brent · Majors',        open:ms.petrole,horaire:'CME Futures · 24h/5j',   keys:['USO','XOM','CVX','OXY'],                               labels:['USO/WTI','ExxonMobil','Chevron','Occidental']},
     {key:'or',     icon:'🥇',label:'Or & Métaux',       sub:'GLD · SLV · GDX Minières',    open:ms.or,     horaire:'Comex · lun–ven',         keys:['GLD','SLV','GDX'],                                     labels:['GLD/Or','SLV/Argent','GDX/Minières']},
     {key:'crypto', icon:'₿', label:'Crypto',            sub:'BTC · ETH · SOL · XRP',       open:ms.crypto, horaire:'24h / 7j',                keys:['BTC','ETH','SOL','XRP'],                               labels:['Bitcoin','Ethereum','Solana','XRP']},
-    {key:'forex',  icon:'💱',label:'Forex',              sub:'EUR/USD · GBP · JPY',         open:ms.forex,  horaire:'Forex · lun–ven 24h/j',   keys:['EURUSD','GBPUSD','USDJPY','EURGBP'],                   labels:['EUR/USD','GBP/USD','USD/JPY','EUR/GBP']},
+    {key:'thematiques',icon:'🚀',label:'Thématiques',sub:'IA · Défense · Biotech · Propre · Cyber',open:ms.nasdaq,horaire:'NYSE · 15h30–22h FR',keys:['BOTZ','ARKK','ITA','ICLN','XBI','HACK'],labels:['IA/Robotique','ARK Innov.','Défense','Énergie propre','Biotech','Cybersécurité']},
   ];
 
   const{vedette,s:sv,raisons,miniActifs}=choisirVedette(MKTS,signals);
@@ -597,7 +568,7 @@ function renderAll(signals,NEWS,ms){
     petrole:{ACHAT:'OXY = haut bêta. XOM = défensif. Surveiller OPEC.',VENTE:'⛔ Pression baissière sur brut. Risque géopolitique élevé.',NEUTRE:'Volatilité géopolitique. Attendre stabilisation du Brent.',DANGER:'🚨 Brut très volatil. Aucune position levier recommandée.'},
     or:{ACHAT:'Or = refuge confirmé. GDX (minières) amplifie ×1.5. Inverse dollar.',VENTE:'⛔ Risk-on dominant → rotation vers actions.',NEUTRE:"Or corrélé à l'inflation et tensions géopolitiques.",DANGER:'🚨 Mouvement extrême sur métaux. Attendre consolidation.'},
     crypto:{ACHAT:'BTC = baromètre sain. ETH et SOL amplifient. Volatilité sous contrôle.',VENTE:'⛔ Risk-off crypto. Suit le Nasdaq en baisse.',NEUTRE:'BTC doit franchir un niveau clé pour confirmer la tendance.',DANGER:'🚨 Volatilité crypto extrême. Risque de liquidation.'},
-    forex:{ACHAT:`EUR/USD ${fx.toFixed(4)} haussier — NQSE hedgé surperforme.`,VENTE:'⛔ Dollar dominant — ETF non-hedgés pénalisés.',NEUTRE:`EUR/USD ${fx.toFixed(4)} — zone neutre. Fed hawkish vs BCE.`,DANGER:'🚨 Mouvement de change brutal. Éviter les ETF non-hedgés.'},
+    thematiques:{ACHAT:'BOTZ/ARKK pour levier IA. ITA en momentum défense. XBI = volatilité élevée, position réduite.',VENTE:'⛔ Risk-off sur thématiques. Réduire ARKK et XBI en premier.',NEUTRE:'Thématiques sans catalyseur clair. Surveiller publications macro et géopolitique.',DANGER:'🚨 Volatilité extrême sur ETF thématiques. Hors position.'},
   };
 
   const cards=MKTS.map(m=>{
@@ -647,14 +618,13 @@ function renderAll(signals,NEWS,ms){
   document.getElementById('sec-global').innerHTML=`
     ${vedetteHTML}
     <div class="safety-legend">🔒 Filtres de sécurité actifs · ACHAT bloqué si : RSI > 75 · chute 5j > 8% · volatilité > 4%/j · DANGER si ≥ 2 alertes critiques</div>
-    <div class="dq">Finnhub · Binance · ExchangeRate · ${now}</div>
+    <div class="dq">Finnhub · Binance · Yahoo Finance · ${now}</div>
     <div class="global-grid">${cards}</div>
     <div class="card"><div class="ch">Résumé du moment</div>
       <div style="font-size:13px;line-height:1.9;color:var(--tx);">
         ★ Vedette : <b style="color:var(--gr)">${vedette.icon} ${vedette.label}</b> (${fmtScore(sv.H)}/100 — ${sv.sig}).<br>
         Signal fort : <b style="color:var(--gr)">${best.icon} ${best.label}</b> (${fmtScore(signals[best.key].H)}/100).<br>
         Signal faible : <b style="color:var(--rd)">${worst.icon} ${worst.label}</b> (${fmtScore(signals[worst.key].H)}/100).<br>
-        EUR/USD ${fx.toFixed(4)} — ${fx>1.10?'NQSE hedgé EUR favorable':'surveiller impact dollar sur ETF non-hedgés'}.<br>
         <span style="color:var(--tx3);font-size:12px;">Signal ACHAT uniquement si score > 60 ET aucun filtre de sécurité actif.</span>
       </div>
     </div>
@@ -674,7 +644,7 @@ function renderAll(signals,NEWS,ms){
     petrole:/oil|crude|brent|wti|opec|iran|energy|barrel|pétrole/i,
     or:/gold|silver|metal|gld|xau|precious|or\b/i,
     crypto:/bitcoin|btc|eth|ethereum|crypto|solana|xrp|blockchain/i,
-    forex:/euro|dollar|fed|rate|inflation|forex|eur|usd|currency|ecb|bce/i,
+    thematiques:/robot|ai\b|artificial|arkk|defense|biotech|cyber|clean energy|renewable|hack|botz|ita|icln|xbi/i,
   };
   const mktCtx={
     semi:'Demande IA structurellement solide. Fed hawkish + tensions Taïwan = risques.',
@@ -683,7 +653,7 @@ function renderAll(signals,NEWS,ms){
     petrole:'Géopolitique Iran/Ormuz = volatilité élevée. Surveiller OPEC.',
     or:'Refuge en période de tensions. Corrélation inverse dollar.',
     crypto:'Corrèle fortement avec le Nasdaq. Volatilité ×3 vs actions.',
-    forex:'Fed hawkish vs BCE plus accommodante = pression sur EUR/USD.',
+    thematiques:'IA et robotique en tendance structurelle. Défense portée par le contexte géopolitique. Biotech = volatilité élevée.',
   };
   const predCards=MKTS.map(m=>{
     const s=signals[m.key];
