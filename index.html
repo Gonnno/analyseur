@@ -127,7 +127,7 @@ h1 em{color:var(--ac);font-style:normal;}
 </head>
 <body>
 <div class="wrap">
-  <div class="logo">Signal Intelligence · v2.9 · <span id="last-update">—</span></div>
+  <div class="logo">Signal Intelligence · v2.10 · <span id="last-update">—</span></div>
   <h1>Dashboard <em>Multi-Marchés</em></h1>
   <div class="sub">US · Europe · Crypto · Forex · Pétrole · Or — signaux filtrés · sécurité renforcée · indice vedette</div>
   <button class="btn-main" id="btn" onclick="analyserTout()">
@@ -266,7 +266,9 @@ async function fetchStocks(){
     const batch=keys.slice(i,i+3);
     await Promise.allSettled(batch.map(async k=>{
       if(!DATA[k]?.ok)return;
-      const c=await fhCandles(STOCKS_FH[k].fh);
+      let c=await fhCandles(STOCKS_FH[k].fh);
+      // Fallback Yahoo Finance si Finnhub ne renvoie rien (ETFs, rate-limit)
+      if(c.length<6) c=await yahooCandles(k);
       if(c.length>2)DATA[k].closes=c;
     }));
     if(i+3<keys.length)await new Promise(r=>setTimeout(r,600));
@@ -303,9 +305,27 @@ async function fetchCrypto(){
 
 // ═══════════════════════════════════════════════════════════
 // ═══════════════════════════════════════════════════════════
-// S&P 500 — ajouté aux STOCKS Yahoo Finance
+// YAHOO FINANCE — fallback candles via proxies CORS
 // ═══════════════════════════════════════════════════════════
-
+const PROXIES=[
+  u=>`https://api.allorigins.win/get?url=${encodeURIComponent(u)}`,
+  u=>`https://corsproxy.io/?${encodeURIComponent(u)}`,
+  u=>`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
+];
+async function yahooCandles(sym){
+  const url=`https://query1.finance.yahoo.com/v8/finance/chart/${sym}?interval=1d&range=2mo`;
+  for(const px of PROXIES){
+    try{
+      const r=await fetchT(px(url),8000);
+      let txt=await r.text();
+      let d;try{d=JSON.parse(txt);}catch{continue;}
+      if(d?.contents){try{d=JSON.parse(d.contents);}catch{continue;}}
+      const closes=(d?.chart?.result?.[0]?.indicators?.quote?.[0]?.close||[]).filter(v=>v!=null);
+      if(closes.length>5)return closes;
+    }catch{continue;}
+  }
+  return[];
+}
 // ═══════════════════════════════════════════════════════════
 // NEWS — Finnhub
 // ═══════════════════════════════════════════════════════════
