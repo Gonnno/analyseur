@@ -127,7 +127,7 @@ h1 em{color:var(--ac);font-style:normal;}
 </head>
 <body>
 <div class="wrap">
-  <div class="logo">Signal Intelligence · v2.11 · <span id="last-update">—</span></div>
+  <div class="logo">Signal Intelligence · v2.12 · <span id="last-update">—</span></div>
   <h1>Dashboard <em>Multi-Marchés</em></h1>
   <div class="sub">US · Europe · Crypto · Forex · Pétrole · Or — signaux filtrés · sécurité renforcée · indice vedette</div>
   <button class="btn-main" id="btn" onclick="analyserTout()">
@@ -533,7 +533,9 @@ async function analyserTout(){
       petrole: computeSignal(['USO','XOM','CVX','OXY']),
       or:      computeSignal(['GLD','SLV','GDX']),
       crypto:  computeSignal(['BTC','ETH','SOL','XRP']),
-      thematiques: computeSignal(['BOTZ','ARKK','ITA','ICLN','XBI','HACK']),
+      innovation: computeSignal(['BOTZ','ARKK']),
+      defense:    computeSignal(['ITA','ICLN']),
+      biotech:    computeSignal(['XBI','HACK']),
     };
     await step(100,'Affichage...');
     ldr.style.display='none';btn.disabled=false;
@@ -561,7 +563,9 @@ function renderAll(signals,NEWS,ms){
     {key:'petrole',icon:'🛢️',label:'Pétrole & Énergie', sub:'WTI · Brent · Majors',        open:ms.petrole,horaire:'CME Futures · 24h/5j',   keys:['USO','XOM','CVX','OXY'],                               labels:['USO/WTI','ExxonMobil','Chevron','Occidental']},
     {key:'or',     icon:'🥇',label:'Or & Métaux',       sub:'GLD · SLV · GDX Minières',    open:ms.or,     horaire:'Comex · lun–ven',         keys:['GLD','SLV','GDX'],                                     labels:['GLD/Or','SLV/Argent','GDX/Minières']},
     {key:'crypto', icon:'₿', label:'Crypto',            sub:'BTC · ETH · SOL · XRP',       open:ms.crypto, horaire:'24h / 7j',                keys:['BTC','ETH','SOL','XRP'],                               labels:['Bitcoin','Ethereum','Solana','XRP']},
-    {key:'thematiques',icon:'🚀',label:'Thématiques',sub:'IA · Défense · Biotech · Propre · Cyber',open:ms.nasdaq,horaire:'NYSE · 15h30–22h FR',keys:['BOTZ','ARKK','ITA','ICLN','XBI','HACK'],labels:['IA/Robotique','ARK Innov.','Défense','Énergie propre','Biotech','Cybersécurité']},
+    {key:'innovation',icon:'🤖',label:'Innovation & IA',      sub:'BOTZ · ARKK — ETF thématique croissance',  open:ms.nasdaq,horaire:'NYSE · 15h30–22h FR',keys:['BOTZ','ARKK'],labels:['BOTZ IA/Robot.','ARKK Disruptif']},
+    {key:'defense',   icon:'🛡️',label:'Défense & Transition', sub:'ITA · ICLN — ETF sectoriel macro',          open:ms.nasdaq,horaire:'NYSE · 15h30–22h FR',keys:['ITA','ICLN'], labels:['ITA Défense','ICLN Énergie propre']},
+    {key:'biotech',   icon:'💊',label:'Biotech & Cyber',       sub:'XBI · HACK — ETF sectoriel haut risque',   open:ms.nasdaq,horaire:'NYSE · 15h30–22h FR',keys:['XBI','HACK'], labels:['XBI Biotech','HACK Cybersécurité']},
   ];
 
   const{vedette,s:sv,raisons,miniActifs}=choisirVedette(MKTS,signals);
@@ -591,7 +595,9 @@ function renderAll(signals,NEWS,ms){
     petrole:{ACHAT:'OXY = haut bêta. XOM = défensif. Surveiller OPEC.',VENTE:'⛔ Pression baissière sur brut. Risque géopolitique élevé.',NEUTRE:'Volatilité géopolitique. Attendre stabilisation du Brent.',DANGER:'🚨 Brut très volatil. Aucune position levier recommandée.'},
     or:{ACHAT:'Or = refuge confirmé. GDX (minières) amplifie ×1.5. Inverse dollar.',VENTE:'⛔ Risk-on dominant → rotation vers actions.',NEUTRE:"Or corrélé à l'inflation et tensions géopolitiques.",DANGER:'🚨 Mouvement extrême sur métaux. Attendre consolidation.'},
     crypto:{ACHAT:'BTC = baromètre sain. ETH et SOL amplifient. Volatilité sous contrôle.',VENTE:'⛔ Risk-off crypto. Suit le Nasdaq en baisse.',NEUTRE:'BTC doit franchir un niveau clé pour confirmer la tendance.',DANGER:'🚨 Volatilité crypto extrême. Risque de liquidation.'},
-    thematiques:{ACHAT:'BOTZ/ARKK pour levier IA. ITA en momentum défense. XBI = volatilité élevée, position réduite.',VENTE:'⛔ Risk-off sur thématiques. Réduire ARKK et XBI en premier.',NEUTRE:'Thématiques sans catalyseur clair. Surveiller publications macro et géopolitique.',DANGER:'🚨 Volatilité extrême sur ETF thématiques. Hors position.'},
+    innovation:{ACHAT:'BOTZ (IA/Robotique pure) + ARKK (tech disruptif) en momentum. Horizon court, stop-loss strict.',VENTE:'⛔ Risk-off sur la croissance. ARKK très sensible aux taux. Réduire.',NEUTRE:'Attendre catalyseur IA (annonces NVDA, Fed). BOTZ plus stable qu\'ARKK.',DANGER:'🚨 Forte volatilité croissance. Ne pas initier de position.'},
+    defense:   {ACHAT:'ITA (Défense US) porté par contexte géopolitique. ICLN bénéficie des politiques énergie verte.',VENTE:'⛔ Rotation défensive inverse. Surveiller les budgets gouvernementaux.',NEUTRE:'ITA et ICLN sur des cycles différents. Analyser séparément avant d\'entrer.',DANGER:'🚨 Mouvements macro extrêmes. Hors position sur ces ETFs.'},
+    biotech:   {ACHAT:'XBI (small caps biotech) très volatil — catalyseurs FDA fréquents. HACK en tendance structurelle.',VENTE:'⛔ XBI chute rapidement en risk-off. HACK plus résilient mais suit le Nasdaq.',NEUTRE:'Attendre catalyseur biotech ou incident cyber majeur pour signal clair.',DANGER:'🚨 Volatilité extrême. XBI peut perdre 10%+ en une séance. Hors position.'},
   };
 
   const cards=MKTS.map(m=>{
@@ -667,7 +673,9 @@ function renderAll(signals,NEWS,ms){
     petrole:/oil|crude|brent|wti|opec|iran|energy|barrel|pétrole/i,
     or:/gold|silver|metal|gld|xau|precious|or\b/i,
     crypto:/bitcoin|btc|eth|ethereum|crypto|solana|xrp|blockchain/i,
-    thematiques:/robot|ai\b|artificial|arkk|defense|biotech|cyber|clean energy|renewable|hack|botz|ita|icln|xbi/i,
+    innovation:/robot|ai\b|artificial|arkk|botz|automation|machine learning|nvidia|openai/i,
+    defense:   /defense|defence|military|ita|icln|clean energy|renewable|solar|wind|nato|géopolitique/i,
+    biotech:   /biotech|pharma|fda|drug|xbi|hack|cyber|ransomware|security breach/i,
   };
   const mktCtx={
     semi:'Demande IA structurellement solide. Fed hawkish + tensions Taïwan = risques.',
@@ -676,7 +684,9 @@ function renderAll(signals,NEWS,ms){
     petrole:'Géopolitique Iran/Ormuz = volatilité élevée. Surveiller OPEC.',
     or:'Refuge en période de tensions. Corrélation inverse dollar.',
     crypto:'Corrèle fortement avec le Nasdaq. Volatilité ×3 vs actions.',
-    thematiques:'IA et robotique en tendance structurelle. Défense portée par le contexte géopolitique. Biotech = volatilité élevée.',
+    innovation:'IA et robotique en tendance structurelle. ARKK très sensible aux taux de la Fed.',
+    defense:   'Contexte géopolitique favorable à ITA. ICLN dépend des politiques énergétiques.',
+    biotech:   'XBI = haute volatilité sur catalyseurs FDA. HACK porté par la croissance des incidents cyber.',
   };
   const predCards=MKTS.map(m=>{
     const s=signals[m.key];
