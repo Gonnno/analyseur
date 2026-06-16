@@ -83,7 +83,15 @@ h1 em{color:var(--ac);font-style:normal;}
 .bt{flex:1;height:5px;background:var(--sur);border-radius:3px;overflow:hidden;}
 .bf{height:100%;border-radius:3px;transition:width 1s cubic-bezier(.4,0,.2,1);}
 .bfg{background:var(--gr);}.bfr{background:var(--rd);}.bfa{background:var(--am);}
-.bv{min-width:42px;text-align:right;font:600 11px/1.4 'DM Mono',monospace;white-space:nowrap;}
+.val-grid-header{display:grid;grid-template-columns:1fr repeat(4,60px);gap:4px;font:400 9px/1 'DM Mono',monospace;color:var(--tx3);text-transform:uppercase;letter-spacing:.08em;padding-bottom:6px;border-bottom:1px solid var(--brd);margin-bottom:6px;}
+.val-grid-row{display:grid;grid-template-columns:1fr repeat(4,60px);gap:4px;font:500 11px/1 'DM Mono',monospace;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04);}
+.val-grid-row:last-child{border-bottom:none;}
+.val-name{color:var(--tx2);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+@media(max-width:480px){
+  .val-grid-header{grid-template-columns:1fr repeat(4,48px);font-size:8px;}
+  .val-grid-row{grid-template-columns:1fr repeat(4,48px);font-size:10px;}
+  .val-name{font-size:10px;}
+}
 .badge{font:700 12px/1 'DM Mono',monospace;padding:4px 12px;border-radius:6px;letter-spacing:.05em;}
 .b-buy{background:var(--gr-bg);color:var(--gr);border:1px solid rgba(74,222,128,.3);}
 .b-sell{background:var(--rd-bg);color:var(--rd);border:1px solid rgba(248,113,113,.3);}
@@ -129,7 +137,7 @@ h1 em{color:var(--ac);font-style:normal;}
 </head>
 <body>
 <div class="wrap">
-  <div class="logo">Signal Intelligence · v2.13 · <span id="last-update">—</span></div>
+  <div class="logo">Signal Intelligence · v2.14 · <span id="last-update">—</span></div>
   <h1>Dashboard <em>Multi-Marchés</em></h1>
   <div class="sub">US · Europe · Crypto · Forex · Pétrole · Or — signaux filtrés · sécurité renforcée · indice vedette</div>
   <button class="btn-main" id="btn" onclick="analyserTout()">
@@ -607,14 +615,21 @@ function renderAll(signals,NEWS,ms){
     const isVedette=m.key===vedette.key;
     const mini=m.keys.slice(0,3).map(k=>{const d=DATA[k];if(!d?.ok)return'';return`<span class="gc-quote"><span class="${pctCls(d.pct)}">${d.label} ${fmtPct(d.pct)}</span></span>`;}).join('');
     const dQuotes=`<div class="quotes">${m.keys.map(k=>{const d=DATA[k];if(!d)return'';const volStr=d._vol?` · v${d._vol.toFixed(1)}%`:'';return`<div class="qc"><div class="ql">${d.label}</div><div class="qp ${d.ok?pctCls(d.pct):'dim'}">${fmtPrice(d.price,k)}</div><div class="qd ${pctCls(d.pct)}">${d.ok?fmtPct(d.pct):'N/A'}${volStr}</div></div>`;}).join('')}</div>`;
-    const dBars=`<div class="card"><div class="ch">Contribution par actif — J / 5j / vol</div>${m.keys.map((k,j)=>{
-      const d=DATA[k];const p=d?.pct||0;const p5=d?._p5,vol=d?._vol;
-      const dirJ=p>0.3?'bull':p<-0.3?'bear':'neutral';
-      const{score}=d?scoreAsset(d):{score:50};
-      const p5str=p5!=null?` / <span class="${vc[p5>2?'bull':p5<-2?'bear':'neutral']}">${p5>=0?'+':''}${p5.toFixed(1)}%</span>`:'';
-      const volStr=vol?` <span class="dim">· v${vol.toFixed(1)}%</span>`:'';
-      return`<div class="br"><span class="bl">${m.labels[j]}</span><div class="bt"><div class="bf ${dc[dirJ]}" style="width:0%" data-w="${score}"></div></div><span class="bv ${vc[dirJ]}">${d?.ok?fmtPct(d.pct):'—'}${p5str}${volStr}</span></div>`;
-    }).join('')}</div>`;
+    const dBars=`<div class="card"><div class="ch">Actif · Jour · 5j · 20j · Vol</div>
+      <div class="val-grid-header"><span>Actif</span><span>Jour</span><span>5j</span><span>20j</span><span>Vol/j</span></div>
+      ${m.keys.map((k,j)=>{
+        const d=DATA[k];
+        const p1 =d?.ok     ? fmtPct(d.pct)                  : '—';
+        const p5  =d?._p5!=null ? `<span class="${pctCls(d._p5)}">${d._p5>=0?'+':''}${d._p5.toFixed(1)}%</span>` : '<span class="dim">—</span>';
+        const p20 =d?._p20!=null? `<span class="${pctCls(d._p20)}">${d._p20>=0?'+':''}${d._p20.toFixed(1)}%</span>`: '<span class="dim">—</span>';
+        const vol =d?._vol!=null ? `<span class="${d._vol>4?'r':d._vol>2?'a':'dim'}">${d._vol.toFixed(1)}%</span>`  : '<span class="dim">—</span>';
+        return`<div class="val-grid-row">
+          <span class="val-name">${m.labels[j]}</span>
+          <span class="${pctCls(d?.pct)}">${p1}</span>
+          ${p5}${p20}${vol}
+        </div>`;
+      }).join('')}
+    </div>`;
     const reco=recoMap[m.key]?.[s.sig]||recoMap[m.key]?.['NEUTRE']||'—';
     const alertHTML=s.alerts?.length?`<div class="alert-box">${s.alerts.map(a=>`${a.label} : ${a.msg}`).join('<br>')}</div>`:'';
     const warnHTML=s.warnings?.length?`<div class="warn-box">⚠ ${s.warnings.join(' · ')}</div>`:'';
