@@ -83,7 +83,7 @@ h1 em{color:var(--ac);font-style:normal;}
 .bt{flex:1;height:5px;background:var(--sur);border-radius:3px;overflow:hidden;}
 .bf{height:100%;border-radius:3px;transition:width 1s cubic-bezier(.4,0,.2,1);}
 .bfg{background:var(--gr);}.bfr{background:var(--rd);}.bfa{background:var(--am);}
-.bv{min-width:42px;text-align:right;font:600 11px/1 'DM Mono',monospace;}
+.bv{min-width:42px;text-align:right;font:600 11px/1.4 'DM Mono',monospace;white-space:nowrap;}
 .badge{font:700 12px/1 'DM Mono',monospace;padding:4px 12px;border-radius:6px;letter-spacing:.05em;}
 .b-buy{background:var(--gr-bg);color:var(--gr);border:1px solid rgba(74,222,128,.3);}
 .b-sell{background:var(--rd-bg);color:var(--rd);border:1px solid rgba(248,113,113,.3);}
@@ -118,16 +118,18 @@ h1 em{color:var(--ac);font-style:normal;}
 .score-detail{font:400 11px/1.6 'DM Mono',monospace;color:var(--tx2);}
 .footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--brd);font:400 10px/1.8 'DM Mono',monospace;color:var(--tx3);}
 @media(max-width:480px){
-  .bl{min-width:90px;} h1{font-size:20px;} .gc-sig{font-size:13px;} .gc-label{font-size:12px;}
+  .bl{min-width:72px;font-size:10px;} h1{font-size:20px;} .gc-sig{font-size:13px;} .gc-label{font-size:12px;}
   .gc-layout{grid-template-columns:76px 1fr 20px;gap:7px;}
   .gc-horaire{display:none;} .pred-horizon{grid-template-columns:repeat(3,1fr);}
   .vedette-score-num{font-size:36px;}
+  .bv{font-size:9px;min-width:unset;max-width:140px;text-align:right;white-space:normal;word-break:break-word;}
+  .br{align-items:flex-start;}
 }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="logo">Signal Intelligence · v2.12 · <span id="last-update">—</span></div>
+  <div class="logo">Signal Intelligence · v2.13 · <span id="last-update">—</span></div>
   <h1>Dashboard <em>Multi-Marchés</em></h1>
   <div class="sub">US · Europe · Crypto · Forex · Pétrole · Or — signaux filtrés · sécurité renforcée · indice vedette</div>
   <button class="btn-main" id="btn" onclick="analyserTout()">
@@ -148,7 +150,6 @@ h1 em{color:var(--ac);font-style:normal;}
     ⚠ Informatif uniquement — pas un conseil en investissement.<br>
     Sources : Binance · CoinGecko · Yahoo Finance · Finnhub (quotes + candles + news) · MyMemory<br>
     Risque très élevé sur produits à levier (3SEM ×3). Toujours utiliser un stop-loss.<br>
-    v2.4 : Yahoo Finance supprimé → Finnhub direct (quotes temps réel + candles 1 mois)
   </div>
 </div>
 
