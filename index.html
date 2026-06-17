@@ -137,7 +137,7 @@ h1 em{color:var(--ac);font-style:normal;}
 </head>
 <body>
 <div class="wrap">
-  <div class="logo">Signal Intelligence · v2.15 · <span id="last-update">—</span></div>
+  <div class="logo">Signal Intelligence · v2.16 · <span id="last-update">—</span></div>
   <h1>Dashboard <em>Multi-Marchés</em></h1>
   <div class="sub">US · Europe · Crypto · Forex · Pétrole · Or — signaux filtrés · sécurité renforcée · indice vedette</div>
   <button class="btn-main" id="btn" onclick="analyserTout()">
@@ -402,14 +402,12 @@ function scoreAsset(d){
   if(!d?.ok||d.pct==null)return{score:50,alerts:[],warnings:[],blocked:false};
   const c=d.closes||[];
   const rsi=d.rsi||null;
-  const vol=volatilite(c);
+  // Lire les valeurs précalculées — ne pas recalculer ici pour éviter les conflits
   const p1=d.pct;
-  const p5 =c.length>=6  ?((c.at(-1)-c.at(-6))/c.at(-6))*100:null;
-  const p20=c.length>=21 ?((c.at(-1)-c.at(-21))/c.at(-21))*100:null;
+  const p5 =d._p5  !=null ? d._p5  : (c.length>=6  ?((c.at(-1)-c.at(-6))/c.at(-6))*100   : null);
+  const p20=d._p20 !=null ? d._p20 : (c.length>=21 ?((c.at(-1)-c.at(-21))/c.at(-21))*100  : null);
+  const vol=d._vol !=null ? d._vol : volatilite(c);
   const sma5v=sma(c,5),sma20v=sma(c,20);
-  if(p5!=null)d._p5=p5;
-  if(p20!=null)d._p20=p20;
-  d._vol=vol;
   const alerts=[],warnings=[];
   let blocked=false;
   if(vol!=null&&vol>4){blocked=true;alerts.push(`🚨 Volatilité ${vol.toFixed(1)}%/j — signal neutralisé`);}
@@ -520,12 +518,12 @@ async function analyserTout(){
     ]);
     await step(65,'RSI 14 · variation 5j · volatilité...');
     Object.keys(DATA).forEach(k=>{
-      if(DATA[k]?.closes?.length>14) DATA[k].rsi=rsi14(DATA[k].closes);
-      // Forcer le calcul _p5 et _vol si pas encore fait
       const d=DATA[k];
-      if(d?.closes?.length>=6  && d._p5===undefined)  d._p5=((d.closes.at(-1)-d.closes.at(-6))/d.closes.at(-6))*100;
-      if(d?.closes?.length>=21 && d._p20===undefined) d._p20=((d.closes.at(-1)-d.closes.at(-21))/d.closes.at(-21))*100;
-      if(d?.closes?.length>=11 && d._vol===undefined) d._vol=volatilite(d.closes);
+      if(!d?.closes?.length)return;
+      if(d.closes.length>14)  d.rsi =rsi14(d.closes);
+      if(d.closes.length>=6)  d._p5 =((d.closes.at(-1)-d.closes.at(-6)) /d.closes.at(-6)) *100;
+      if(d.closes.length>=21) d._p20=((d.closes.at(-1)-d.closes.at(-21))/d.closes.at(-21))*100;
+      if(d.closes.length>=11) d._vol=volatilite(d.closes);
     });
     await step(75,'Traduction des actualités...');
     const newsRaw=(rawNews||[]).map(n=>({
