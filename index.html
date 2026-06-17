@@ -137,7 +137,7 @@ h1 em{color:var(--ac);font-style:normal;}
 </head>
 <body>
 <div class="wrap">
-  <div class="logo">Signal Intelligence · v2.14 · <span id="last-update">—</span></div>
+  <div class="logo">Signal Intelligence · v2.15 · <span id="last-update">—</span></div>
   <h1>Dashboard <em>Multi-Marchés</em></h1>
   <div class="sub">US · Europe · Crypto · Forex · Pétrole · Or — signaux filtrés · sécurité renforcée · indice vedette</div>
   <button class="btn-main" id="btn" onclick="analyserTout()">
@@ -711,16 +711,43 @@ function renderAll(signals,NEWS,ms){
     const ni=mb>mr?'bull':mr>mb?'bear':'neutral';
     const niTxt=ni==='bull'?'haussier':ni==='bear'?'baissier':'neutre';
     const niIcon=ni==='bull'?'🟢':ni==='bear'?'🔴':'🟡';
+
+    // Si DANGER ou VENTE : le sentiment news positif est ignoré — cohérence visuelle
+    const isDanger = s.sig==='DANGER';
+    const isVente  = s.sig==='VENTE';
+    const niEffectif = (isDanger||isVente) && ni==='bull' ? 'neutral' : ni;
+    const niTxtEff   = niEffectif==='bull'?'haussier':niEffectif==='bear'?'baissier':'prudent';
+    const niIconEff  = niEffectif==='bull'?'🟢':niEffectif==='bear'?'🔴':'🟡';
+
     let fH=mn.length>0?Math.round(s.H*0.65+(ni==='bull'?72:ni==='bear'?28:50)*0.35):s.H;
-    if(s.sig==='DANGER'||s.sig==='VENTE')fH=Math.min(fH,45);
-    const fs=fH>=60?'ACHAT':fH<=42?'VENTE':'NEUTRE';
-    const fsSafe=s.sig==='DANGER'?'DANGER':fs;
-    const projMax=s.sig==='DANGER'?0.5:s.sig==='VENTE'?1.5:3;
-    const base=(fH-50)/10;
-    const p24=cl(base,-projMax,projMax).toFixed(1),p1w=cl(base*2.1,-projMax*2,projMax*2).toFixed(1);
-    const concl=mn.length===0
-      ?`Pas d'actualité spécifique. Signal cours : <b>${s.sig}</b> (${fmtScore(s.H)}/100). ${mktCtx[m.key]}`
-      :`${mn.length} actu(s) — sentiment ${niIcon} <b>${niTxt}</b>. "${mn[0].titre}". ${mktCtx[m.key]} `+(fsSafe==='ACHAT'?'<b>→ Conditions favorables.</b>':fsSafe==='DANGER'?'<b>→ 🚨 Ne pas intervenir.</b>':fsSafe==='VENTE'?'<b>→ Pression vendeuse confirmée.</b>':'<b>→ Attendre confirmation.</b>');
+    if(isDanger||isVente) fH=Math.min(fH,45);
+    const fsSafe=isDanger?'DANGER':fH>=60?'ACHAT':fH<=42?'VENTE':'NEUTRE';
+
+    // Fourchettes estimées selon le signal — honnêtes, pas de fausse précision
+    let est24h, est1sem, estCls;
+    if(isDanger){
+      est24h='imprédictible'; est1sem='imprédictible'; estCls='a';
+    } else if(isVente||fsSafe==='VENTE'){
+      est24h='de -1% à -4%'; est1sem='de -2% à -8%'; estCls='r';
+    } else if(fsSafe==='ACHAT'){
+      const amp=fH>=70?4:2;
+      est24h=`de 0% à +${amp}%`; est1sem=`de +1% à +${amp*2}%`; estCls='g';
+    } else {
+      est24h='de -1% à +1%'; est1sem='de -2% à +2%'; estCls='dim';
+    }
+
+    // Conclusion — cohérente avec le signal réel
+    let concl='';
+    if(mn.length===0){
+      concl=`Pas d'actualité spécifique. Signal cours : <b>${s.sig}</b> (${fmtScore(s.H)}/100). ${mktCtx[m.key]}`;
+    } else {
+      const action = fsSafe==='ACHAT' ? '<b>→ Conditions favorables.</b>'
+                   : fsSafe==='DANGER'? '<b>→ 🚨 Ne pas intervenir — filtres de sécurité actifs.</b>'
+                   : fsSafe==='VENTE' ? '<b>→ Pression vendeuse confirmée.</b>'
+                   : '<b>→ Attendre confirmation du signal.</b>';
+      concl=`${mn.length} actu(s) — sentiment ${niIconEff} <b>${niTxtEff}</b>. "${mn[0].titre}". ${mktCtx[m.key]} ${action}`;
+    }
+
     const alertHTML=s.alerts?.length?`<div class="alert-box" style="margin-bottom:.6rem;">${s.alerts.map(a=>`⚠ <b>${a.label}</b> : ${a.msg}`).join('<br>')}</div>`:'';
     const worstG=m.keys.filter(k=>DATA[k]?.ok&&DATA[k]?._p5!=null).sort((a,b)=>(DATA[a]._p5||0)-(DATA[b]._p5||0))[0];
     const worstInfo=worstG&&DATA[worstG]._p5<-3?`<div style="font:400 11px/1.5 'DM Mono',monospace;color:var(--am);margin-top:.4rem;">📉 Sous pression 5j : <b>${DATA[worstG].label}</b> ${(DATA[worstG]._p5>=0?'+':'')+DATA[worstG]._p5.toFixed(1)}%</div>`:'';
@@ -733,8 +760,8 @@ function renderAll(signals,NEWS,ms){
       </div>
       <div class="pred-horizon">
         <div class="pred-h-item"><div class="pred-h-label">Signal données</div><div class="pred-h-val ${sigCls(s.H)}">${s.sig} ${fmtScore(s.H)}/100</div></div>
-        <div class="pred-h-item"><div class="pred-h-label">Projection 24h</div><div class="pred-h-val">${parseFloat(p24)>=0?'+':''}${p24}%</div></div>
-        <div class="pred-h-item"><div class="pred-h-label">Projection 1 sem</div><div class="pred-h-val">${parseFloat(p1w)>=0?'+':''}${p1w}%</div></div>
+        <div class="pred-h-item"><div class="pred-h-label">Estimation 24h</div><div class="pred-h-val ${estCls}" style="font-size:11px;">${est24h}</div></div>
+        <div class="pred-h-item"><div class="pred-h-label">Estimation 1 sem</div><div class="pred-h-val ${estCls}" style="font-size:11px;">${est1sem}</div></div>
       </div>
       <div class="pred-concl">${concl}</div>
       ${alertHTML}${worstInfo}${newsHTML}
