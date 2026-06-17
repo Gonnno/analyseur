@@ -554,6 +554,7 @@ async function analyserTout(){
     };
     const nbCandles=Object.keys(DATA).filter(k=>DATA[k]?.closes?.length>5).length;
     const nbTotal=Object.keys(DATA).length;
+    const now=new Date().toLocaleString('fr-FR');
     document.getElementById('sec-global').innerHTML=`<div class="dq">Finnhub · Binance · Yahoo Finance · ${now} · Candles: ${nbCandles}/${nbTotal} actifs</div>`+document.getElementById('sec-global').innerHTML.replace(/<div class="dq">.*?<\/div>/,'');
     ldr.style.display='none';btn.disabled=false;
     document.getElementById('tabs').style.display='flex';
