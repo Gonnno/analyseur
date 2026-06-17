@@ -137,7 +137,7 @@ h1 em{color:var(--ac);font-style:normal;}
 </head>
 <body>
 <div class="wrap">
-  <div class="logo">Signal Intelligence · v2.16 · <span id="last-update">—</span></div>
+  <div class="logo">Signal Intelligence · v2.17 · <span id="last-update">—</span></div>
   <h1>Dashboard <em>Multi-Marchés</em></h1>
   <div class="sub">US · Europe · Crypto · Forex · Pétrole · Or — signaux filtrés · sécurité renforcée · indice vedette</div>
   <button class="btn-main" id="btn" onclick="analyserTout()">
@@ -257,27 +257,35 @@ const STOCKS_FH={
 };
 
 async function fetchStocks(){
-  // On fait les quotes en parallèle (max 30 req/s Finnhub free)
-  // puis les candles en séquence douce pour ne pas dépasser la limite
   const keys=Object.keys(STOCKS_FH);
 
-  // 1) Quotes en parallèle (légères, 1 req chacune)
+  // 1) Quotes en parallèle
   await Promise.allSettled(keys.map(async k=>{
-    const {fh,label}=STOCKS_FH[k];
+    const{fh,label}=STOCKS_FH[k];
     const q=await fhQuote(fh);
     DATA[k]=q
       ?{label,price:q.price,prev:q.prev,pct:q.pct,ok:true,closes:[],source:'Finnhub'}
       :{label,price:null,prev:null,pct:null,ok:false,closes:[],source:'Finnhub'};
   }));
 
-  // 2) Candles toutes en parallèle — Yahoo direct (plus fiable et plus rapide que Finnhub pour les ETFs)
+  // 2) Candles — essaie Yahoo puis Finnhub, log le résultat
   await Promise.allSettled(keys.map(async k=>{
     if(!DATA[k]?.ok)return;
-    // Yahoo d'abord (plus fiable pour ETFs), Finnhub en fallback
     let c=await yahooCandles(k);
     if(c.length<6)c=await fhCandles(STOCKS_FH[k].fh);
-    if(c.length>2)DATA[k].closes=c;
+    if(c.length>2){
+      DATA[k].closes=c;
+      DATA[k]._candleSrc=c.length+' pts';
+    } else {
+      DATA[k]._candleSrc='VIDE';
+    }
   }));
+
+  // Log debug visible dans la console
+  const ok=keys.filter(k=>DATA[k]?.closes?.length>5);
+  const ko=keys.filter(k=>!DATA[k]?.closes?.length||DATA[k].closes.length<=5);
+  console.log(`[Candles] OK: ${ok.join(', ')}`);
+  console.log(`[Candles] VIDE: ${ko.join(', ')}`);
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -544,7 +552,9 @@ async function analyserTout(){
       defense:    computeSignal(['ITA','ICLN']),
       biotech:    computeSignal(['XBI','HACK']),
     };
-    await step(100,'Affichage...');
+    const nbCandles=Object.keys(DATA).filter(k=>DATA[k]?.closes?.length>5).length;
+    const nbTotal=Object.keys(DATA).length;
+    document.getElementById('sec-global').innerHTML=`<div class="dq">Finnhub · Binance · Yahoo Finance · ${now} · Candles: ${nbCandles}/${nbTotal} actifs</div>`+document.getElementById('sec-global').innerHTML.replace(/<div class="dq">.*?<\/div>/,'');
     ldr.style.display='none';btn.disabled=false;
     document.getElementById('tabs').style.display='flex';
     renderAll(signals,NEWS,getMarketStatus());
