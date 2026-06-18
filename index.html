@@ -137,7 +137,7 @@ h1 em{color:var(--ac);font-style:normal;}
 </head>
 <body>
 <div class="wrap">
-  <div class="logo">Signal Intelligence · v2.17 · <span id="last-update">—</span></div>
+  <div class="logo">Signal Intelligence · v2.18 · <span id="last-update">—</span></div>
   <h1>Dashboard <em>Multi-Marchés</em></h1>
   <div class="sub">US · Europe · Crypto · Forex · Pétrole · Or — signaux filtrés · sécurité renforcée · indice vedette</div>
   <button class="btn-main" id="btn" onclick="analyserTout()">
@@ -552,10 +552,6 @@ async function analyserTout(){
       defense:    computeSignal(['ITA','ICLN']),
       biotech:    computeSignal(['XBI','HACK']),
     };
-    const nbCandles=Object.keys(DATA).filter(k=>DATA[k]?.closes?.length>5).length;
-    const nbTotal=Object.keys(DATA).length;
-    const now=new Date().toLocaleString('fr-FR');
-    document.getElementById('sec-global').innerHTML=`<div class="dq">Finnhub · Binance · Yahoo Finance · ${now} · Candles: ${nbCandles}/${nbTotal} actifs</div>`+document.getElementById('sec-global').innerHTML.replace(/<div class="dq">.*?<\/div>/,'');
     ldr.style.display='none';btn.disabled=false;
     document.getElementById('tabs').style.display='flex';
     renderAll(signals,NEWS,getMarketStatus());
@@ -572,6 +568,8 @@ async function analyserTout(){
 // ═══════════════════════════════════════════════════════════
 function renderAll(signals,NEWS,ms){
   const now=new Date().toLocaleString('fr-FR');
+  const nbCandles=Object.keys(DATA).filter(k=>DATA[k]?.closes?.length>5).length;
+  const nbTotal=Object.keys(DATA).length;
   document.getElementById('last-update').textContent='Mis à jour '+now;
 
   const MKTS=[
@@ -672,7 +670,7 @@ function renderAll(signals,NEWS,ms){
   document.getElementById('sec-global').innerHTML=`
     ${vedetteHTML}
     <div class="safety-legend">🔒 Filtres de sécurité actifs · ACHAT bloqué si : RSI > 75 · chute 5j > 8% · volatilité > 4%/j · DANGER si ≥ 2 alertes critiques</div>
-    <div class="dq">Finnhub · Binance · Yahoo Finance · ${now}</div>
+    <div class="dq">Finnhub · Binance · Yahoo Finance · ${now} · Historique: ${nbCandles}/${nbTotal} actifs</div>
     <div class="global-grid">${cards}</div>
     <div class="card"><div class="ch">Résumé du moment</div>
       <div style="font-size:13px;line-height:1.9;color:var(--tx);">
