@@ -137,7 +137,7 @@ h1 em{color:var(--ac);font-style:normal;}
 </head>
 <body>
 <div class="wrap">
-  <div class="logo">Signal Intelligence · v2.18 · <span id="last-update">—</span></div>
+  <div class="logo">Signal Intelligence · v2.19 · <span id="last-update">—</span></div>
   <h1>Dashboard <em>Multi-Marchés</em></h1>
   <div class="sub">US · Europe · Crypto · Forex · Pétrole · Or — signaux filtrés · sécurité renforcée · indice vedette</div>
   <button class="btn-main" id="btn" onclick="analyserTout()">
@@ -268,15 +268,15 @@ async function fetchStocks(){
       :{label,price:null,prev:null,pct:null,ok:false,closes:[],source:'Finnhub'};
   }));
 
-  // 2) Candles — essaie Yahoo puis Finnhub, log le résultat
+  // 2) Candles — Stooq direct (gratuit, sans CORS), Finnhub en fallback pour actions US
   await Promise.allSettled(keys.map(async k=>{
     if(!DATA[k]?.ok)return;
-    let c=await yahooCandles(k);
+    let c=await stooqCandles(k);
     if(c.length<6)c=await fhCandles(STOCKS_FH[k].fh);
     if(c.length>2){
       DATA[k].closes=c;
       DATA[k]._candleSrc=c.length+' pts';
-    } else {
+    }else{
       DATA[k]._candleSrc='VIDE';
     }
   }));
@@ -318,26 +318,32 @@ async function fetchCrypto(){
 
 // ═══════════════════════════════════════════════════════════
 // ═══════════════════════════════════════════════════════════
-// YAHOO FINANCE — fallback candles via proxies CORS
+// STOOQ — historique journalier gratuit, sans clé, sans CORS
+// Format : https://stooq.com/q/d/l/?s=nvda.us&i=d
 // ═══════════════════════════════════════════════════════════
-const PROXIES=[
-  u=>`https://api.allorigins.win/get?url=${encodeURIComponent(u)}`,
-  u=>`https://corsproxy.io/?${encodeURIComponent(u)}`,
-  u=>`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
-];
-async function yahooCandles(sym){
-  const url=`https://query1.finance.yahoo.com/v8/finance/chart/${sym}?interval=1d&range=2mo`;
-  for(const px of PROXIES){
-    try{
-      const r=await fetchT(px(url),8000);
-      let txt=await r.text();
-      let d;try{d=JSON.parse(txt);}catch{continue;}
-      if(d?.contents){try{d=JSON.parse(d.contents);}catch{continue;}}
-      const closes=(d?.chart?.result?.[0]?.indicators?.quote?.[0]?.close||[]).filter(v=>v!=null);
-      if(closes.length>5)return closes;
-    }catch{continue;}
-  }
-  return[];
+function toStooqSym(k){
+  // Actions EU .PA → .fr sur Stooq
+  if(k.endsWith('.PA'))return k.replace('.PA','.fr').toLowerCase();
+  // Crypto → pas sur Stooq, on skip
+  if(['BTC','ETH','SOL','XRP'].includes(k))return null;
+  // Actions US et ETFs → .us
+  return k.toLowerCase()+'.us';
+}
+async function stooqCandles(k){
+  const sym=toStooqSym(k);
+  if(!sym)return[];
+  try{
+    const r=await fetchT(`https://stooq.com/q/d/l/?s=${sym}&i=d`,8000);
+    if(!r.ok)return[];
+    const txt=await r.text();
+    // CSV : Date,Open,High,Low,Close,Volume
+    const lines=txt.trim().split('\n').slice(1); // skip header
+    const closes=lines
+      .map(l=>parseFloat(l.split(',')[4]))
+      .filter(v=>!isNaN(v)&&v>0)
+      .slice(-35); // 35 derniers jours
+    return closes.length>5?closes:[];
+  }catch{return[];}
 }
 // ═══════════════════════════════════════════════════════════
 // NEWS — Finnhub
