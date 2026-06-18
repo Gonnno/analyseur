@@ -63,9 +63,9 @@ h1 em{color:var(--ac);font-style:normal;}
 .gc-status-label{font:700 9px/1 'DM Mono',monospace;}
 .gc-horaire{font:400 8px/1.3 'DM Mono',monospace;color:var(--tx3);}
 .gc-label{font:600 13px/1.2 'Syne',sans-serif;color:var(--tx2);letter-spacing:-.01em;margin-bottom:5px;}
-.gc-sig{font-size:14px;font-weight:800;line-height:1;}
+.gc-sig{font-size:17px;font-weight:800;line-height:1;}
 .gc-score{font-size:11px;color:var(--tx3);font-family:'DM Mono',monospace;margin-left:5px;}
-.gc-sub{font:400 10px/1.4 'DM Mono',monospace;color:var(--tx3);margin-top:3px;}
+.gc-sub{font:400 10px/1.4 'DM Mono',monospace;color:var(--tx2);margin-top:3px;}
 .gc-arrow{font-size:11px;color:var(--tx3);transition:transform .25s;display:block;text-align:center;}
 .gc.expanded .gc-arrow{transform:rotate(180deg);}
 .gc-quotes{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;padding-top:8px;border-top:1px solid var(--brd);}
@@ -83,15 +83,7 @@ h1 em{color:var(--ac);font-style:normal;}
 .bt{flex:1;height:5px;background:var(--sur);border-radius:3px;overflow:hidden;}
 .bf{height:100%;border-radius:3px;transition:width 1s cubic-bezier(.4,0,.2,1);}
 .bfg{background:var(--gr);}.bfr{background:var(--rd);}.bfa{background:var(--am);}
-.val-grid-header{display:grid;grid-template-columns:1fr repeat(4,60px);gap:4px;font:400 9px/1 'DM Mono',monospace;color:var(--tx3);text-transform:uppercase;letter-spacing:.08em;padding-bottom:6px;border-bottom:1px solid var(--brd);margin-bottom:6px;}
-.val-grid-row{display:grid;grid-template-columns:1fr repeat(4,60px);gap:4px;font:500 11px/1 'DM Mono',monospace;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04);}
-.val-grid-row:last-child{border-bottom:none;}
-.val-name{color:var(--tx2);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-@media(max-width:480px){
-  .val-grid-header{grid-template-columns:1fr repeat(4,48px);font-size:8px;}
-  .val-grid-row{grid-template-columns:1fr repeat(4,48px);font-size:10px;}
-  .val-name{font-size:10px;}
-}
+.bv{min-width:42px;text-align:right;font:600 11px/1 'DM Mono',monospace;}
 .badge{font:700 12px/1 'DM Mono',monospace;padding:4px 12px;border-radius:6px;letter-spacing:.05em;}
 .b-buy{background:var(--gr-bg);color:var(--gr);border:1px solid rgba(74,222,128,.3);}
 .b-sell{background:var(--rd-bg);color:var(--rd);border:1px solid rgba(248,113,113,.3);}
@@ -126,12 +118,10 @@ h1 em{color:var(--ac);font-style:normal;}
 .score-detail{font:400 11px/1.6 'DM Mono',monospace;color:var(--tx2);}
 .footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--brd);font:400 10px/1.8 'DM Mono',monospace;color:var(--tx3);}
 @media(max-width:480px){
-  .bl{min-width:72px;font-size:10px;} h1{font-size:20px;} .gc-sig{font-size:13px;} .gc-label{font-size:12px;}
+  .bl{min-width:90px;} h1{font-size:20px;} .gc-sig{font-size:15px;}
   .gc-layout{grid-template-columns:76px 1fr 20px;gap:7px;}
   .gc-horaire{display:none;} .pred-horizon{grid-template-columns:repeat(3,1fr);}
   .vedette-score-num{font-size:36px;}
-  .bv{font-size:9px;min-width:unset;max-width:140px;text-align:right;white-space:normal;word-break:break-word;}
-  .br{align-items:flex-start;}
 }
 </style>
 </head>
@@ -158,6 +148,7 @@ h1 em{color:var(--ac);font-style:normal;}
     ⚠ Informatif uniquement — pas un conseil en investissement.<br>
     Sources : Binance · CoinGecko · Yahoo Finance · Finnhub (quotes + candles + news) · MyMemory<br>
     Risque très élevé sur produits à levier (3SEM ×3). Toujours utiliser un stop-loss.<br>
+    v2.4 : Yahoo Finance supprimé → Finnhub direct (quotes temps réel + candles 1 mois)
   </div>
 </div>
 
@@ -200,66 +191,36 @@ async function fhQuote(sym){
   }catch{return null;}
 }
 
-// FINNHUB : candles journaliers sur 35 jours → closes[] pour RSI/vol
-async function fhCandles(sym){
-  try{
-    const to=Math.floor(Date.now()/1000);
-    const from=to-35*86400;
-    const r=await fetchT(fhUrl(`/stock/candle?symbol=${sym}&resolution=D&from=${from}&to=${to}`),8000);
-    if(!r.ok)return[];
-    const d=await r.json();
-    if(d.s!=='ok'||!d.c)return[];
-    return d.c; // tableau de closing prices
-  }catch{return[];}
+// ═══════════════════════════════════════════════════════════
+// HISTORIQUE LOCAL — localStorage, 1 entrée par jour par actif
+// S'enrichit à chaque analyse — pas d'API externe nécessaire
+// ═══════════════════════════════════════════════════════════
+const LS_KEY='smv3_hist';
+function loadHist(){try{const r=localStorage.getItem(LS_KEY);return r?JSON.parse(r):{}}catch{return{}}}
+function saveHist(h){try{localStorage.setItem(LS_KEY,JSON.stringify(h))}catch{}}
+function pushAndGet(h,k,price){
+  if(!price||isNaN(+price))return(h[k]||[]).map(e=>e.c);
+  if(!h[k])h[k]=[];
+  const today=new Date().toISOString().slice(0,10);
+  if(!h[k].length||h[k].at(-1).d!==today)h[k].push({d:today,c:+price});
+  if(h[k].length>60)h[k]=h[k].slice(-60);
+  return h[k].map(e=>e.c);
 }
 
-// ─── mapping symboles Finnhub ────────────────────────────
-// Actions US → symbole direct
-// Actions EU (.PA) → Finnhub utilise le format "TTE:XPAR"
 const STOCKS_FH={
-  // Semis
-  NVDA:{fh:'NVDA',label:'Nvidia'},
-  AMD: {fh:'AMD', label:'AMD'},
-  TSM: {fh:'TSM', label:'TSMC'},
-  AVGO:{fh:'AVGO',label:'Broadcom'},
-  ASML:{fh:'ASML',label:'ASML'},
-  // Nasdaq
-  QQQ: {fh:'QQQ', label:'QQQ ETF'},
-  MSFT:{fh:'MSFT',label:'Microsoft'},
-  AAPL:{fh:'AAPL',label:'Apple'},
-  META:{fh:'META',label:'Meta'},
-  GOOG:{fh:'GOOG',label:'Alphabet'},
-  // S&P 500 (référence)
-  SPY: {fh:'SPY', label:'SPY S&P500'},
-  // Thématiques
-  BOTZ:{fh:'BOTZ',label:'IA/Robotique'},
-  ARKK:{fh:'ARKK',label:'ARK Innov.'},
-  ITA: {fh:'ITA', label:'Défense'},
-  ICLN:{fh:'ICLN',label:'Énergie propre'},
-  XBI: {fh:'XBI', label:'Biotech'},
-  HACK:{fh:'HACK',label:'Cybersécurité'},
-  // Energie/Pétrole
-  USO: {fh:'USO', label:'USO/WTI'},
-  XOM: {fh:'XOM', label:'ExxonMobil'},
-  CVX: {fh:'CVX', label:'Chevron'},
-  OXY: {fh:'OXY', label:'Occidental'},
-  // Or/Métaux
-  GLD: {fh:'GLD', label:'GLD/Or'},
-  SLV: {fh:'SLV', label:'Argent'},
-  GDX: {fh:'GDX', label:'Minières Or'},
-  // Europe
-  'TTE.PA':{fh:'TTE:XPAR',label:'TotalEnergies'},
-  'AIR.PA':{fh:'AIR:XPAR',label:'Airbus'},
-  'LVMH.PA':{fh:'MC:XPAR', label:'LVMH'},
-  'SAN.PA':{fh:'SAN:XPAR',label:'Sanofi'},
-  'BNP.PA':{fh:'BNP:XPAR',label:'BNP Paribas'},
-  'OR.PA': {fh:'OR:XPAR', label:"L'Oréal"},
+  NVDA:{fh:'NVDA',label:'Nvidia'},AMD:{fh:'AMD',label:'AMD'},TSM:{fh:'TSM',label:'TSMC'},AVGO:{fh:'AVGO',label:'Broadcom'},ASML:{fh:'ASML',label:'ASML'},
+  QQQ:{fh:'QQQ',label:'QQQ ETF'},MSFT:{fh:'MSFT',label:'Microsoft'},AAPL:{fh:'AAPL',label:'Apple'},META:{fh:'META',label:'Meta'},GOOG:{fh:'GOOG',label:'Alphabet'},
+  SPY:{fh:'SPY',label:'SPY S&P500'},
+  BOTZ:{fh:'BOTZ',label:'IA/Robotique'},ARKK:{fh:'ARKK',label:'ARK Innov.'},ITA:{fh:'ITA',label:'Défense'},ICLN:{fh:'ICLN',label:'Énergie propre'},XBI:{fh:'XBI',label:'Biotech'},HACK:{fh:'HACK',label:'Cybersécurité'},
+  USO:{fh:'USO',label:'USO/WTI'},XOM:{fh:'XOM',label:'ExxonMobil'},CVX:{fh:'CVX',label:'Chevron'},OXY:{fh:'OXY',label:'Occidental'},
+  GLD:{fh:'GLD',label:'GLD/Or'},SLV:{fh:'SLV',label:'Argent'},GDX:{fh:'GDX',label:'Minières Or'},
+  'TTE.PA':{fh:'TTE:XPAR',label:'TotalEnergies'},'AIR.PA':{fh:'AIR:XPAR',label:'Airbus'},'LVMH.PA':{fh:'MC:XPAR',label:'LVMH'},
+  'SAN.PA':{fh:'SAN:XPAR',label:'Sanofi'},'BNP.PA':{fh:'BNP:XPAR',label:'BNP Paribas'},'OR.PA':{fh:'OR:XPAR',label:"L'Oréal"},
 };
 
 async function fetchStocks(){
   const keys=Object.keys(STOCKS_FH);
-
-  // 1) Quotes en parallèle
+  // Quotes en parallèle
   await Promise.allSettled(keys.map(async k=>{
     const{fh,label}=STOCKS_FH[k];
     const q=await fhQuote(fh);
@@ -267,24 +228,10 @@ async function fetchStocks(){
       ?{label,price:q.price,prev:q.prev,pct:q.pct,ok:true,closes:[],source:'Finnhub'}
       :{label,price:null,prev:null,pct:null,ok:false,closes:[],source:'Finnhub'};
   }));
-
-  // 2) Candles — Finnhub pour actions US, localStorage accumulé pour ETFs
-  await Promise.allSettled(keys.map(async k=>{
-    if(!DATA[k]?.ok)return;
-    const c=await getCandles(k,STOCKS_FH[k].fh,DATA[k].price);
-    if(c.length>2){
-      DATA[k].closes=c;
-      DATA[k]._candleSrc=c.length+' pts';
-    }else{
-      DATA[k]._candleSrc='VIDE';
-    }
-  }));
-
-  // Log debug visible dans la console
-  const ok=keys.filter(k=>DATA[k]?.closes?.length>5);
-  const ko=keys.filter(k=>!DATA[k]?.closes?.length||DATA[k].closes.length<=5);
-  console.log(`[Candles] OK: ${ok.join(', ')}`);
-  console.log(`[Candles] VIDE: ${ko.join(', ')}`);
+  // Historique local — push prix du jour et récupère closes accumulés
+  const h=loadHist();
+  keys.forEach(k=>{DATA[k].closes=pushAndGet(h,k,DATA[k].price);});
+  saveHist(h);
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -317,48 +264,9 @@ async function fetchCrypto(){
 
 // ═══════════════════════════════════════════════════════════
 // ═══════════════════════════════════════════════════════════
-// HISTORIQUE LOCAL — accumule les closes dans localStorage
-// Chaque analyse stocke le prix du jour → construit l'historique
+// S&P 500 — ajouté aux STOCKS Yahoo Finance
 // ═══════════════════════════════════════════════════════════
-const LS_KEY='signal_closes_v1';
 
-function loadLocalHistory(){
-  try{
-    const raw=localStorage.getItem(LS_KEY);
-    return raw?JSON.parse(raw):{};
-  }catch{return{};}
-}
-
-function saveLocalHistory(hist){
-  try{localStorage.setItem(LS_KEY,JSON.stringify(hist));}catch{}
-}
-
-function addTodayToHistory(hist,key,price){
-  if(!hist[key])hist[key]=[];
-  const today=new Date().toISOString().slice(0,10);
-  // Évite les doublons du même jour
-  const last=hist[key].at(-1);
-  if(!last||last.d!==today){
-    hist[key].push({d:today,c:price});
-  }
-  // Garder max 35 jours
-  if(hist[key].length>35)hist[key]=hist[key].slice(-35);
-  return hist[key].map(e=>e.c);
-}
-
-// Finnhub /stock/candle fonctionne pour actions US — pas pour ETFs
-// Pour les ETFs on accumule l'historique local
-async function getCandles(k,fhSym,price){
-  // 1. Essai Finnhub candles (actions US uniquement)
-  const c=await fhCandles(fhSym);
-  if(c.length>=6)return c;
-
-  // 2. Fallback : historique local accumulé
-  const hist=loadLocalHistory();
-  const closes=addTodayToHistory(hist,k,price);
-  saveLocalHistory(hist);
-  return closes;
-}
 // ═══════════════════════════════════════════════════════════
 // NEWS — Finnhub
 // ═══════════════════════════════════════════════════════════
@@ -430,12 +338,12 @@ function scoreAsset(d){
   if(!d?.ok||d.pct==null)return{score:50,alerts:[],warnings:[],blocked:false};
   const c=d.closes||[];
   const rsi=d.rsi||null;
-  // Lire les valeurs précalculées — ne pas recalculer ici pour éviter les conflits
   const p1=d.pct;
-  const p5 =d._p5  !=null ? d._p5  : (c.length>=6  ?((c.at(-1)-c.at(-6))/c.at(-6))*100   : null);
-  const p20=d._p20 !=null ? d._p20 : (c.length>=21 ?((c.at(-1)-c.at(-21))/c.at(-21))*100  : null);
-  const vol=d._vol !=null ? d._vol : volatilite(c);
+  const p5 =d._p5  !=null?d._p5  :(c.length>=6  ?((c.at(-1)-c.at(-6))/c.at(-6))*100:null);
+  const p20=d._p20 !=null?d._p20 :(c.length>=21 ?((c.at(-1)-c.at(-21))/c.at(-21))*100:null);
+  const vol=d._vol !=null?d._vol :volatilite(c);
   const sma5v=sma(c,5),sma20v=sma(c,20);
+  // _p5, _p20, _vol précalculés dans analyserTout — lecture directe
   const alerts=[],warnings=[];
   let blocked=false;
   if(vol!=null&&vol>4){blocked=true;alerts.push(`🚨 Volatilité ${vol.toFixed(1)}%/j — signal neutralisé`);}
@@ -538,21 +446,14 @@ async function analyserTout(){
   document.getElementById('sec-prediction').innerHTML='';
   Object.keys(DATA).forEach(k=>delete DATA[k]);
   try{
-    await step(5,'Quotes temps réel...');
+    await step(5,'Quotes temps réel (Finnhub)...');
     const [,rawNews]=await Promise.all([
       fetchCrypto().catch(()=>{}),
       fetchNews().catch(()=>[]),
       fetchStocks().catch(()=>{}),
     ]);
-    await step(65,'RSI 14 · variation 5j · volatilité...');
-    Object.keys(DATA).forEach(k=>{
-      const d=DATA[k];
-      if(!d?.closes?.length)return;
-      if(d.closes.length>14)  d.rsi =rsi14(d.closes);
-      if(d.closes.length>=6)  d._p5 =((d.closes.at(-1)-d.closes.at(-6)) /d.closes.at(-6)) *100;
-      if(d.closes.length>=21) d._p20=((d.closes.at(-1)-d.closes.at(-21))/d.closes.at(-21))*100;
-      if(d.closes.length>=11) d._vol=volatilite(d.closes);
-    });
+    await step(65,'RSI 14 + volatilité réalisée...');
+    Object.keys(DATA).forEach(k=>{if(DATA[k]?.closes?.length>14)DATA[k].rsi=rsi14(DATA[k].closes);});
     await step(75,'Traduction des actualités...');
     const newsRaw=(rawNews||[]).map(n=>({
       impact:sentimentNews(n),titre:n.headline||'',detail:(n.summary||'').slice(0,200),
@@ -572,6 +473,7 @@ async function analyserTout(){
       defense:    computeSignal(['ITA','ICLN']),
       biotech:    computeSignal(['XBI','HACK']),
     };
+    await step(100,'Affichage...');
     ldr.style.display='none';btn.disabled=false;
     document.getElementById('tabs').style.display='flex';
     renderAll(signals,NEWS,getMarketStatus());
@@ -588,8 +490,6 @@ async function analyserTout(){
 // ═══════════════════════════════════════════════════════════
 function renderAll(signals,NEWS,ms){
   const now=new Date().toLocaleString('fr-FR');
-  const nbCandles=Object.keys(DATA).filter(k=>DATA[k]?.closes?.length>5).length;
-  const nbTotal=Object.keys(DATA).length;
   document.getElementById('last-update').textContent='Mis à jour '+now;
 
   const MKTS=[
@@ -599,9 +499,9 @@ function renderAll(signals,NEWS,ms){
     {key:'petrole',icon:'🛢️',label:'Pétrole & Énergie', sub:'WTI · Brent · Majors',        open:ms.petrole,horaire:'CME Futures · 24h/5j',   keys:['USO','XOM','CVX','OXY'],                               labels:['USO/WTI','ExxonMobil','Chevron','Occidental']},
     {key:'or',     icon:'🥇',label:'Or & Métaux',       sub:'GLD · SLV · GDX Minières',    open:ms.or,     horaire:'Comex · lun–ven',         keys:['GLD','SLV','GDX'],                                     labels:['GLD/Or','SLV/Argent','GDX/Minières']},
     {key:'crypto', icon:'₿', label:'Crypto',            sub:'BTC · ETH · SOL · XRP',       open:ms.crypto, horaire:'24h / 7j',                keys:['BTC','ETH','SOL','XRP'],                               labels:['Bitcoin','Ethereum','Solana','XRP']},
-    {key:'innovation',icon:'🤖',label:'Innovation & IA',      sub:'BOTZ · ARKK — ETF thématique croissance',  open:ms.nasdaq,horaire:'NYSE · 15h30–22h FR',keys:['BOTZ','ARKK'],labels:['BOTZ IA/Robot.','ARKK Disruptif']},
-    {key:'defense',   icon:'🛡️',label:'Défense & Transition', sub:'ITA · ICLN — ETF sectoriel macro',          open:ms.nasdaq,horaire:'NYSE · 15h30–22h FR',keys:['ITA','ICLN'], labels:['ITA Défense','ICLN Énergie propre']},
-    {key:'biotech',   icon:'💊',label:'Biotech & Cyber',       sub:'XBI · HACK — ETF sectoriel haut risque',   open:ms.nasdaq,horaire:'NYSE · 15h30–22h FR',keys:['XBI','HACK'], labels:['XBI Biotech','HACK Cybersécurité']},
+    {key:'innovation',icon:'🤖',label:'Innovation & IA',sub:'BOTZ · ARKK — ETF thématique croissance',open:ms.nasdaq,horaire:'NYSE · 15h30–22h FR',keys:['BOTZ','ARKK'],labels:['BOTZ IA/Robot.','ARKK Disruptif']},
+    {key:'defense',icon:'🛡️',label:'Défense & Transition',sub:'ITA · ICLN — ETF sectoriel macro',open:ms.nasdaq,horaire:'NYSE · 15h30–22h FR',keys:['ITA','ICLN'],labels:['ITA Défense','ICLN Énergie propre']},
+    {key:'biotech',icon:'💊',label:'Biotech & Cyber',sub:'XBI · HACK — ETF sectoriel haut risque',open:ms.nasdaq,horaire:'NYSE · 15h30–22h FR',keys:['XBI','HACK'],labels:['XBI Biotech','HACK Cybersécurité']},
   ];
 
   const{vedette,s:sv,raisons,miniActifs}=choisirVedette(MKTS,signals);
@@ -631,9 +531,9 @@ function renderAll(signals,NEWS,ms){
     petrole:{ACHAT:'OXY = haut bêta. XOM = défensif. Surveiller OPEC.',VENTE:'⛔ Pression baissière sur brut. Risque géopolitique élevé.',NEUTRE:'Volatilité géopolitique. Attendre stabilisation du Brent.',DANGER:'🚨 Brut très volatil. Aucune position levier recommandée.'},
     or:{ACHAT:'Or = refuge confirmé. GDX (minières) amplifie ×1.5. Inverse dollar.',VENTE:'⛔ Risk-on dominant → rotation vers actions.',NEUTRE:"Or corrélé à l'inflation et tensions géopolitiques.",DANGER:'🚨 Mouvement extrême sur métaux. Attendre consolidation.'},
     crypto:{ACHAT:'BTC = baromètre sain. ETH et SOL amplifient. Volatilité sous contrôle.',VENTE:'⛔ Risk-off crypto. Suit le Nasdaq en baisse.',NEUTRE:'BTC doit franchir un niveau clé pour confirmer la tendance.',DANGER:'🚨 Volatilité crypto extrême. Risque de liquidation.'},
-    innovation:{ACHAT:'BOTZ (IA/Robotique pure) + ARKK (tech disruptif) en momentum. Horizon court, stop-loss strict.',VENTE:'⛔ Risk-off sur la croissance. ARKK très sensible aux taux. Réduire.',NEUTRE:'Attendre catalyseur IA (annonces NVDA, Fed). BOTZ plus stable qu\'ARKK.',DANGER:'🚨 Forte volatilité croissance. Ne pas initier de position.'},
-    defense:   {ACHAT:'ITA (Défense US) porté par contexte géopolitique. ICLN bénéficie des politiques énergie verte.',VENTE:'⛔ Rotation défensive inverse. Surveiller les budgets gouvernementaux.',NEUTRE:'ITA et ICLN sur des cycles différents. Analyser séparément avant d\'entrer.',DANGER:'🚨 Mouvements macro extrêmes. Hors position sur ces ETFs.'},
-    biotech:   {ACHAT:'XBI (small caps biotech) très volatil — catalyseurs FDA fréquents. HACK en tendance structurelle.',VENTE:'⛔ XBI chute rapidement en risk-off. HACK plus résilient mais suit le Nasdaq.',NEUTRE:'Attendre catalyseur biotech ou incident cyber majeur pour signal clair.',DANGER:'🚨 Volatilité extrême. XBI peut perdre 10%+ en une séance. Hors position.'},
+    innovation:{ACHAT:'BOTZ + ARKK en momentum IA. Horizon court, stop-loss strict.',VENTE:'⛔ Risk-off croissance. ARKK très sensible aux taux.',NEUTRE:'Attendre catalyseur IA. BOTZ plus stable qu\'ARKK.',DANGER:'🚨 Forte volatilité croissance. Ne pas initier.'},
+    defense:{ACHAT:'ITA porté par contexte géopolitique. ICLN bénéficie des politiques énergie verte.',VENTE:'⛔ Rotation inverse défense. Surveiller budgets gouvernementaux.',NEUTRE:'ITA et ICLN sur cycles différents. Analyser séparément.',DANGER:'🚨 Mouvements macro extrêmes. Hors position.'},
+    biotech:{ACHAT:'XBI = catalyseurs FDA fréquents. HACK en tendance structurelle cybersécurité.',VENTE:'⛔ XBI chute vite en risk-off. HACK suit le Nasdaq.',NEUTRE:'Attendre catalyseur biotech ou incident cyber.',DANGER:'🚨 XBI peut perdre 10%+ en une séance. Hors position.'},
   };
 
   const cards=MKTS.map(m=>{
@@ -642,21 +542,14 @@ function renderAll(signals,NEWS,ms){
     const isVedette=m.key===vedette.key;
     const mini=m.keys.slice(0,3).map(k=>{const d=DATA[k];if(!d?.ok)return'';return`<span class="gc-quote"><span class="${pctCls(d.pct)}">${d.label} ${fmtPct(d.pct)}</span></span>`;}).join('');
     const dQuotes=`<div class="quotes">${m.keys.map(k=>{const d=DATA[k];if(!d)return'';const volStr=d._vol?` · v${d._vol.toFixed(1)}%`:'';return`<div class="qc"><div class="ql">${d.label}</div><div class="qp ${d.ok?pctCls(d.pct):'dim'}">${fmtPrice(d.price,k)}</div><div class="qd ${pctCls(d.pct)}">${d.ok?fmtPct(d.pct):'N/A'}${volStr}</div></div>`;}).join('')}</div>`;
-    const dBars=`<div class="card"><div class="ch">Actif · Jour · 5j · 20j · Vol</div>
-      <div class="val-grid-header"><span>Actif</span><span>Jour</span><span>5j</span><span>20j</span><span>Vol/j</span></div>
-      ${m.keys.map((k,j)=>{
-        const d=DATA[k];
-        const p1 =d?.ok     ? fmtPct(d.pct)                  : '—';
-        const p5  =d?._p5!=null ? `<span class="${pctCls(d._p5)}">${d._p5>=0?'+':''}${d._p5.toFixed(1)}%</span>` : '<span class="dim">—</span>';
-        const p20 =d?._p20!=null? `<span class="${pctCls(d._p20)}">${d._p20>=0?'+':''}${d._p20.toFixed(1)}%</span>`: '<span class="dim">—</span>';
-        const vol =d?._vol!=null ? `<span class="${d._vol>4?'r':d._vol>2?'a':'dim'}">${d._vol.toFixed(1)}%</span>`  : '<span class="dim">—</span>';
-        return`<div class="val-grid-row">
-          <span class="val-name">${m.labels[j]}</span>
-          <span class="${pctCls(d?.pct)}">${p1}</span>
-          ${p5}${p20}${vol}
-        </div>`;
-      }).join('')}
-    </div>`;
+    const dBars=`<div class="card"><div class="ch">Contribution par actif — J / 5j / vol</div>${m.keys.map((k,j)=>{
+      const d=DATA[k];const p=d?.pct||0;const p5=d?._p5,vol=d?._vol;
+      const dirJ=p>0.3?'bull':p<-0.3?'bear':'neutral';
+      const{score}=d?scoreAsset(d):{score:50};
+      const p5str=p5!=null?` / <span class="${vc[p5>2?'bull':p5<-2?'bear':'neutral']}">${p5>=0?'+':''}${p5.toFixed(1)}%</span>`:'';
+      const volStr=vol?` <span class="dim">· v${vol.toFixed(1)}%</span>`:'';
+      return`<div class="br"><span class="bl">${m.labels[j]}</span><div class="bt"><div class="bf ${dc[dirJ]}" style="width:0%" data-w="${score}"></div></div><span class="bv ${vc[dirJ]}">${d?.ok?fmtPct(d.pct):'—'}${p5str}${volStr}</span></div>`;
+    }).join('')}</div>`;
     const reco=recoMap[m.key]?.[s.sig]||recoMap[m.key]?.['NEUTRE']||'—';
     const alertHTML=s.alerts?.length?`<div class="alert-box">${s.alerts.map(a=>`${a.label} : ${a.msg}`).join('<br>')}</div>`:'';
     const warnHTML=s.warnings?.length?`<div class="warn-box">⚠ ${s.warnings.join(' · ')}</div>`:'';
@@ -690,7 +583,7 @@ function renderAll(signals,NEWS,ms){
   document.getElementById('sec-global').innerHTML=`
     ${vedetteHTML}
     <div class="safety-legend">🔒 Filtres de sécurité actifs · ACHAT bloqué si : RSI > 75 · chute 5j > 8% · volatilité > 4%/j · DANGER si ≥ 2 alertes critiques</div>
-    <div class="dq">Finnhub · Binance · Yahoo Finance · ${now} · Historique: ${nbCandles}/${nbTotal} actifs</div>
+    <div class="dq">Finnhub · Binance · Yahoo Finance · ${now}</div>
     <div class="global-grid">${cards}</div>
     <div class="card"><div class="ch">Résumé du moment</div>
       <div style="font-size:13px;line-height:1.9;color:var(--tx);">
@@ -716,9 +609,9 @@ function renderAll(signals,NEWS,ms){
     petrole:/oil|crude|brent|wti|opec|iran|energy|barrel|pétrole/i,
     or:/gold|silver|metal|gld|xau|precious|or\b/i,
     crypto:/bitcoin|btc|eth|ethereum|crypto|solana|xrp|blockchain/i,
-    innovation:/robot|ai\b|artificial|arkk|botz|automation|machine learning|nvidia|openai/i,
-    defense:   /defense|defence|military|ita|icln|clean energy|renewable|solar|wind|nato|géopolitique/i,
-    biotech:   /biotech|pharma|fda|drug|xbi|hack|cyber|ransomware|security breach/i,
+    innovation:/robot|ai\b|artificial|arkk|botz|automation|machine learning|openai/i,
+    defense:/defense|defence|military|ita|icln|clean energy|renewable|solar|nato/i,
+    biotech:/biotech|pharma|fda|drug|xbi|hack|cyber|ransomware|security/i,
   };
   const mktCtx={
     semi:'Demande IA structurellement solide. Fed hawkish + tensions Taïwan = risques.',
@@ -727,9 +620,9 @@ function renderAll(signals,NEWS,ms){
     petrole:'Géopolitique Iran/Ormuz = volatilité élevée. Surveiller OPEC.',
     or:'Refuge en période de tensions. Corrélation inverse dollar.',
     crypto:'Corrèle fortement avec le Nasdaq. Volatilité ×3 vs actions.',
-    innovation:'IA et robotique en tendance structurelle. ARKK très sensible aux taux de la Fed.',
-    defense:   'Contexte géopolitique favorable à ITA. ICLN dépend des politiques énergétiques.',
-    biotech:   'XBI = haute volatilité sur catalyseurs FDA. HACK porté par la croissance des incidents cyber.',
+    innovation:'IA et robotique en tendance structurelle. ARKK très sensible aux taux Fed.',
+    defense:'Contexte géopolitique favorable à ITA. ICLN dépend des politiques énergétiques.',
+    biotech:'XBI = haute volatilité sur catalyseurs FDA. HACK porté par la croissance cyber.',
   };
   const predCards=MKTS.map(m=>{
     const s=signals[m.key];
@@ -738,43 +631,16 @@ function renderAll(signals,NEWS,ms){
     const ni=mb>mr?'bull':mr>mb?'bear':'neutral';
     const niTxt=ni==='bull'?'haussier':ni==='bear'?'baissier':'neutre';
     const niIcon=ni==='bull'?'🟢':ni==='bear'?'🔴':'🟡';
-
-    // Si DANGER ou VENTE : le sentiment news positif est ignoré — cohérence visuelle
-    const isDanger = s.sig==='DANGER';
-    const isVente  = s.sig==='VENTE';
-    const niEffectif = (isDanger||isVente) && ni==='bull' ? 'neutral' : ni;
-    const niTxtEff   = niEffectif==='bull'?'haussier':niEffectif==='bear'?'baissier':'prudent';
-    const niIconEff  = niEffectif==='bull'?'🟢':niEffectif==='bear'?'🔴':'🟡';
-
     let fH=mn.length>0?Math.round(s.H*0.65+(ni==='bull'?72:ni==='bear'?28:50)*0.35):s.H;
-    if(isDanger||isVente) fH=Math.min(fH,45);
-    const fsSafe=isDanger?'DANGER':fH>=60?'ACHAT':fH<=42?'VENTE':'NEUTRE';
-
-    // Fourchettes estimées selon le signal — honnêtes, pas de fausse précision
-    let est24h, est1sem, estCls;
-    if(isDanger){
-      est24h='imprédictible'; est1sem='imprédictible'; estCls='a';
-    } else if(isVente||fsSafe==='VENTE'){
-      est24h='de -1% à -4%'; est1sem='de -2% à -8%'; estCls='r';
-    } else if(fsSafe==='ACHAT'){
-      const amp=fH>=70?4:2;
-      est24h=`de 0% à +${amp}%`; est1sem=`de +1% à +${amp*2}%`; estCls='g';
-    } else {
-      est24h='de -1% à +1%'; est1sem='de -2% à +2%'; estCls='dim';
-    }
-
-    // Conclusion — cohérente avec le signal réel
-    let concl='';
-    if(mn.length===0){
-      concl=`Pas d'actualité spécifique. Signal cours : <b>${s.sig}</b> (${fmtScore(s.H)}/100). ${mktCtx[m.key]}`;
-    } else {
-      const action = fsSafe==='ACHAT' ? '<b>→ Conditions favorables.</b>'
-                   : fsSafe==='DANGER'? '<b>→ 🚨 Ne pas intervenir — filtres de sécurité actifs.</b>'
-                   : fsSafe==='VENTE' ? '<b>→ Pression vendeuse confirmée.</b>'
-                   : '<b>→ Attendre confirmation du signal.</b>';
-      concl=`${mn.length} actu(s) — sentiment ${niIconEff} <b>${niTxtEff}</b>. "${mn[0].titre}". ${mktCtx[m.key]} ${action}`;
-    }
-
+    if(s.sig==='DANGER'||s.sig==='VENTE')fH=Math.min(fH,45);
+    const fs=fH>=60?'ACHAT':fH<=42?'VENTE':'NEUTRE';
+    const fsSafe=s.sig==='DANGER'?'DANGER':fs;
+    const projMax=s.sig==='DANGER'?0.5:s.sig==='VENTE'?1.5:3;
+    const base=(fH-50)/10;
+    const p24=cl(base,-projMax,projMax).toFixed(1),p1w=cl(base*2.1,-projMax*2,projMax*2).toFixed(1);
+    const concl=mn.length===0
+      ?`Pas d'actualité spécifique. Signal cours : <b>${s.sig}</b> (${fmtScore(s.H)}/100). ${mktCtx[m.key]}`
+      :`${mn.length} actu(s) — sentiment ${niIcon} <b>${niTxt}</b>. "${mn[0].titre}". ${mktCtx[m.key]} `+(fsSafe==='ACHAT'?'<b>→ Conditions favorables.</b>':fsSafe==='DANGER'?'<b>→ 🚨 Ne pas intervenir.</b>':fsSafe==='VENTE'?'<b>→ Pression vendeuse confirmée.</b>':'<b>→ Attendre confirmation.</b>');
     const alertHTML=s.alerts?.length?`<div class="alert-box" style="margin-bottom:.6rem;">${s.alerts.map(a=>`⚠ <b>${a.label}</b> : ${a.msg}`).join('<br>')}</div>`:'';
     const worstG=m.keys.filter(k=>DATA[k]?.ok&&DATA[k]?._p5!=null).sort((a,b)=>(DATA[a]._p5||0)-(DATA[b]._p5||0))[0];
     const worstInfo=worstG&&DATA[worstG]._p5<-3?`<div style="font:400 11px/1.5 'DM Mono',monospace;color:var(--am);margin-top:.4rem;">📉 Sous pression 5j : <b>${DATA[worstG].label}</b> ${(DATA[worstG]._p5>=0?'+':'')+DATA[worstG]._p5.toFixed(1)}%</div>`:'';
@@ -787,8 +653,8 @@ function renderAll(signals,NEWS,ms){
       </div>
       <div class="pred-horizon">
         <div class="pred-h-item"><div class="pred-h-label">Signal données</div><div class="pred-h-val ${sigCls(s.H)}">${s.sig} ${fmtScore(s.H)}/100</div></div>
-        <div class="pred-h-item"><div class="pred-h-label">Estimation 24h</div><div class="pred-h-val ${estCls}" style="font-size:11px;">${est24h}</div></div>
-        <div class="pred-h-item"><div class="pred-h-label">Estimation 1 sem</div><div class="pred-h-val ${estCls}" style="font-size:11px;">${est1sem}</div></div>
+        <div class="pred-h-item"><div class="pred-h-label">Projection 24h</div><div class="pred-h-val">${parseFloat(p24)>=0?'+':''}${p24}%</div></div>
+        <div class="pred-h-item"><div class="pred-h-label">Projection 1 sem</div><div class="pred-h-val">${parseFloat(p1w)>=0?'+':''}${p1w}%</div></div>
       </div>
       <div class="pred-concl">${concl}</div>
       ${alertHTML}${worstInfo}${newsHTML}
