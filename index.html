@@ -122,7 +122,7 @@ h1 em{color:var(--ac);font-style:normal;}
 </head>
 <body>
 <div class="wrap">
-  <div class="logo">Signal Intelligence · v2.27 · <span id="last-update">—</span></div>
+  <div class="logo">Signal Intelligence · v2.28 · <span id="last-update">—</span></div>
   <h1>Dashboard <em>Multi-Marchés</em></h1>
   <div class="sub">US · Europe · Crypto · Pétrole · Or · Radar Volatilité — signaux filtrés · sécurité renforcée · indice vedette</div>
   <button class="btn-main" id="btn" onclick="analyserTout()">
@@ -700,12 +700,17 @@ function renderAll(signals,NEWS,ms){
 function toggleGC(key){
   const gc=document.getElementById('gc-'+key);if(!gc)return;
   const was=gc.classList.contains('expanded');
-  document.querySelectorAll('.gc.expanded').forEach(el=>el.classList.remove('expanded'));
+  const othersOpen=document.querySelectorAll('.gc.expanded');
+  othersOpen.forEach(el=>el.classList.remove('expanded'));
   if(!was){
-    gc.classList.add('expanded');
-    // Scroll immédiat vers le HAUT de la carte (avant tout déploiement)
-    // pour fixer le repère visuel dès le début, sans attendre l'animation
-    gc.scrollIntoView({behavior:'smooth',block:'start'});
+    // Si une autre carte se refermait juste au-dessus, on attend que sa
+    // transition de fermeture soit bien amorcée avant de scroller,
+    // sinon le scroll cible une position qui bouge encore (décalage).
+    const delay=othersOpen.length?180:0;
+    setTimeout(()=>{
+      gc.classList.add('expanded');
+      gc.scrollIntoView({behavior:'smooth',block:'start'});
+    },delay);
   }
 }
 function showTab(name){
