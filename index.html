@@ -43,11 +43,11 @@ h1 em{color:var(--ac);font-style:normal;}
 .vedette-actifs{display:flex;flex-wrap:wrap;gap:5px;margin-top:.8rem;padding-top:.8rem;border-top:1px solid rgba(255,255,255,.07);}
 .vedette-actif{font:500 11px/1 'DM Mono',monospace;padding:4px 9px;border-radius:5px;background:rgba(255,255,255,.05);}
 .global-grid{display:flex;flex-direction:column;gap:8px;margin-bottom:1rem;}
-.gc{background:var(--sur);border:1px solid var(--brd);border-radius:12px;padding:1rem 1.1rem;cursor:pointer;transition:border-color .2s;}
+.gc{background:var(--sur);border:1px solid var(--brd);border-radius:12px;padding:1rem 1.1rem;cursor:pointer;transition:border-color .2s;scroll-margin-top:16px;}
 .gc:hover,.gc.expanded{border-color:var(--ac);}
 .gc.is-vedette{border-color:rgba(139,127,255,.4);background:linear-gradient(135deg,var(--sur),rgba(139,127,255,.05));}
-.gc-body{display:none;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--brd);}
-.gc.expanded .gc-body{display:block;}
+.gc-body{max-height:0;overflow:hidden;margin-top:0;padding-top:0;border-top:0 solid var(--brd);transition:max-height .35s ease,margin-top .35s ease,padding-top .35s ease;}
+.gc.expanded .gc-body{max-height:2000px;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--brd);}
 .gc-layout{display:grid;grid-template-columns:88px 1fr 24px;align-items:center;gap:10px;}
 .gc-col-status{display:flex;flex-direction:column;align-items:flex-start;gap:3px;}
 .gc-dot{width:8px;height:8px;border-radius:50%;margin-bottom:1px;}
@@ -121,7 +121,7 @@ h1 em{color:var(--ac);font-style:normal;}
 </head>
 <body>
 <div class="wrap">
-  <div class="logo">Signal Intelligence · v2.23 · <span id="last-update">—</span></div>
+  <div class="logo">Signal Intelligence · v2.25 · <span id="last-update">—</span></div>
   <h1>Dashboard <em>Multi-Marchés</em></h1>
   <div class="sub">US · Europe · Crypto · Pétrole · Or · Radar Volatilité — signaux filtrés · sécurité renforcée · indice vedette</div>
   <button class="btn-main" id="btn" onclick="analyserTout()">
@@ -482,6 +482,28 @@ function renderAll(signals,NEWS,ms){
     ${miniActifs?`<div class="vedette-actifs">${miniActifs}</div>`:''}
   </div>`;
 
+  // Équivalents UCITS disponibles sur Trade Republic (ETF achetables, contrairement aux tickers US ci-dessus qui servent au signal)
+  const TR_EQUIV={
+    semi:      [{n:'iShares Automation & Robotics',t:'RBOT',isin:'IE00BYZK4552'},{n:'Amundi MSCI Robotics & AI',t:'',isin:'LU1861132840'}],
+    nasdaq:    [{n:'Amundi PEA Nasdaq-100',t:'PUST',isin:'FR0011871128'}],
+    europe:    [{n:'Amundi PEA CAC 40',t:'C40',isin:'FR0007052782'}],
+    petrole:   [{n:'Amundi MSCI World Energy',t:'',isin:'LU1681043920'}],
+    or:        [{n:'Xtrackers Physical Gold',t:'XAD1',isin:'DE000A1E0HR8'},{n:'iShares Gold Producers',t:'',isin:'IE00B6R52036'}],
+    crypto:    [{n:'iShares Bitcoin (ETP)',t:'',isin:'IE000OY7BFM7'}],
+    innovation:[{n:'iShares Automation & Robotics',t:'RBOT',isin:'IE00BYZK4552'}],
+    defense:   [{n:'Amundi Stoxx Europe Defence',t:'',isin:'LU2960306960'}],
+    energie:   [{n:'iShares Global Clean Energy',t:'INRG',isin:'IE00B1XNHC34'}],
+    biotech:   [{n:'Amundi MSCI World Health Care',t:'',isin:'LU1681043599'}],
+    cyber:     [{n:'L&G Cyber Security UCITS',t:'ISPY',isin:'IE00BYPLS672'}],
+  };
+  function trBadges(key){
+    const list=TR_EQUIV[key];
+    if(!list?.length)return'';
+    return `<div style="margin-top:.5rem;display:flex;flex-wrap:wrap;gap:5px;">${list.map(e=>
+      `<span style="font:500 10px/1 'DM Mono',monospace;padding:4px 9px;border-radius:5px;background:rgba(139,127,255,.12);color:var(--ac2);border:1px solid rgba(139,127,255,.25);">📍 TR : ${e.n}${e.t?' ('+e.t+')':''}</span>`
+    ).join('')}</div>`;
+  }
+
   const recoMap={
     semi:      {ACHAT:'3SEM ×3 : max 25% · stop-loss -10% · ≤4 jours.',VENTE:'⛔ Éviter 3SEM long. Tendance baissière ou RSI dégradé.',NEUTRE:'Hors position levier. Attendre signal ACHAT > 60/100.',DANGER:'🚨 Ne pas intervenir. Volatilité ou chute trop importante.'},
     nasdaq:    {ACHAT:'NQSE hedgé EUR recommandé. Indicateurs sains.',VENTE:'⛔ Réduire QQQ/NQSE. Dollar fort amplifie les pertes.',NEUTRE:'Surveiller le dollar avant entrée.',DANGER:'🚨 Conditions dégradées. Ne pas initier de position.'},
@@ -534,6 +556,7 @@ function renderAll(signals,NEWS,ms){
             </div>
           </div>
           <div class="reco">→ ${radarReco}</div>
+          <div style="font:400 10px/1.5 'DM Mono',monospace;color:var(--tx3);margin-top:.6rem;">📍 Ces ETF US servent uniquement au signal de volatilité — non disponibles tels quels sur Trade Republic. Pour t'exposer aux mêmes secteurs, vois les badges "📍 TR" dans les cartes Semi-conducteurs, Défense, Crypto, etc. ci-dessus.</div>
         </div>
       </div>`;
     }
@@ -575,7 +598,7 @@ function renderAll(signals,NEWS,ms){
         <span class="gc-arrow">▼</span>
       </div>
       ${mini?`<div class="gc-quotes">${mini}</div>`:''}
-      <div class="gc-body">${dQuotes}${dGrid}<div class="reco">→ ${reco}</div>${alertHTML}${warnHTML}${blockedInfo}</div>
+      <div class="gc-body">${dQuotes}${dGrid}<div class="reco">→ ${reco}</div>${trBadges(m.key)}${alertHTML}${warnHTML}${blockedInfo}</div>
     </div>`;
   }).join('');
 
@@ -677,7 +700,14 @@ function toggleGC(key){
   const gc=document.getElementById('gc-'+key);if(!gc)return;
   const was=gc.classList.contains('expanded');
   document.querySelectorAll('.gc.expanded').forEach(el=>el.classList.remove('expanded'));
-  if(!was)gc.classList.add('expanded');
+  if(!was){
+    gc.classList.add('expanded');
+    // Laisse la carte se déplier visuellement, puis recentre la vue dessus
+    // pour que l'utilisateur ne perde jamais le titre de vue (mobile)
+    setTimeout(()=>{
+      gc.scrollIntoView({behavior:'smooth',block:'start'});
+    },80);
+  }
 }
 function showTab(name){
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('visible'));
