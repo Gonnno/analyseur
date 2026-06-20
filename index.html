@@ -121,9 +121,9 @@ h1 em{color:var(--ac);font-style:normal;}
 </head>
 <body>
 <div class="wrap">
-  <div class="logo">Signal Intelligence · v2.22 · <span id="last-update">—</span></div>
+  <div class="logo">Signal Intelligence · v2.23 · <span id="last-update">—</span></div>
   <h1>Dashboard <em>Multi-Marchés</em></h1>
-  <div class="sub">US · Europe · Crypto · Pétrole · Or · Thématiques — signaux filtrés · sécurité renforcée · indice vedette</div>
+  <div class="sub">US · Europe · Crypto · Pétrole · Or · Radar Volatilité — signaux filtrés · sécurité renforcée · indice vedette</div>
   <button class="btn-main" id="btn" onclick="analyserTout()">
     <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     Analyser maintenant
@@ -195,11 +195,24 @@ function pushAndGet(h,k,price,prevClose){
 const STOCKS_FH={
   NVDA:{fh:'NVDA',label:'Nvidia'},AMD:{fh:'AMD',label:'AMD'},TSM:{fh:'TSM',label:'TSMC'},AVGO:{fh:'AVGO',label:'Broadcom'},ASML:{fh:'ASML',label:'ASML'},
   QQQ:{fh:'QQQ',label:'QQQ ETF'},MSFT:{fh:'MSFT',label:'Microsoft'},AAPL:{fh:'AAPL',label:'Apple'},META:{fh:'META',label:'Meta'},GOOG:{fh:'GOOG',label:'Alphabet'},
-  BOTZ:{fh:'BOTZ',label:'IA/Robotique'},ARKK:{fh:'ARKK',label:'ARK Innov.'},ITA:{fh:'ITA',label:'Défense'},ICLN:{fh:'ICLN',label:'Énergie propre'},XBI:{fh:'XBI',label:'Biotech'},HACK:{fh:'HACK',label:'Cybersécurité'},
   USO:{fh:'USO',label:'USO/WTI'},XOM:{fh:'XOM',label:'ExxonMobil'},CVX:{fh:'CVX',label:'Chevron'},OXY:{fh:'OXY',label:'Occidental'},
   GLD:{fh:'GLD',label:'GLD/Or'},SLV:{fh:'SLV',label:'Argent'},GDX:{fh:'GDX',label:'Minières Or'},
   'TTE.PA':{fh:'TTE:XPAR',label:'TotalEnergies'},'AIR.PA':{fh:'AIR:XPAR',label:'Airbus'},'LVMH.PA':{fh:'MC:XPAR',label:'LVMH'},
   'SAN.PA':{fh:'SAN:XPAR',label:'Sanofi'},'BNP.PA':{fh:'BNP:XPAR',label:'BNP Paribas'},'OR.PA':{fh:'OR:XPAR',label:"L'Oréal"},
+  // ── Panel Radar Volatilité — ETF scannés pour repérer les plus agités ──
+  BOTZ:{fh:'BOTZ',label:'IA/Robotique',radar:true},
+  ARKK:{fh:'ARKK',label:'ARK Innov.',radar:true},
+  ITA: {fh:'ITA', label:'Défense',radar:true},
+  ICLN:{fh:'ICLN',label:'Énergie propre',radar:true},
+  XBI: {fh:'XBI', label:'Biotech',radar:true},
+  HACK:{fh:'HACK',label:'Cybersécurité',radar:true},
+  TQQQ:{fh:'TQQQ',label:'Nasdaq ×3',radar:true},
+  SOXL:{fh:'SOXL',label:'Semis ×3',radar:true},
+  UVXY:{fh:'UVXY',label:'Volatilité VIX',radar:true},
+  JETS:{fh:'JETS',label:'Compagnies aériennes',radar:true},
+  KWEB:{fh:'KWEB',label:'Tech Chine',radar:true},
+  SMH: {fh:'SMH', label:'Semi-conducteurs',radar:true},
+  IBIT:{fh:'IBIT',label:'Bitcoin ETF',radar:true},
 };
 async function fetchStocks(){
   const keys=Object.keys(STOCKS_FH);
@@ -315,6 +328,24 @@ function scoreAsset(d){
   return{score,alerts,warnings,blocked};
 }
 
+// ── Radar Volatilité — scanne le panel ETF, retourne les + volatils ──
+function computeRadarVolatilite(){
+  const panel=Object.keys(STOCKS_FH).filter(k=>STOCKS_FH[k].radar);
+  const ranked=panel
+    .map(k=>{
+      const d=DATA[k];
+      if(!d?.ok)return null;
+      const{score,alerts,blocked}=scoreAsset(d);
+      const sig=blocked?(d._p5!=null&&d._p5<-8?'VENTE':'NEUTRE'):(score>=60?'ACHAT':score<=42?'VENTE':'NEUTRE');
+      const nbCrit=alerts.filter(a=>a.startsWith('🚨')).length;
+      return{key:k,label:d.label,pct:d.pct,vol:d._vol,p5:d._p5,score,sig:nbCrit>=1?'DANGER':sig,alerts};
+    })
+    .filter(Boolean)
+    .sort((a,b)=>(b.vol||0)-(a.vol||0));
+  return ranked.slice(0,4);
+}
+
+
 function computeSignal(keys){
   let totalBull=0,totalBear=0,n=0,nbBlocked=0;
   const allAlerts=[],allWarnings=[];
@@ -337,8 +368,9 @@ function computeSignal(keys){
 }
 
 function choisirVedette(MKTS,signals){
-  const cands=[...MKTS].filter(m=>signals[m.key].sig==='ACHAT'||signals[m.key].sig==='NEUTRE').sort((a,b)=>signals[b.key].H-signals[a.key].H);
-  const vedette=cands.find(m=>signals[m.key].sig==='ACHAT')||cands[0]||MKTS[0];
+  const MKTS_H=MKTS.filter(m=>!m.isRadar);
+  const cands=[...MKTS_H].filter(m=>signals[m.key].sig==='ACHAT'||signals[m.key].sig==='NEUTRE').sort((a,b)=>signals[b.key].H-signals[a.key].H);
+  const vedette=cands.find(m=>signals[m.key].sig==='ACHAT')||cands[0]||MKTS_H[0];
   const s=signals[vedette.key];
   const actifs=vedette.keys.filter(k=>DATA[k]?.ok);
   const raisons=[];
@@ -407,9 +439,7 @@ async function analyserTout(){
       petrole:   computeSignal(['USO','XOM','CVX','OXY']),
       or:        computeSignal(['GLD','SLV','GDX']),
       crypto:    computeSignal(['BTC','ETH','SOL','XRP']),
-      innovation:computeSignal(['BOTZ','ARKK']),
-      defense:   computeSignal(['ITA','ICLN']),
-      biotech:   computeSignal(['XBI','HACK']),
+      radar:     computeRadarVolatilite(),
     };
     await step(100,'Affichage...');
     ldr.style.display='none';btn.disabled=false;
@@ -436,9 +466,7 @@ function renderAll(signals,NEWS,ms){
     {key:'petrole',   icon:'🛢️',label:'Pétrole & Énergie',    sub:'WTI · Brent · Majors',                    open:ms.petrole,horaire:'CME Futures · 24h/5j',   keys:['USO','XOM','CVX','OXY'],                               labels:['USO/WTI','ExxonMobil','Chevron','Occidental']},
     {key:'or',        icon:'🥇',label:'Or & Métaux',          sub:'GLD · SLV · GDX Minières',                open:ms.or,     horaire:'Comex · lun–ven',         keys:['GLD','SLV','GDX'],                                     labels:['GLD/Or','SLV/Argent','GDX/Minières']},
     {key:'crypto',    icon:'₿', label:'Crypto',               sub:'BTC · ETH · SOL · XRP',                  open:ms.crypto, horaire:'24h / 7j',                keys:['BTC','ETH','SOL','XRP'],                               labels:['Bitcoin','Ethereum','Solana','XRP']},
-    {key:'innovation',icon:'🤖',label:'Innovation & IA',      sub:'BOTZ · ARKK — ETF thématique croissance', open:ms.nasdaq, horaire:'NYSE · 15h30–22h FR',   keys:['BOTZ','ARKK'],                                         labels:['BOTZ IA/Robot.','ARKK Disruptif']},
-    {key:'defense',   icon:'🛡️',label:'Défense & Transition', sub:'ITA · ICLN — ETF sectoriel macro',        open:ms.nasdaq, horaire:'NYSE · 15h30–22h FR',   keys:['ITA','ICLN'],                                          labels:['ITA Défense','ICLN Énergie propre']},
-    {key:'biotech',   icon:'💊',label:'Biotech & Cyber',      sub:'XBI · HACK — ETF sectoriel haut risque',  open:ms.nasdaq, horaire:'NYSE · 15h30–22h FR',   keys:['XBI','HACK'],                                          labels:['XBI Biotech','HACK Cybersécurité']},
+    {key:'radar',icon:'⚡',label:'Radar Volatilité',sub:'Les ETF les plus agités du moment — scan auto',open:ms.nasdaq,horaire:'NYSE · 15h30–22h FR',keys:[],labels:[],isRadar:true},
   ];
 
   const{vedette,s:sv,raisons,miniActifs}=choisirVedette(MKTS,signals);
@@ -461,12 +489,54 @@ function renderAll(signals,NEWS,ms){
     petrole:   {ACHAT:'OXY = haut bêta. XOM = défensif. Surveiller OPEC.',VENTE:'⛔ Pression baissière sur brut.',NEUTRE:'Volatilité géopolitique. Attendre stabilisation du Brent.',DANGER:'🚨 Brut très volatil. Aucune position levier.'},
     or:        {ACHAT:'Or = refuge confirmé. GDX (minières) amplifie ×1.5.',VENTE:'⛔ Risk-on dominant → rotation vers actions.',NEUTRE:"Or corrélé à l'inflation et tensions géopolitiques.",DANGER:'🚨 Mouvement extrême sur métaux.'},
     crypto:    {ACHAT:'BTC sain. ETH et SOL amplifient. Volatilité sous contrôle.',VENTE:'⛔ Risk-off crypto. Suit le Nasdaq en baisse.',NEUTRE:'BTC doit franchir un niveau clé pour confirmer.',DANGER:'🚨 Volatilité crypto extrême. Risque de liquidation.'},
-    innovation:{ACHAT:'BOTZ + ARKK en momentum IA. Horizon court, stop-loss strict.',VENTE:"⛔ Risk-off croissance. ARKK très sensible aux taux.",NEUTRE:"Attendre catalyseur IA. BOTZ plus stable qu'ARKK.",DANGER:'🚨 Forte volatilité croissance. Ne pas initier.'},
-    defense:   {ACHAT:'ITA porté par géopolitique. ICLN bénéficie de la transition énergétique.',VENTE:'⛔ Rotation inverse défense.',NEUTRE:'ITA et ICLN sur cycles différents.',DANGER:'🚨 Mouvements macro extrêmes. Hors position.'},
-    biotech:   {ACHAT:'XBI = catalyseurs FDA fréquents. HACK en tendance cyber.',VENTE:'⛔ XBI chute vite en risk-off.',NEUTRE:'Attendre catalyseur biotech ou incident cyber.',DANGER:'🚨 XBI peut perdre 10%+ en une séance.'},
   };
 
   const cards=MKTS.map(m=>{
+    if(m.isRadar){
+      // ── Carte spéciale Radar Volatilité ──
+      const top=signals.radar||[];
+      const radarItems=top.map((r,i)=>{
+        const medal=['🥇','🥈','🥉','4·'][i]||'';
+        return`<div class="val-row">
+          <span>${medal} ${r.label}</span>
+          <span class="${pctCls(r.pct)}">${fmtPct(r.pct)}</span>
+          <span>${r.p5!=null?`<span class="${pctCls(r.p5)}">${r.p5>=0?'+':''}${r.p5.toFixed(1)}%</span>`:'<span class="dim">—</span>'}</span>
+          <span class="badge ${badgeCls(r.sig)}" style="font-size:9px;padding:2px 6px;justify-self:end;">${r.sig}</span>
+          <span class="${r.vol>4?'r':r.vol>2?'a':'dim'}">${r.vol!=null?r.vol.toFixed(1)+'%':'—'}</span>
+        </div>`;
+      }).join('');
+      const avgVol=top.length?(top.reduce((a,r)=>a+(r.vol||0),0)/top.length):0;
+      const radarReco = avgVol>4
+        ? '🚨 Volatilité extrême sur le panel — aucune position recommandée, même opportuniste.'
+        : avgVol>2.5
+        ? '⚠ Volatilité élevée détectée — positions courtes uniquement, stop-loss serré obligatoire.'
+        : '✓ Volatilité modérée sur le panel — opportunités tactiques possibles selon signal individuel.';
+      return`<div class="gc" id="gc-radar" onclick="toggleGC('radar')">
+        <div class="gc-layout">
+          <div class="gc-col-status">
+            <div class="gc-dot gc-dot-open"></div>
+            <span class="gc-status-label" style="color:var(--gr);">SCAN</span>
+            <span class="gc-horaire">${top.length} actifs trackés</span>
+          </div>
+          <div>
+            <div class="gc-label">${m.icon} ${m.label}</div>
+            <div style="display:flex;align-items:baseline;gap:6px;"><span class="gc-sig ${avgVol>4?'r':avgVol>2?'a':'g'}">${avgVol.toFixed(1)}%/j moy.</span></div>
+            <div class="gc-sub">${m.sub}</div>
+          </div>
+          <span class="gc-arrow">▼</span>
+        </div>
+        <div class="gc-quotes">${top.map(r=>`<span class="gc-quote"><span class="${pctCls(r.pct)}">${r.label} ${fmtPct(r.pct)}</span></span>`).join('')}</div>
+        <div class="gc-body">
+          <div class="card"><div class="ch">Classement par volatilité — Jour · 5j · Signal · Vol/j</div>
+            <div class="val-grid" style="grid-template-columns:1fr 56px 56px 70px 56px;">
+              <span class="val-hd">ETF</span><span class="val-hd">Jour</span><span class="val-hd">5j</span><span class="val-hd">Signal</span><span class="val-hd">Vol</span>
+              ${radarItems}
+            </div>
+          </div>
+          <div class="reco">→ ${radarReco}</div>
+        </div>
+      </div>`;
+    }
     const s=signals[m.key],sc=sigCls(s.H),isVed=m.key===vedette.key;
     const mini=m.keys.slice(0,3).map(k=>{const d=DATA[k];if(!d?.ok)return'';return`<span class="gc-quote"><span class="${pctCls(d.pct)}">${d.label} ${fmtPct(d.pct)}</span></span>`;}).join('');
     const dQuotes=`<div class="quotes">${m.keys.map(k=>{const d=DATA[k];if(!d)return'';const vs=d._vol?` · v${d._vol.toFixed(1)}%`:'';return`<div class="qc"><div class="ql">${d.label}</div><div class="qp ${d.ok?pctCls(d.pct):'dim'}">${fmtPrice(d.price,k)}</div><div class="qd ${pctCls(d.pct)}">${d.ok?fmtPct(d.pct):'N/A'}${vs}</div></div>`;}).join('')}</div>`;
@@ -509,8 +579,9 @@ function renderAll(signals,NEWS,ms){
     </div>`;
   }).join('');
 
-  const best=[...MKTS].sort((a,b)=>signals[b.key].H-signals[a.key].H)[0];
-  const worst=[...MKTS].sort((a,b)=>signals[a.key].H-signals[b.key].H)[0];
+  const MKTS_H=MKTS.filter(m=>!m.isRadar);
+  const best=[...MKTS_H].sort((a,b)=>signals[b.key].H-signals[a.key].H)[0];
+  const worst=[...MKTS_H].sort((a,b)=>signals[a.key].H-signals[b.key].H)[0];
 
   document.getElementById('sec-global').innerHTML=`
     ${vedetteHTML}
@@ -537,9 +608,6 @@ function renderAll(signals,NEWS,ms){
     petrole:/oil|crude|brent|wti|opec|iran|energy|barrel/i,
     or:/gold|silver|metal|gld|xau|precious/i,
     crypto:/bitcoin|btc|eth|ethereum|crypto|solana|xrp|blockchain/i,
-    innovation:/robot|ai\b|artificial|arkk|botz|automation|openai/i,
-    defense:/defense|defence|military|ita|icln|clean energy|renewable|solar|nato/i,
-    biotech:/biotech|pharma|fda|drug|xbi|hack|cyber|ransomware|security/i,
   };
   const mktCtx={
     semi:'Demande IA structurellement solide. Fed hawkish + tensions Taïwan = risques.',
@@ -548,11 +616,8 @@ function renderAll(signals,NEWS,ms){
     petrole:'Géopolitique Iran/Ormuz = volatilité. Surveiller OPEC.',
     or:'Refuge en tensions. Corrélation inverse dollar.',
     crypto:'Corrèle avec le Nasdaq. Volatilité ×3 vs actions.',
-    innovation:'IA en tendance structurelle. ARKK sensible aux taux Fed.',
-    defense:'Contexte géopolitique favorable à ITA. ICLN dépend des politiques énergétiques.',
-    biotech:'XBI = catalyseurs FDA. HACK porté par la croissance cyber.',
   };
-  const predCards=MKTS.map(m=>{
+  const predCards=MKTS.filter(m=>!m.isRadar).map(m=>{
     const s=signals[m.key];
     const mn=NEWS.filter(n=>mktKw[m.key].test(n.titre+(n.resume||n.detail||'')));
     const mb=mn.filter(n=>n.impact==='bull').length,mr=mn.filter(n=>n.impact==='bear').length;
