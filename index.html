@@ -43,7 +43,7 @@ h1 em{color:var(--ac);font-style:normal;}
 .vedette-actifs{display:flex;flex-wrap:wrap;gap:5px;margin-top:.8rem;padding-top:.8rem;border-top:1px solid rgba(255,255,255,.07);}
 .vedette-actif{font:500 11px/1 'DM Mono',monospace;padding:4px 9px;border-radius:5px;background:rgba(255,255,255,.05);}
 .global-grid{display:flex;flex-direction:column;gap:8px;margin-bottom:1rem;}
-.gc{background:var(--sur);border:1px solid var(--brd);border-radius:12px;padding:1rem 1.1rem;cursor:pointer;transition:border-color .2s;scroll-margin-top:16px;}
+.gc{background:var(--sur);border:1px solid var(--brd);border-radius:12px;padding:1rem 1.1rem;cursor:pointer;transition:border-color .2s;}
 .gc:hover,.gc.expanded{border-color:var(--ac);}
 .gc.is-vedette{border-color:rgba(139,127,255,.4);background:linear-gradient(135deg,var(--sur),rgba(139,127,255,.05));}
 .gc-body{max-height:0;overflow:hidden;margin-top:0;padding-top:0;border-top:0 solid var(--brd);transition:max-height .35s ease,margin-top .35s ease,padding-top .35s ease;}
@@ -122,7 +122,7 @@ h1 em{color:var(--ac);font-style:normal;}
 </head>
 <body>
 <div class="wrap">
-  <div class="logo">Signal Intelligence · v2.28 · <span id="last-update">—</span></div>
+  <div class="logo">Signal Intelligence · v2.29 · <span id="last-update">—</span></div>
   <h1>Dashboard <em>Multi-Marchés</em></h1>
   <div class="sub">US · Europe · Crypto · Pétrole · Or · Radar Volatilité — signaux filtrés · sécurité renforcée · indice vedette</div>
   <button class="btn-main" id="btn" onclick="analyserTout()">
@@ -703,13 +703,16 @@ function toggleGC(key){
   const othersOpen=document.querySelectorAll('.gc.expanded');
   othersOpen.forEach(el=>el.classList.remove('expanded'));
   if(!was){
-    // Si une autre carte se refermait juste au-dessus, on attend que sa
-    // transition de fermeture soit bien amorcée avant de scroller,
-    // sinon le scroll cible une position qui bouge encore (décalage).
     const delay=othersOpen.length?180:0;
     setTimeout(()=>{
       gc.classList.add('expanded');
-      gc.scrollIntoView({behavior:'smooth',block:'start'});
+      // Calcul manuel de la position cible : on vise un point fixe
+      // à 24px du haut de l'écran, recalculé après ouverture pour être précis
+      const OFFSET=24;
+      requestAnimationFrame(()=>{
+        const top=gc.getBoundingClientRect().top+window.scrollY-OFFSET;
+        window.scrollTo({top,behavior:'smooth'});
+      });
     },delay);
   }
 }
