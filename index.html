@@ -75,8 +75,9 @@ h1 em{color:var(--ac);font-style:normal;}
 .val-hd{font:400 9px/1 'DM Mono',monospace;color:var(--tx3);text-align:right;padding-bottom:5px;border-bottom:1px solid var(--brd);}
 .val-hd:first-child{text-align:left;}
 .val-row{display:contents;}
-.val-row span{font:500 11px/1 'DM Mono',monospace;text-align:right;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.03);}
+.val-row span{font:500 11px/1 'DM Mono',monospace;text-align:right;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.03);display:block;width:100%;}
 .val-row span:first-child{text-align:left;color:var(--tx2);font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.val-row span > span{display:inline;width:auto;}
 .badge{font:700 12px/1 'DM Mono',monospace;padding:4px 12px;border-radius:6px;letter-spacing:.05em;}
 .b-buy{background:var(--gr-bg);color:var(--gr);border:1px solid rgba(74,222,128,.3);}
 .b-sell{background:var(--rd-bg);color:var(--rd);border:1px solid rgba(248,113,113,.3);}
@@ -121,7 +122,7 @@ h1 em{color:var(--ac);font-style:normal;}
 </head>
 <body>
 <div class="wrap">
-  <div class="logo">Signal Intelligence · v2.25 · <span id="last-update">—</span></div>
+  <div class="logo">Signal Intelligence · v2.27 · <span id="last-update">—</span></div>
   <h1>Dashboard <em>Multi-Marchés</em></h1>
   <div class="sub">US · Europe · Crypto · Pétrole · Or · Radar Volatilité — signaux filtrés · sécurité renforcée · indice vedette</div>
   <button class="btn-main" id="btn" onclick="analyserTout()">
@@ -702,11 +703,9 @@ function toggleGC(key){
   document.querySelectorAll('.gc.expanded').forEach(el=>el.classList.remove('expanded'));
   if(!was){
     gc.classList.add('expanded');
-    // Laisse la carte se déplier visuellement, puis recentre la vue dessus
-    // pour que l'utilisateur ne perde jamais le titre de vue (mobile)
-    setTimeout(()=>{
-      gc.scrollIntoView({behavior:'smooth',block:'start'});
-    },80);
+    // Scroll immédiat vers le HAUT de la carte (avant tout déploiement)
+    // pour fixer le repère visuel dès le début, sans attendre l'animation
+    gc.scrollIntoView({behavior:'smooth',block:'start'});
   }
 }
 function showTab(name){
