@@ -121,7 +121,7 @@ h1 em{color:var(--ac);font-style:normal;}
 </head>
 <body>
 <div class="wrap">
-  <div class="logo">Signal Intelligence · v2.21 · <span id="last-update">—</span></div>
+  <div class="logo">Signal Intelligence · v2.22 · <span id="last-update">—</span></div>
   <h1>Dashboard <em>Multi-Marchés</em></h1>
   <div class="sub">US · Europe · Crypto · Pétrole · Or · Thématiques — signaux filtrés · sécurité renforcée · indice vedette</div>
   <button class="btn-main" id="btn" onclick="analyserTout()">
@@ -176,9 +176,15 @@ async function fhQuote(sym){
 const LS_KEY='smv3_hist';
 function loadHist(){try{const r=localStorage.getItem(LS_KEY);return r?JSON.parse(r):{}}catch{return{}}}
 function saveHist(h){try{localStorage.setItem(LS_KEY,JSON.stringify(h))}catch{}}
-function pushAndGet(h,k,price){
+function pushAndGet(h,k,price,prevClose){
   if(!price||isNaN(+price))return(h[k]||[]).map(e=>e.c);
   if(!h[k])h[k]=[];
+  // Initialisation : si l'historique est vide, on amorce avec la clôture de la veille
+  // pour avoir au moins 2 points dès la première utilisation
+  if(!h[k].length&&prevClose&&!isNaN(+prevClose)){
+    const yest=new Date(Date.now()-86400000).toISOString().slice(0,10);
+    h[k].push({d:yest,c:+prevClose});
+  }
   const today=new Date().toISOString().slice(0,10);
   if(!h[k].length||h[k].at(-1).d!==today)h[k].push({d:today,c:+price});
   if(h[k].length>60)h[k]=h[k].slice(-60);
@@ -203,7 +209,7 @@ async function fetchStocks(){
     DATA[k]=q?{label,price:q.price,prev:q.prev,pct:q.pct,ok:true,closes:[],source:'Finnhub'}:{label,price:null,prev:null,pct:null,ok:false,closes:[],source:'Finnhub'};
   }));
   const h=loadHist();
-  keys.forEach(k=>{DATA[k].closes=pushAndGet(h,k,DATA[k].price);});
+  keys.forEach(k=>{DATA[k].closes=pushAndGet(h,k,DATA[k].price,DATA[k].prev);});
   saveHist(h);
 }
 
@@ -378,7 +384,7 @@ async function analyserTout(){
     await step(65,'RSI · 5j · 20j · volatilité...');
     // Crypto aussi dans localStorage
     const hh=loadHist();
-    ['BTC','ETH','SOL','XRP'].forEach(k=>{if(DATA[k]?.ok&&DATA[k].price)DATA[k].closes=pushAndGet(hh,k,DATA[k].price);});
+    ['BTC','ETH','SOL','XRP'].forEach(k=>{if(DATA[k]?.ok&&DATA[k].price)DATA[k].closes=pushAndGet(hh,k,DATA[k].price,DATA[k].prev);});
     saveHist(hh);
     // Recalcul forcé TOUJOURS après que closes est rempli
     Object.keys(DATA).forEach(k=>{
@@ -508,7 +514,7 @@ function renderAll(signals,NEWS,ms){
 
   document.getElementById('sec-global').innerHTML=`
     ${vedetteHTML}
-    <div class="safety-legend">🔒 Filtres · ACHAT bloqué si : RSI > 75 · chute 5j > 8% · vol > 4%/j · DANGER si ≥ 2 alertes critiques · Historique : ${nbHist}/${nbTotal} actifs</div>
+    <div class="safety-legend">🔒 Filtres · ACHAT bloqué si : RSI > 75 · chute 5j > 8% · vol > 4%/j · DANGER si ≥ 2 alertes critiques<br>📊 Historique : ${nbHist}/${nbTotal} actifs avec ≥2 points. 5j/20j/vol s'enrichissent à chaque nouvelle analyse quotidienne (J6=5j disponible, J11=vol, J21=20j).</div>
     <div class="dq">Finnhub · Binance · CoinGecko · ${now}</div>
     <div class="global-grid">${cards}</div>
     <div class="card"><div class="ch">Résumé du moment</div>
